@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Odontológico — ONG Junta Mais</title>
+<style>
+:root {
+  --purple:#6B21A8;--purple-mid:#9333EA;--purple-light:#F3E8FF;--purple-border:#D8B4FE;
+  --teal:#0F766E;--teal-mid:#14B8A6;--teal-light:#CCFBF1;
+  --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-400:#9CA3AF;
+  --gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;
+  --red:#DC2626;--red-light:#FEE2E2;--green:#16A34A;--green-light:#DCFCE7;
+  --amber:#D97706;--amber-light:#FEF3C7;--white:#FFFFFF;
+  --radius:8px;--shadow:0 1px 4px rgba(0,0,0,0.08);--shadow-md:0 4px 12px rgba(0,0,0,0.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:220px;flex-shrink:0;background:var(--gray-800);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:10;overflow-y:auto;}
+.sidebar-brand{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-brand .org{font-size:10px;color:var(--gray-400);letter-spacing:1.5px;text-transform:uppercase;}
+.sidebar-brand .name{font-size:15px;font-weight:700;color:white;margin-top:2px;}
+.sidebar-brand .sub{font-size:11px;color:var(--gray-400);margin-top:1px;}
+.nav{padding:12px 0;flex:1;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--gray-400);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;}
+.nav-item:hover{color:white;background:rgba(255,255,255,0.06);}
+.nav-item.active{color:white;background:rgba(255,255,255,0.1);border-left-color:var(--purple-mid);}
+.nav-sep{height:1px;background:rgba(255,255,255,0.06);margin:8px 0;}
+.sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);}
+.db-badge{font-size:10px;color:var(--gray-400);display:flex;align-items:center;gap:6px;}
+.db-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.db-dot.red{background:var(--red);}
+.conn-status{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.main{margin-left:220px;flex:1;}
+.page{display:none;padding:24px;}
+.page.active{display:block;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.topbar h1{font-size:20px;font-weight:700;}
+.topbar p{font-size:13px;color:var(--gray-400);margin-top:2px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.stat-label{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;}
+.stat-value{font-size:28px;font-weight:700;margin-top:4px;}
+.stat-value.purple{color:var(--purple);}
+.stat-value.teal{color:var(--teal);}
+.stat-value.amber{color:var(--amber);}
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.search-box{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:8px 12px;}
+.search-box input{border:none;outline:none;font-size:14px;width:100%;font-family:inherit;color:var(--gray-800);background:transparent;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s;}
+.btn-primary{background:var(--purple);color:white;}.btn-primary:hover{background:#581C87;}
+.btn-teal{background:var(--teal);color:white;}.btn-teal:hover{background:#134E4A;}
+.btn-outline{background:white;color:var(--gray-700);border:1.5px solid var(--gray-200);}.btn-outline:hover{border-color:var(--gray-400);}
+.btn-danger{background:var(--red-light);color:var(--red);}.btn-danger:hover{background:#FECACA;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.filter-btn{padding:8px 12px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-200);background:white;color:var(--gray-600);font-family:inherit;transition:all 0.15s;}
+.filter-btn.active{border-color:var(--purple-mid);background:var(--purple-light);color:var(--purple);}
+.table-wrap{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--gray-50);}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--gray-200);}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--gray-100);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--gray-50);}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-adult{background:var(--purple-light);color:var(--purple);}
+.badge-ped{background:var(--teal-light);color:var(--teal);}
+.empty-state{text-align:center;padding:48px 24px;color:var(--gray-400);}
+.form-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px;}
+.form-section-header{display:flex;align-items:center;gap:10px;padding:12px 18px;border-left:4px solid var(--purple);background:var(--purple-light);}
+.form-section-header.teal{border-left-color:var(--teal);background:var(--teal-light);}
+.section-num{background:var(--purple);color:white;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-num.teal{background:var(--teal);}
+.section-title{font-size:14px;font-weight:600;color:var(--purple);}
+.section-title.teal{color:var(--teal);}
+.form-body{padding:18px;}
+.field{margin-bottom:16px;}
+.field:last-child{margin-bottom:0;}
+.field-label{font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.required{color:var(--red);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+input[type="text"],input[type="number"],textarea,select{width:100%;border:1.5px solid var(--gray-200);border-radius:6px;padding:9px 12px;font-size:14px;color:var(--gray-800);background:var(--white);font-family:inherit;transition:border-color 0.15s,box-shadow 0.15s;outline:none;}
+input:focus,textarea:focus,select:focus{border-color:var(--purple-mid);box-shadow:0 0 0 3px rgba(147,51,234,0.1);}
+textarea{resize:vertical;min-height:70px;}
+.options-group{display:flex;flex-wrap:wrap;gap:7px;}
+.opt{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--gray-200);border-radius:20px;cursor:pointer;font-size:13px;color:var(--gray-600);background:var(--white);transition:all 0.15s;user-select:none;}
+.opt:hover{border-color:var(--purple-mid);color:var(--purple);}
+.opt.sel{background:var(--purple-light);border-color:var(--purple-mid);color:var(--purple);font-weight:600;}
+.opt .dot{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.opt.sel .dot::after{content:'';width:5px;height:5px;background:var(--purple);border-radius:50%;}
+.opt .chk{width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.opt.sel .chk::after{content:'✓';font-size:9px;color:var(--purple);font-weight:700;}
+.conditional{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--gray-200);}
+.conditional.show{display:block;}
+.cond-label{font-size:12px;color:var(--gray-400);margin-bottom:5px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:12px;padding:24px;max-width:720px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-md);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-header h2{font-size:17px;font-weight:700;}
+.modal-close{background:var(--gray-100);border:none;cursor:pointer;border-radius:6px;padding:6px 10px;font-size:16px;color:var(--gray-600);}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.detail-item{padding:10px 12px;background:var(--gray-50);border-radius:6px;}
+.detail-key{font-size:11px;color:var(--gray-400);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px;}
+.detail-val{font-size:13px;font-weight:600;color:var(--gray-800);}
+.detail-val.empty{color:var(--gray-400);font-weight:400;font-style:italic;}
+.detail-section{font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--purple-border);}
+.toast{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:8px;font-size:14px;font-weight:600;box-shadow:var(--shadow-md);transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:var(--green);color:white;}
+.toast.error{background:var(--red);color:white;}
+.toast.info{background:var(--purple);color:white;}
+.tab-bar{display:flex;gap:4px;background:var(--gray-200);padding:4px;border-radius:10px;margin-bottom:20px;}
+.tab{flex:1;text-align:center;padding:8px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;color:var(--gray-600);transition:all 0.2s;}
+.tab.active{background:white;color:var(--gray-800);box-shadow:var(--shadow);}
+.date-input{font-variant-numeric:tabular-nums;letter-spacing:0.5px;}
+/* FOTO */
+.foto-area{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+.foto-preview{width:120px;height:120px;border-radius:10px;border:2px dashed var(--gray-200);background:var(--gray-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.foto-preview img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;}
+.foto-placeholder{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--gray-400);}
+.foto-placeholder span{font-size:11px;text-align:center;line-height:1.3;}
+.foto-btns{display:flex;flex-direction:column;gap:8px;flex:1;min-width:150px;justify-content:center;}
+.foto-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-200);background:white;color:var(--gray-700);font-family:inherit;transition:all 0.15s;width:100%;}
+.foto-btn:hover{border-color:var(--purple-mid);color:var(--purple);}
+.foto-btn-remover{color:var(--red);border-color:var(--red-light);background:var(--red-light);display:none;}
+.foto-btn-remover.visible{display:flex;}
+.cam-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:400;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.cam-overlay.open{display:flex;}
+.cam-video{width:100%;max-width:420px;border-radius:10px;background:#000;}
+.cam-btns{display:flex;gap:12px;}
+.cam-btn{padding:12px 28px;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;}
+.cam-capturar{background:white;color:#1F2937;}
+.cam-cancelar{background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);}
+/* ANEXOS */
+.anexo-area{display:flex;flex-direction:column;gap:10px;}
+.anexo-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;}
+.anexo-preview{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;border:1px solid var(--gray-200);}
+.anexo-preview.pdf{display:flex;align-items:center;justify-content:center;background:var(--red-light);color:var(--red);font-size:11px;font-weight:700;}
+.anexo-info{flex:1;min-width:0;}
+.anexo-nome{font-size:13px;font-weight:600;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.anexo-data{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.anexo-btn-add{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;border:1.5px dashed var(--gray-200);background:white;color:var(--gray-600);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;width:100%;}
+.anexo-btn-add:hover{border-color:var(--purple-mid);color:var(--purple);}
+.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:10px;}
+.foto-card{position:relative;border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200);}
+.foto-card img{width:100%;height:100px;object-fit:cover;display:block;}
+.foto-card-info{padding:4px 6px;background:white;font-size:11px;color:var(--gray-600);}
+.foto-card-remove{position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* CONFIG */
+.config-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:16px;}
+.config-card h3{font-size:15px;font-weight:700;margin-bottom:4px;}
+.config-card p{font-size:13px;color:var(--gray-600);margin-bottom:16px;}
+.config-status{display:flex;align-items:center;gap:8px;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:12px;}
+.config-status.ok{background:var(--green-light);color:var(--green);}
+.config-status.err{background:var(--red-light);color:var(--red);}
+.config-status.warn{background:var(--amber-light);color:var(--amber);}
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.8);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:40px;height:40px;border:4px solid var(--gray-200);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* PLANO */
+.plano-table input{border:none;background:transparent;padding:4px;width:100%;font-size:13px;outline:none;font-family:inherit;}
+.plano-table input:focus{background:var(--purple-light);border-radius:4px;}
+/* PROCS */
+.proc-row{display:grid;grid-template-columns:110px 1fr 150px auto;gap:8px;align-items:center;padding:8px;background:var(--gray-50);border-radius:6px;margin-bottom:6px;font-size:13px;}
+@media(max-width:640px){
+  .sidebar{width:100%;height:auto;position:relative;}
+  .main{margin-left:0;}
+  .stats{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+  .detail-grid{grid-template-columns:1fr;}
+  .proc-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<input type="file" id="foto-upload-input" accept="image/*" style="display:none" onchange="fotoUploadSelecionada(this)">
+<input type="file" id="autorizacao-input" accept="image/*,application/pdf" style="display:none" onchange="autorizacaoSelecionada(this)">
+<input type="file" id="raiox-input" accept="image/*" style="display:none" onchange="raioxSelecionado(this)">
+<input type="file" id="fotos-avaliacao-input" accept="image/*" multiple style="display:none" onchange="fotosAvaliacaoSelecionadas(this)">
+<canvas id="cam-canvas" style="display:none"></canvas>
+
+<!-- CAMERA -->
+<div class="cam-overlay" id="cam-overlay">
+  <video id="cam-video" class="cam-video" autoplay playsinline muted></video>
+  <div class="cam-btns">
+    <button class="cam-btn cam-capturar" onclick="capturarFoto()">📸 Capturar foto</button>
+    <button class="cam-btn cam-cancelar" onclick="fecharCamera()">✕ Cancelar</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div id="loading-msg" style="font-size:14px;color:var(--gray-600)">Aguarde...</div>
+</div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="org">ONG Junta Mais</div>
+    <div class="name">Consultório Odontológico</div>
+    <div class="sub">Sistema de Fichas</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-item active" onclick="goTo('dashboard')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="goTo('pacientes')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Pacientes
+    </div>
+    <div class="nav-item" onclick="goTo('novo')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Nova Ficha
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="exportarCSV()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exportar CSV
+    </div>
+    <div class="nav-item" onclick="goTo('config')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Configurações
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="db-badge"><span class="db-dot" id="conn-dot"></span><span id="conn-label">Verificando...</span></div>
+    <div class="conn-status" id="conn-status"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="topbar"><div><h1>Dashboard</h1><p>Visão geral do consultório</p></div></div>
+  <div class="stats">
+    <div class="stat-card"><div class="stat-label">Total de pacientes</div><div class="stat-value purple" id="stat-total">—</div></div>
+    <div class="stat-card"><div class="stat-label">Fichas adulto</div><div class="stat-value amber" id="stat-adulto">—</div></div>
+    <div class="stat-card"><div class="stat-label">Fichas pediátrico</div><div class="stat-value teal" id="stat-ped">—</div></div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Paciente</th><th>Tipo</th><th>Consulta</th><th>Dentista</th><th>Queixa</th><th></th></tr></thead>
+    <tbody id="dashboard-tbody"><tr><td colspan="6"><div class="empty-state"><p>Configure a conexão com o Supabase para começar</p></div></td></tr></tbody></table>
+  </div>
+</div>
+
+<!-- PACIENTES -->
+<div class="page" id="page-pacientes">
+  <div class="topbar"><div><h1>Pacientes</h1><p>Buscar e gerenciar fichas</p></div><button class="btn btn-primary" onclick="goTo('novo')">+ Nova ficha</button></div>
+  <div class="toolbar">
+    <div class="search-box">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Buscar por nome, CPF ou dentista..." oninput="carregarPacientes()">
+    </div>
+    <button class="filter-btn active" onclick="filtrarTipo('todos',this)">Todos</button>
+    <button class="filter-btn" onclick="filtrarTipo('adulto',this)">Adulto</button>
+    <button class="filter-btn" onclick="filtrarTipo('pediatrico',this)">Pediátrico</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Paciente</th><th>Tipo</th><th>Nascimento</th><th>Telefone</th><th>Dentista</th><th>Consulta</th><th></th></tr></thead>
+    <tbody id="pacientes-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- NOVA FICHA -->
+<div class="page" id="page-novo">
+  <div class="topbar"><div><h1 id="form-title">Nova Ficha</h1><p>Preencher na chegada do paciente</p></div></div>
+  <div class="tab-bar">
+    <div class="tab active" id="tab-adulto" onclick="trocarTipo('adulto')">👤 Adulto</div>
+    <div class="tab" id="tab-pediatrico" onclick="trocarTipo('pediatrico')">🧒 Pediátrico</div>
+  </div>
+  <input type="hidden" id="f-id" value="">
+  <input type="hidden" id="f-tipo" value="adulto">
+
+  <!-- SEÇÃO 1: CONSULTA -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num">1</span><span class="section-title">Consulta</span></div>
+    <div class="form-body">
+      <div class="field-row">
+        <div class="field"><div class="field-label">Data da consulta <span class="required">*</span></div><input type="text" id="f-data-consulta" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div class="field"><div class="field-label">Horário</div><input type="text" id="f-horario" placeholder="hh:mm" maxlength="5" oninput="maskTime(this)"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Nome do(a) dentista <span class="required">*</span></div><input type="text" id="f-dentista" placeholder="Nome completo"></div>
+        <div class="field"><div class="field-label">CRO</div><input type="text" id="f-cro" placeholder="Ex: SP-12345"></div>
+      </div>
+      <!-- FOTO -->
+      <div class="field">
+        <div class="field-label">Foto do paciente</div>
+        <div class="foto-area">
+          <div class="foto-preview" id="foto-preview">
+            <div class="foto-placeholder" id="foto-placeholder">
+              <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <span>Sem foto</span>
+            </div>
+            <img id="foto-img" src="" alt="Foto do paciente">
+          </div>
+          <div class="foto-btns">
+            <button type="button" class="foto-btn" onclick="abrirCamera()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Tirar foto com câmera
+            </button>
+            <button type="button" class="foto-btn" onclick="document.getElementById('foto-upload-input').click()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Carregar imagem
+            </button>
+            <button type="button" class="foto-btn foto-btn-remover" id="foto-btn-remover" onclick="removerFoto()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              Remover foto
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO: CRIANÇA (pediátrico) -->
+  <div class="form-card" id="sec-crianca" style="display:none">
+    <div class="form-section-header teal"><span class="section-num teal">2</span><span class="section-title teal">Dados da criança</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Nome da criança <span class="required">*</span></div><input type="text" id="f-nome-crianca" placeholder="Nome completo da criança"></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nasc-crianca" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sexo-c','radio')"><span class="dot"></span>Feminino</span><span class="opt" onclick="selOpt(this,'sexo-c','radio')"><span class="dot"></span>Masculino</span></div></div>
+      </div>
+      <div class="field"><div class="field-label">Possui irmãos? Se sim, quantos e de quais idades?</div><input type="text" id="f-irmaos" placeholder="Ex: 2 irmãos — 3 e 7 anos"></div>
+      <div class="field"><div class="field-label">Etnia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Branca</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Parda</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Negra</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Amarela</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Indígena</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Outra</span></div></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Cidade e Estado que nasceu</div><input type="text" id="f-cidade-crianca" placeholder="Ex: Curitiba - PR"></div>
+        <div class="field"><div class="field-label">CPF da criança</div><input type="text" id="f-cpf-crianca" placeholder="000.000.000-00"></div>
+      </div>
+      <div class="field"><div class="field-label">RG da criança</div><input type="text" id="f-rg-crianca" placeholder="00.000.000-0"></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO: RESPONSÁVEL (pediátrico) -->
+  <div class="form-card" id="sec-resp" style="display:none">
+    <div class="form-section-header teal"><span class="section-num teal">3</span><span class="section-title teal">Dados do responsável</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Nome do responsável <span class="required">*</span></div><input type="text" id="f-resp-nome" placeholder="Nome completo"></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-resp-nasc" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sexo-r','radio')"><span class="dot"></span>Feminino</span><span class="opt" onclick="selOpt(this,'sexo-r','radio')"><span class="dot"></span>Masculino</span></div></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Parentesco</div><input type="text" id="f-resp-parentesco" placeholder="Ex: mãe, pai, avó"></div>
+        <div class="field"><div class="field-label">Cidade e Estado que nasceu</div><input type="text" id="f-resp-cidade" placeholder="Ex: Curitiba - PR"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">CPF do responsável</div><input type="text" id="f-resp-cpf" placeholder="000.000.000-00"></div>
+        <div class="field"><div class="field-label">RG do responsável</div><input type="text" id="f-resp-rg" placeholder="00.000.000-0"></div>
+      </div>
+      <div class="field"><div class="field-label">Telefone de contato <span class="required">*</span></div><input type="text" id="f-telefone-ped" placeholder="(00) 00000-0000"></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO: DADOS DO PACIENTE (adulto) -->
+  <div class="form-card" id="sec-adulto">
+    <div class="form-section-header"><span class="section-num">2</span><span class="section-title">Dados do paciente</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Nome completo <span class="required">*</span></div><input type="text" id="f-nome" placeholder="Nome completo do paciente"></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nascimento" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sexo','radio')"><span class="dot"></span>Feminino</span><span class="opt" onclick="selOpt(this,'sexo','radio')"><span class="dot"></span>Masculino</span></div></div>
+      </div>
+      <div class="field"><div class="field-label">Possui filhos? Se sim, quantos e de quais idades?</div><input type="text" id="f-filhos" placeholder="Ex: 2 filhos — 5 e 8 anos"></div>
+      <div class="field"><div class="field-label">Etnia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Branca</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Parda</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Negra</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Amarela</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Indígena</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Outra</span></div></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Cidade e Estado que nasceu</div><input type="text" id="f-cidade" placeholder="Ex: Curitiba - PR"></div>
+        <div class="field"><div class="field-label">Telefone de contato</div><input type="text" id="f-telefone" placeholder="(00) 00000-0000"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">CPF</div><input type="text" id="f-cpf" placeholder="000.000.000-00"></div>
+        <div class="field"><div class="field-label">RG</div><input type="text" id="f-rg" placeholder="00.000.000-0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DADOS GERAIS -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-geral-num">3</span><span class="section-title">Dados gerais</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Endereço (caso possua)</div><input type="text" id="f-endereco" placeholder="Rua, número, complemento"></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Bairro</div><input type="text" id="f-bairro" placeholder="Bairro"></div>
+        <div class="field"><div class="field-label">CEP</div><input type="text" id="f-cep" placeholder="00000-000"></div>
+      </div>
+      <div class="field"><div class="field-label">Área de moradia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'area','radio')"><span class="dot"></span>Área urbana</span><span class="opt" onclick="selOpt(this,'area','radio')"><span class="dot"></span>Área rural</span></div></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Adultos na casa</div><input type="number" id="f-adultos" min="0" placeholder="0"></div>
+        <div class="field"><div class="field-label">Crianças na casa</div><input type="number" id="f-criancas" min="0" placeholder="0"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Água encanada?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'agua','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'agua','radio')"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Luz elétrica?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'luz','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'luz','radio')"><span class="dot"></span>Não</span></div></div>
+      </div>
+      <div class="field"><div class="field-label">Transporte da família</div><input type="text" id="f-transporte" placeholder="Ex: ônibus, carro próprio, a pé..."></div>
+      <div class="field"><div class="field-label">Possui renda fixa?</div>
+        <div class="options-group"><span class="opt" onclick="selOpt(this,'renda','radio');showCond('cond-renda')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'renda','radio');hideCond('cond-renda')"><span class="dot"></span>Não</span></div>
+        <div class="conditional" id="cond-renda"><div class="cond-label">Qual o valor?</div><input type="text" id="f-renda-valor" placeholder="R$ 0,00"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCOLARIDADE (pediátrico) -->
+  <div class="form-card" id="sec-escola" style="display:none">
+    <div class="form-section-header teal"><span class="section-num teal" id="sec-escola-num">5</span><span class="section-title teal">Escolaridade</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Frequenta escola ou creche?</div>
+        <div class="options-group"><span class="opt" onclick="selOpt(this,'escola','radio');showCond('cond-escola')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'escola','radio');hideCond('cond-escola')"><span class="dot"></span>Não</span></div>
+        <div class="conditional" id="cond-escola">
+          <div class="field-row" style="margin-bottom:10px">
+            <div><div class="cond-label">Rede</div><div class="options-group"><span class="opt" onclick="selOpt(this,'rede','radio')"><span class="dot"></span>Pública</span><span class="opt" onclick="selOpt(this,'rede','radio')"><span class="dot"></span>Privada</span></div></div>
+            <div><div class="cond-label">Período</div><div class="options-group"><span class="opt" onclick="selOpt(this,'periodo','radio')"><span class="dot"></span>Manhã</span><span class="opt" onclick="selOpt(this,'periodo','radio')"><span class="dot"></span>Tarde</span><span class="opt" onclick="selOpt(this,'periodo','radio')"><span class="dot"></span>Integral</span></div></div>
+          </div>
+          <div class="cond-label">Nome da escola/creche</div><input type="text" id="f-escola-nome" placeholder="Nome da instituição">
+        </div>
+      </div>
+      <div class="field"><div class="field-label">Faz atividade extracurricular?</div>
+        <div class="options-group"><span class="opt" onclick="selOpt(this,'extra','radio');showCond('cond-extra')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'extra','radio');hideCond('cond-extra')"><span class="dot"></span>Não</span></div>
+        <div class="conditional" id="cond-extra"><div class="cond-label">O que e onde?</div><textarea id="f-extra-det" placeholder="Ex: futebol no clube da comunidade"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO MÉDICO -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-med-num">4</span><span class="section-title">Histórico médico</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Problema de saúde?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'prob-saude','radio');showCond('cond-saude')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'prob-saude','radio');hideCond('cond-saude')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-saude"><div class="cond-label">Qual?</div><textarea id="f-saude-qual" placeholder="Descreva"></textarea></div></div>
+      <div class="field"><div class="field-label">Tratamento odontológico ou médico?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'tratamento','radio');showCond('cond-trat')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'tratamento','radio');hideCond('cond-trat')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-trat"><div class="cond-label">Qual tratamento?</div><textarea id="f-trat-qual" placeholder="Descreva o tratamento"></textarea></div></div>
+      <div class="field"><div class="field-label">Usa medicamento?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'medicamento','radio');showCond('cond-med')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'medicamento','radio');hideCond('cond-med')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-med"><div class="cond-label">Qual?</div><textarea id="f-med-qual" placeholder="Nome e dose"></textarea></div></div>
+      <div class="field"><div class="field-label">Já realizou cirurgia?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'cirurgia','radio');showCond('cond-cirurgia')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'cirurgia','radio');hideCond('cond-cirurgia')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-cirurgia"><div class="cond-label">Qual e quando?</div><textarea id="f-cirurgia-qual" placeholder="Descreva"></textarea></div></div>
+      <div class="field">
+        <div class="field-label" style="margin-bottom:10px">Complicações</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Cicatrização?</span><div class="options-group"><span class="opt" onclick="selOpt(this,'cicatriz','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'cicatriz','radio')"><span class="dot"></span>Não</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Anestesia?</span><div class="options-group"><span class="opt" onclick="selOpt(this,'anestesia','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'anestesia','radio')"><span class="dot"></span>Não</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Hemorragia?</span><div class="options-group"><span class="opt" onclick="selOpt(this,'hemorragia','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'hemorragia','radio')"><span class="dot"></span>Não</span></div></div>
+        </div>
+      </div>
+      <div class="field"><div class="field-label">Alergia?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'alergia','radio');showCond('cond-alergia')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'alergia','radio');hideCond('cond-alergia')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-alergia"><div class="cond-label">Qual?</div><textarea id="f-alergia-qual" placeholder="Descreva as alergias"></textarea></div></div>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO ODONTOLÓGICO -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-odonto-num">5</span><span class="section-title">Histórico odontológico</span></div>
+    <div class="form-body">
+      <div class="field"><div class="field-label">Escovações por dia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>1x</span><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>2x</span><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>3x</span><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>4x ou mais</span></div></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Fio dental?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'fio','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'fio','radio')"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Bochecho c/ flúor?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'fluor','radio');showCond('cond-fluor')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'fluor','radio');hideCond('cond-fluor')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-fluor"><input type="text" id="f-fluor-qual" placeholder="Qual bochecho e frequência?"></div></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Sangramento gengival?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sangramento','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'sangramento','radio')"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Hábito bucal?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'habito','radio');showCond('cond-habito')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'habito','radio');hideCond('cond-habito')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-habito"><div class="options-group"><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Bruxismo</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Apertamento dental</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Chupeta</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Sucção digital</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Onicofagia</span></div></div></div>
+      </div>
+      <div class="field"><div class="field-label">Prótese odontológica?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Não usa</span><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Móvel</span><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Fixa</span><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Total</span></div></div>
+      <div class="field"><div class="field-label">Desconforto com a prótese?</div><input type="text" id="f-protese-desc" placeholder="Descreva se sente algum desconforto"></div>
+      <div class="field"><div class="field-label">Queixa principal <span class="required">*</span></div><textarea id="f-queixa" placeholder="Motivo da consulta" style="min-height:80px"></textarea></div>
+      <div class="field"><div class="field-label">Observações</div><textarea id="f-obs" placeholder="Outras informações relevantes"></textarea></div>
+    </div>
+  </div>
+
+  <!-- PLANO DE TRATAMENTO -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-plano-num">6</span><span class="section-title">Plano de tratamento</span></div>
+    <div class="form-body">
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:12px">Preencha o tratamento planejado para cada dente. Deixe em branco os dentes sem tratamento.</p>
+      <div style="overflow-x:auto">
+        <table class="plano-table" style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr>
+            <th style="background:var(--purple);color:white;padding:8px 10px;text-align:left;width:70px">Dente</th>
+            <th style="background:var(--purple);color:white;padding:8px 10px;text-align:left">Tratamento planejado</th>
+            <th style="background:var(--purple);color:white;padding:8px 10px;text-align:left;width:70px">Dente</th>
+            <th style="background:var(--purple);color:white;padding:8px 10px;text-align:left">Tratamento planejado</th>
+          </tr></thead>
+          <tbody id="plano-tbody"></tbody>
+        </table>
+      </div>
+      <div class="field" style="margin-top:14px"><div class="field-label">Observações do plano</div><textarea id="f-plano-obs" placeholder="Observações gerais sobre o plano de tratamento"></textarea></div>
+    </div>
+  </div>
+
+  <!-- PROCEDIMENTOS REALIZADOS -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-proc-num">7</span><span class="section-title">Procedimentos realizados</span></div>
+    <div class="form-body">
+      <div id="procs-ficha-lista" style="margin-bottom:14px"></div>
+      <div style="background:var(--gray-50);border-radius:8px;padding:14px;border:1.5px dashed var(--gray-200)">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:10px">Adicionar procedimento</div>
+        <div class="field-row" style="margin-bottom:10px">
+          <div><div class="field-label">Data</div><input type="text" id="pf-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+          <div><div class="field-label">Dentista</div><input type="text" id="pf-dentista" placeholder="Nome do(a) dentista"></div>
+        </div>
+        <div class="field" style="margin-bottom:10px"><div class="field-label">Procedimento realizado <span class="required">*</span></div><input type="text" id="pf-proc" placeholder="Ex: Profilaxia, Extração dente 36..."></div>
+        <div class="field" style="margin-bottom:10px"><div class="field-label">Observações</div><input type="text" id="pf-obs" placeholder="Observações adicionais"></div>
+        <button class="btn btn-teal btn-sm" onclick="adicionarProcFicha()">+ Adicionar procedimento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTORIZAÇÃO -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-aut-num">8</span><span class="section-title">Autorização de uso de imagem e tratamento</span></div>
+    <div class="form-body">
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px;line-height:1.6">Anexe o termo de autorização assinado. Aceita foto do documento ou PDF. O arquivo será salvo no Google Drive da ONG.</p>
+      <div id="autorizacao-preview-wrap" style="display:none;margin-bottom:10px"></div>
+      <button type="button" class="anexo-btn-add" onclick="document.getElementById('autorizacao-input').click()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Anexar autorização (imagem ou PDF)
+      </button>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:8px">📁 Salvo automaticamente no Google Drive da ONG</div>
+    </div>
+  </div>
+
+  <!-- RAIO-X -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-raiox-num">9</span><span class="section-title">Imagem de Raio-X</span></div>
+    <div class="form-body">
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Anexe a imagem do raio-X. O arquivo será salvo no Google Drive da ONG.</p>
+      <div id="raiox-preview-wrap" style="display:none;margin-bottom:10px"></div>
+      <button type="button" class="anexo-btn-add" onclick="document.getElementById('raiox-input').click()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Anexar imagem de Raio-X
+      </button>
+      <div class="field-row" style="margin-top:12px">
+        <div class="field"><div class="field-label">Data do Raio-X</div><input type="text" id="f-raiox-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div class="field"><div class="field-label">Observações</div><input type="text" id="f-raiox-obs" placeholder="Ex: panorâmico, periapical..."></div>
+      </div>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:4px">📁 Salvo automaticamente no Google Drive da ONG</div>
+    </div>
+  </div>
+
+  <!-- FOTOS DE AVALIAÇÃO -->
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-fotosaval-num">10</span><span class="section-title">Fotos do paciente / Avaliação</span></div>
+    <div class="form-body">
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Adicione fotos de avaliação clínica. Cada foto pode ter data e descrição. As fotos serão salvas no Google Drive da ONG.</p>
+      <div class="fotos-grid" id="fotos-avaliacao-grid"></div>
+      <div class="field-row" style="margin-bottom:10px">
+        <div><div class="field-label">Data da avaliação</div><input type="text" id="f-fotoaval-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div><div class="field-label">Descrição</div><input type="text" id="f-fotoaval-desc" placeholder="Ex: foto frontal, lateral esquerda..."></div>
+      </div>
+      <button type="button" class="anexo-btn-add" onclick="document.getElementById('fotos-avaliacao-input').click()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Adicionar foto(s) de avaliação
+      </button>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:8px">📁 Salvas automaticamente no Google Drive da ONG</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-bottom:32px">
+    <button class="btn btn-primary" style="flex:1;justify-content:center;padding:13px" onclick="salvarFicha()">Salvar ficha</button>
+    <button class="btn btn-outline" onclick="limparForm()">Limpar</button>
+  </div>
+</div>
+
+<!-- CONFIGURAÇÕES -->
+<div class="page" id="page-config">
+  <div class="topbar"><div><h1>Configurações</h1><p>Conexão com Supabase e Google Drive</p></div></div>
+
+  <div class="config-card">
+    <h3>🔌 Conexão Supabase</h3>
+    <p>Cole aqui as credenciais do seu projeto Supabase. Encontre em: Supabase → Settings → API</p>
+    <div id="supabase-status" class="config-status warn">⚠️ Não configurado</div>
+    <div class="field"><div class="field-label">Project URL</div><input type="text" id="cfg-url" placeholder="https://xxxxxxxxxxx.supabase.co"></div>
+    <div class="field" style="margin-top:10px"><div class="field-label">Anon Public Key</div><input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></div>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="salvarConfig()">Salvar e testar conexão</button>
+  </div>
+
+  <div class="config-card">
+    <h3>📁 Google Drive (fotos, raio-x e autorizações)</h3>
+    <p>Cole aqui o ID da pasta do Google Drive onde os arquivos serão salvos. Encontre na URL da pasta: drive.google.com/drive/folders/<strong>ID_AQUI</strong></p>
+    <div id="drive-status" class="config-status warn">⚠️ Não configurado</div>
+    <div class="field"><div class="field-label">API Key do Google</div><input type="text" id="cfg-google-key" placeholder="AIzaSy..."></div>
+    <div class="field" style="margin-top:10px"><div class="field-label">ID da pasta do Google Drive</div><input type="text" id="cfg-drive-folder" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"></div>
+    <button class="btn btn-teal" style="margin-top:12px" onclick="salvarConfigDrive()">Salvar configuração Drive</button>
+    <div style="margin-top:12px;padding:12px;background:var(--amber-light);border-radius:8px;font-size:12px;color:var(--amber)">
+      <strong>⚠️ Importante:</strong> Para usar o Google Drive você precisa criar uma API Key no Google Cloud Console e compartilhar a pasta com o e-mail de serviço. O passo a passo está no manual de configuração.
+    </div>
+  </div>
+
+  <div class="config-card">
+    <h3>💾 Backup manual</h3>
+    <p>Exporte todos os dados dos pacientes para CSV a qualquer momento.</p>
+    <button class="btn btn-outline" onclick="exportarCSV()">📥 Exportar CSV agora</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal">
+    <div class="modal-header"><h2 id="modal-titulo">Ficha do paciente</h2><button class="modal-close" onclick="fecharModalBtn()">✕</button></div>
+    <div id="modal-body"></div>
+    <div style="display:flex;gap:8px;margin-top:20px">
+      <button class="btn btn-outline btn-sm" onclick="editarPaciente(currentId)">✏️ Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="excluirPaciente(currentId)">🗑️ Excluir</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIGURAÇÃO — preencha após criar o projeto Supabase
+// ══════════════════════════════════════════
+let SUPABASE_URL = localStorage.getItem('sb_url') || '';
+let SUPABASE_KEY = localStorage.getItem('sb_key') || '';
+let GOOGLE_KEY   = localStorage.getItem('gd_key') || '';
+let DRIVE_FOLDER = localStorage.getItem('gd_folder') || '';
+
+let currentId = null;
+let tipoAtual = 'adulto';
+let filtroTipo = 'todos';
+let fotoAtual = '';
+let autorizacaoAtual = '';
+let autorizacaoTipo = '';
+let raioxAtual = '';
+let fotosAvaliacao = [];
+let procsFicha = [];
+let cameraStream = null;
+
+// ── API SUPABASE ──
+async function sbFetch(path, opts = {}) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase não configurado');
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=representation',
+      ...opts.headers
+    },
+    ...opts
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function criarTabela() {
+  // Cria via SQL RPC — requer a tabela criada no Supabase conforme passo a passo
+}
+
+// ── CONFIGURAÇÕES ──
+function salvarConfig() {
+  SUPABASE_URL = document.getElementById('cfg-url').value.trim().replace(/\/$/, '');
+  SUPABASE_KEY = document.getElementById('cfg-key').value.trim();
+  localStorage.setItem('sb_url', SUPABASE_URL);
+  localStorage.setItem('sb_key', SUPABASE_KEY);
+  testarConexao();
+}
+
+function salvarConfigDrive() {
+  GOOGLE_KEY = document.getElementById('cfg-google-key').value.trim();
+  DRIVE_FOLDER = document.getElementById('cfg-drive-folder').value.trim();
+  localStorage.setItem('gd_key', GOOGLE_KEY);
+  localStorage.setItem('gd_folder', DRIVE_FOLDER);
+  document.getElementById('drive-status').className = 'config-status ok';
+  document.getElementById('drive-status').textContent = '✅ Configuração salva';
+  toast('Configuração do Drive salva!', 'success');
+}
+
+async function testarConexao() {
+  const el = document.getElementById('supabase-status');
+  el.className = 'config-status warn';
+  el.textContent = '🔄 Testando conexão...';
+  try {
+    await sbFetch('pacientes?limit=1', { method: 'GET' });
+    el.className = 'config-status ok';
+    el.textContent = '✅ Conectado com sucesso!';
+    document.getElementById('conn-dot').classList.remove('red');
+    document.getElementById('conn-label').textContent = 'Supabase conectado';
+    document.getElementById('conn-status').textContent = SUPABASE_URL.replace('https://','').split('.')[0];
+    toast('Supabase conectado!', 'success');
+    atualizarDashboard();
+    carregarPacientes();
+  } catch(e) {
+    el.className = 'config-status err';
+    el.textContent = '❌ Erro: ' + e.message;
+    document.getElementById('conn-dot').classList.add('red');
+    document.getElementById('conn-label').textContent = 'Sem conexão';
+    toast('Erro na conexão: ' + e.message, 'error');
+  }
+}
+
+function carregarConfig() {
+  if (SUPABASE_URL) document.getElementById('cfg-url').value = SUPABASE_URL;
+  if (SUPABASE_KEY) document.getElementById('cfg-key').value = SUPABASE_KEY;
+  if (GOOGLE_KEY) document.getElementById('cfg-google-key').value = GOOGLE_KEY;
+  if (DRIVE_FOLDER) document.getElementById('cfg-drive-folder').value = DRIVE_FOLDER;
+  if (SUPABASE_URL && SUPABASE_KEY) testarConexao();
+  if (DRIVE_FOLDER) {
+    document.getElementById('drive-status').className = 'config-status ok';
+    document.getElementById('drive-status').textContent = '✅ Drive configurado';
+  }
+}
+
+// ── GOOGLE DRIVE UPLOAD ──
+async function uploadDrive(base64, nome, mimeType) {
+  if (!GOOGLE_KEY || !DRIVE_FOLDER) {
+    toast('Configure o Google Drive nas Configurações', 'error');
+    return null;
+  }
+  try {
+    // Converter base64 para blob
+    const byteStr = atob(base64.split(',')[1]);
+    const ab = new ArrayBuffer(byteStr.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+    const blob = new Blob([ab], { type: mimeType });
+
+    const metadata = JSON.stringify({ name: nome, parents: [DRIVE_FOLDER] });
+    const formData = new FormData();
+    formData.append('metadata', new Blob([metadata], { type: 'application/json' }));
+    formData.append('file', blob);
+
+    const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&key=${GOOGLE_KEY}`, {
+      method: 'POST', body: formData
+    });
+    const data = await res.json();
+    return data.id ? `https://drive.google.com/file/d/${data.id}/view` : null;
+  } catch(e) {
+    console.error('Drive upload error:', e);
+    return null;
+  }
+}
+
+// ── MÁSCARAS ──
+function maskDate(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+  if (v.length > 5) v = v.slice(0,5) + '/' + v.slice(5);
+  el.value = v.slice(0,10);
+}
+function maskTime(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (v.length > 2) v = v.slice(0,2) + ':' + v.slice(2);
+  el.value = v.slice(0,5);
+}
+
+// ── NAVEGAÇÃO ──
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const map = { dashboard:0, pacientes:1, novo:2, config:4 };
+  const items = document.querySelectorAll('.nav-item');
+  if (map[page] !== undefined && items[map[page]]) items[map[page]].classList.add('active');
+}
+
+// ── TIPO ──
+function trocarTipo(tipo) {
+  tipoAtual = tipo;
+  document.getElementById('f-tipo').value = tipo;
+  document.getElementById('tab-adulto').classList.toggle('active', tipo === 'adulto');
+  document.getElementById('tab-pediatrico').classList.toggle('active', tipo === 'pediatrico');
+  const isPed = tipo === 'pediatrico';
+  document.getElementById('sec-adulto').style.display = isPed ? 'none' : 'block';
+  document.getElementById('sec-crianca').style.display = isPed ? 'block' : 'none';
+  document.getElementById('sec-resp').style.display = isPed ? 'block' : 'none';
+  document.getElementById('sec-escola').style.display = isPed ? 'block' : 'none';
+  document.getElementById('sec-geral-num').textContent = isPed ? '4' : '3';
+  document.getElementById('sec-med-num').textContent = isPed ? '6' : '4';
+  document.getElementById('sec-odonto-num').textContent = isPed ? '7' : '5';
+  document.getElementById('sec-plano-num').textContent = isPed ? '8' : '6';
+  document.getElementById('sec-proc-num').textContent = isPed ? '9' : '7';
+  document.getElementById('sec-aut-num').textContent = isPed ? '10' : '8';
+  document.getElementById('sec-raiox-num').textContent = isPed ? '11' : '9';
+  document.getElementById('sec-fotosaval-num').textContent = isPed ? '12' : '10';
+  renderizarTabelaPlano();
+}
+
+// ── OPTS ──
+function selOpt(el, grupo, modo) {
+  if (modo === 'radio') document.querySelectorAll(`[onclick*="'${grupo}'"]`).forEach(o => o.classList.remove('sel'));
+  el.classList.toggle('sel');
+  if (modo === 'radio') el.classList.add('sel');
+}
+function getOpt(grupo) {
+  return [...document.querySelectorAll(`[onclick*="'${grupo}'"].sel`)].map(o => o.textContent.trim().replace(/[✓●]/g,'')).join(', ');
+}
+function setOpts(grupo, val, modo) {
+  if (!val) return;
+  const vals = val.split(', ');
+  document.querySelectorAll(`[onclick*="'${grupo}'"]`).forEach(o => {
+    const txt = o.textContent.trim().replace(/[✓●]/g,'').trim();
+    if (vals.some(v => v.trim() === txt)) {
+      if (modo === 'radio') document.querySelectorAll(`[onclick*="'${grupo}'"]`).forEach(x => x.classList.remove('sel'));
+      o.classList.add('sel');
+    }
+  });
+}
+function showCond(id) { document.getElementById(id).classList.add('show'); }
+function hideCond(id) { document.getElementById(id).classList.remove('show'); }
+
+// ── FOTO PACIENTE ──
+function atualizarPreviewFoto(base64) {
+  fotoAtual = base64;
+  const img = document.getElementById('foto-img');
+  const ph = document.getElementById('foto-placeholder');
+  const rem = document.getElementById('foto-btn-remover');
+  if (base64) { img.src = base64; img.style.display = 'block'; ph.style.display = 'none'; rem.classList.add('visible'); }
+  else { img.src = ''; img.style.display = 'none'; ph.style.display = 'flex'; rem.classList.remove('visible'); }
+}
+function removerFoto() { atualizarPreviewFoto(''); }
+function fotoUploadSelecionada(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => atualizarPreviewFoto(e.target.result);
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+async function abrirCamera() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    document.getElementById('cam-video').srcObject = cameraStream;
+    document.getElementById('cam-overlay').classList.add('open');
+  } catch(e) { toast('Câmera não disponível. Use "Carregar imagem".', 'error'); }
+}
+function capturarFoto() {
+  const video = document.getElementById('cam-video');
+  const canvas = document.getElementById('cam-canvas');
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  atualizarPreviewFoto(canvas.toDataURL('image/jpeg', 0.75));
+  fecharCamera();
+}
+function fecharCamera() {
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  document.getElementById('cam-overlay').classList.remove('open');
+}
+
+// ── AUTORIZAÇÃO ──
+function autorizacaoSelecionada(input) {
+  const file = input.files[0]; if (!file) return;
+  autorizacaoTipo = file.type === 'application/pdf' ? 'pdf' : 'imagem';
+  const reader = new FileReader();
+  reader.onload = e => { autorizacaoAtual = e.target.result; renderizarAutorizacao(); };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function renderizarAutorizacao() {
+  const wrap = document.getElementById('autorizacao-preview-wrap');
+  if (!autorizacaoAtual) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  const isImg = autorizacaoTipo === 'imagem';
+  wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px">
+    ${isImg ? `<img src="${autorizacaoAtual}" style="width:48px;height:48px;border-radius:6px;object-fit:cover">` : `<div style="width:48px;height:48px;border-radius:6px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red)">PDF</div>`}
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">Autorização anexada</div><div style="font-size:11px;color:var(--gray-400)">${autorizacaoTipo === 'pdf' ? 'Arquivo PDF' : 'Imagem'} · será enviada ao Google Drive</div></div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removerAutorizacao()">✕</button>
+  </div>`;
+}
+function removerAutorizacao() { autorizacaoAtual = ''; autorizacaoTipo = ''; renderizarAutorizacao(); }
+
+// ── RAIO-X ──
+function raioxSelecionado(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { raioxAtual = e.target.result; renderizarRaiox(); };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function renderizarRaiox() {
+  const wrap = document.getElementById('raiox-preview-wrap');
+  if (!raioxAtual) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  wrap.innerHTML = `<div style="position:relative;display:inline-block">
+    <img src="${raioxAtual}" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block" alt="Raio-X">
+    <button type="button" style="position:absolute;top:6px;right:6px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px" onclick="removerRaiox()">✕</button>
+  </div>`;
+}
+function removerRaiox() { raioxAtual = ''; renderizarRaiox(); }
+
+// ── FOTOS AVALIAÇÃO ──
+function fotosAvaliacaoSelecionadas(input) {
+  const files = Array.from(input.files); if (!files.length) return;
+  const data = document.getElementById('f-fotoaval-data').value;
+  const desc = document.getElementById('f-fotoaval-desc').value;
+  let count = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      fotosAvaliacao.push({ base64: e.target.result, data, desc: desc || 'Foto de avaliação', mimeType: file.type, nome: file.name });
+      count++;
+      if (count === files.length) {
+        renderizarFotosAvaliacao();
+        document.getElementById('f-fotoaval-data').value = '';
+        document.getElementById('f-fotoaval-desc').value = '';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+function renderizarFotosAvaliacao() {
+  const grid = document.getElementById('fotos-avaliacao-grid');
+  if (!fotosAvaliacao.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = fotosAvaliacao.map((f, i) => `
+    <div class="foto-card">
+      <img src="${f.base64}" alt="Foto avaliação">
+      <button type="button" class="foto-card-remove" onclick="removerFotoAvaliacao(${i})">✕</button>
+      <div class="foto-card-info"><div style="font-weight:600">${f.data || '—'}</div><div style="color:var(--gray-400)">${f.desc}</div></div>
+    </div>`).join('');
+}
+function removerFotoAvaliacao(i) { fotosAvaliacao.splice(i, 1); renderizarFotosAvaliacao(); }
+
+// ── PLANO DE TRATAMENTO ──
+const DENTES = [
+  ['11/51','21/61'],['12/52','22/62'],['13/53','23/63'],['14/54','24/64'],['15/55','25/65'],
+  ['16','26'],['17','27'],['18','28'],
+  ['31/71','41/81'],['32/72','42/82'],['33/73','43/83'],['34/74','44/84'],['35/75','45/85'],
+  ['36','46'],['37','47'],['38','48']
+];
+function renderizarTabelaPlano() {
+  const tbody = document.getElementById('plano-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = DENTES.map((par, i) => `
+    <tr style="background:${i%2===0?'var(--gray-50)':'white'}">
+      <td style="padding:6px 10px;font-weight:600;color:var(--purple);border-bottom:1px solid var(--gray-100)">${par[0]}</td>
+      <td style="padding:4px 6px;border-bottom:1px solid var(--gray-100)"><input type="text" id="dente-${par[0].replace('/','_')}" placeholder="—"></td>
+      <td style="padding:6px 10px;font-weight:600;color:var(--purple);border-bottom:1px solid var(--gray-100)">${par[1]}</td>
+      <td style="padding:4px 6px;border-bottom:1px solid var(--gray-100)"><input type="text" id="dente-${par[1].replace('/','_')}" placeholder="—"></td>
+    </tr>`).join('');
+}
+function lerPlano() {
+  const plano = {};
+  DENTES.forEach(par => par.forEach(d => {
+    const el = document.getElementById('dente-' + d.replace('/','_'));
+    if (el && el.value) plano[d] = el.value;
+  }));
+  return JSON.stringify(plano);
+}
+function carregarPlano(json) {
+  if (!json) return;
+  try {
+    const plano = JSON.parse(json);
+    Object.entries(plano).forEach(([d,v]) => {
+      const el = document.getElementById('dente-' + d.replace('/','_'));
+      if (el) el.value = v;
+    });
+  } catch(e) {}
+}
+
+// ── PROCEDIMENTOS ──
+function renderizarProcsFicha() {
+  const lista = document.getElementById('procs-ficha-lista');
+  if (!lista) return;
+  if (!procsFicha.length) { lista.innerHTML = '<div style="font-size:13px;color:var(--gray-400);padding:8px 0">Nenhum procedimento registrado ainda.</div>'; return; }
+  lista.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr>
+      <th style="background:var(--teal);color:white;padding:8px 10px;text-align:left;width:110px">Data</th>
+      <th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Procedimento</th>
+      <th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Dentista</th>
+      <th style="background:var(--teal);color:white;padding:8px 10px;width:40px"></th>
+    </tr></thead>
+    <tbody>${procsFicha.map((p,i) => `
+      <tr style="background:${i%2===0?'var(--gray-50)':'white'}">
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">${p.data||'—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">${p.proc||'—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">${p.dentista||'—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)"><button class="btn btn-danger btn-sm" onclick="removerProcFicha(${i})">✕</button></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+function adicionarProcFicha() {
+  const proc = document.getElementById('pf-proc').value.trim();
+  if (!proc) { toast('Informe o procedimento!', 'error'); return; }
+  procsFicha.push({ data: document.getElementById('pf-data').value, proc, dentista: document.getElementById('pf-dentista').value, obs: document.getElementById('pf-obs').value });
+  ['pf-data','pf-proc','pf-dentista','pf-obs'].forEach(id => document.getElementById(id).value = '');
+  renderizarProcsFicha();
+}
+function removerProcFicha(i) { procsFicha.splice(i,1); renderizarProcsFicha(); }
+
+// ── LER FORM ──
+function lerForm() {
+  const g = id => (document.getElementById(id)||{}).value || '';
+  return {
+    tipo:tipoAtual, data_consulta:g('f-data-consulta'), horario:g('f-horario'), dentista:g('f-dentista'), cro:g('f-cro'),
+    foto_paciente:fotoAtual,
+    nome:g('f-nome'), nascimento:g('f-nascimento'), sexo:getOpt('sexo'), cpf:g('f-cpf'), rg:g('f-rg'), telefone:g('f-telefone'), etnia:getOpt('etnia'), cidade:g('f-cidade'), filhos:g('f-filhos'),
+    nome_crianca:g('f-nome-crianca'), nasc_crianca:g('f-nasc-crianca'), sexo_crianca:getOpt('sexo-c'), cpf_crianca:g('f-cpf-crianca'), rg_crianca:g('f-rg-crianca'), cidade_crianca:g('f-cidade-crianca'), irmaos:g('f-irmaos'),
+    resp_nome:g('f-resp-nome'), resp_nasc:g('f-resp-nasc'), sexo_resp:getOpt('sexo-r'), resp_parentesco:g('f-resp-parentesco'), resp_cidade:g('f-resp-cidade'), resp_cpf:g('f-resp-cpf'), resp_rg:g('f-resp-rg'), telefone_ped:g('f-telefone-ped'),
+    endereco:g('f-endereco'), bairro:g('f-bairro'), cep:g('f-cep'), area:getOpt('area'), adultos_casa:g('f-adultos'), criancas_casa:g('f-criancas'),
+    agua:getOpt('agua'), luz:getOpt('luz'), transporte:g('f-transporte'), renda:getOpt('renda'), renda_valor:g('f-renda-valor'),
+    escola:getOpt('escola'), escola_nome:g('f-escola-nome'), rede:getOpt('rede'), periodo:getOpt('periodo'), extra:getOpt('extra'), extra_det:g('f-extra-det'),
+    prob_saude:getOpt('prob-saude'), saude_qual:g('f-saude-qual'), tratamento:getOpt('tratamento'), trat_qual:g('f-trat-qual'),
+    medicamento:getOpt('medicamento'), med_qual:g('f-med-qual'), cirurgia:getOpt('cirurgia'), cirurgia_qual:g('f-cirurgia-qual'),
+    cicatriz:getOpt('cicatriz'), anestesia:getOpt('anestesia'), hemorragia:getOpt('hemorragia'), alergia:getOpt('alergia'), alergia_qual:g('f-alergia-qual'),
+    escovacao:getOpt('escovacao'), fio:getOpt('fio'), fluor:getOpt('fluor'), fluor_qual:g('f-fluor-qual'), sangramento:getOpt('sangramento'),
+    habito:getOpt('habito'), habito_tipos:getOpt('hab-tipo'), protese:getOpt('protese'), protese_desc:g('f-protese-desc'),
+    queixa:g('f-queixa'), obs:g('f-obs'),
+    plano_tratamento:lerPlano(), plano_obs:g('f-plano-obs'),
+    procedimentos:JSON.stringify(procsFicha),
+    autorizacao_tipo:autorizacaoTipo,
+    raiox_data:g('f-raiox-data'), raiox_obs:g('f-raiox-obs'),
+    fotos_avaliacao_meta:JSON.stringify(fotosAvaliacao.map(f=>({data:f.data,desc:f.desc,drive_url:f.drive_url||''}))),
+  };
+}
+
+// ── SALVAR FICHA ──
+async function salvarFicha() {
+  const d = lerForm();
+  const nomeDisplay = d.tipo === 'pediatrico' ? d.nome_crianca : d.nome;
+  if (!nomeDisplay || !d.dentista) { toast('Preencha nome e dentista!', 'error'); return; }
+  showLoading('Salvando ficha...');
+  try {
+    // Upload de arquivos no Google Drive
+    if (autorizacaoAtual && !autorizacaoAtual.startsWith('https')) {
+      showLoading('Enviando autorização para o Drive...');
+      const ext = autorizacaoTipo === 'pdf' ? 'pdf' : 'jpg';
+      const nome = `autorizacao_${nomeDisplay.replace(/\s/g,'_')}_${Date.now()}.${ext}`;
+      const mime = autorizacaoTipo === 'pdf' ? 'application/pdf' : 'image/jpeg';
+      const url = await uploadDrive(autorizacaoAtual, nome, mime);
+      d.autorizacao_url = url || '';
+    }
+    if (raioxAtual && !raioxAtual.startsWith('https')) {
+      showLoading('Enviando raio-x para o Drive...');
+      const nome = `raiox_${nomeDisplay.replace(/\s/g,'_')}_${Date.now()}.jpg`;
+      const url = await uploadDrive(raioxAtual, nome, 'image/jpeg');
+      d.raiox_url = url || '';
+    }
+    // Upload fotos avaliação
+    const fotasMeta = [];
+    for (let i = 0; i < fotosAvaliacao.length; i++) {
+      const f = fotosAvaliacao[i];
+      if (f.base64 && !f.drive_url) {
+        showLoading(`Enviando foto ${i+1} de ${fotosAvaliacao.length} para o Drive...`);
+        const nome = `foto_${nomeDisplay.replace(/\s/g,'_')}_${Date.now()}_${i}.jpg`;
+        const url = await uploadDrive(f.base64, nome, f.mimeType || 'image/jpeg');
+        fotasMeta.push({ data: f.data, desc: f.desc, drive_url: url || '' });
+      } else {
+        fotasMeta.push({ data: f.data, desc: f.desc, drive_url: f.drive_url || '' });
+      }
+    }
+    d.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
+
+    const id = document.getElementById('f-id').value;
+    showLoading('Salvando no banco de dados...');
+    if (id) {
+      await sbFetch(`pacientes?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(d), prefer: 'return=minimal' });
+      toast('Ficha atualizada!', 'success');
+    } else {
+      await sbFetch('pacientes', { method: 'POST', body: JSON.stringify(d) });
+      toast('Ficha salva!', 'success');
+    }
+    limparForm();
+    atualizarDashboard();
+    carregarPacientes();
+    goTo('pacientes');
+  } catch(e) {
+    toast('Erro ao salvar: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// ── LIMPAR FORM ──
+function limparForm() {
+  document.getElementById('f-id').value = '';
+  document.getElementById('form-title').textContent = 'Nova Ficha';
+  document.querySelectorAll('#page-novo input[type="text"],#page-novo input[type="number"],#page-novo textarea').forEach(el => el.value = '');
+  document.querySelectorAll('#page-novo .opt').forEach(o => o.classList.remove('sel'));
+  document.querySelectorAll('#page-novo .conditional').forEach(c => c.classList.remove('show'));
+  atualizarPreviewFoto('');
+  autorizacaoAtual = ''; autorizacaoTipo = ''; renderizarAutorizacao();
+  raioxAtual = ''; renderizarRaiox();
+  fotosAvaliacao = []; renderizarFotosAvaliacao();
+  procsFicha = []; renderizarProcsFicha();
+  trocarTipo('adulto');
+}
+
+// ── DASHBOARD ──
+async function atualizarDashboard() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return;
+  try {
+    const todos = await sbFetch('pacientes?select=id,tipo', { method: 'GET', prefer: '' });
+    const total = todos ? todos.length : 0;
+    const adultos = todos ? todos.filter(p => p.tipo === 'adulto').length : 0;
+    const peds = todos ? todos.filter(p => p.tipo === 'pediatrico').length : 0;
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-adulto').textContent = adultos;
+    document.getElementById('stat-ped').textContent = peds;
+    const recentes = await sbFetch('pacientes?select=id,tipo,nome,nome_crianca,data_consulta,dentista,queixa&order=id.desc&limit=10', { method: 'GET', prefer: '' });
+    renderTabelaDashboard(recentes || []);
+  } catch(e) {}
+}
+
+function renderTabelaDashboard(rows) {
+  const tbody = document.getElementById('dashboard-tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>Nenhum paciente cadastrado ainda</p></div></td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => {
+    const nome = r.tipo === 'pediatrico' ? (r.nome_crianca||'—') : (r.nome||'—');
+    const badge = r.tipo === 'pediatrico' ? '<span class="badge badge-ped">Pediátrico</span>' : '<span class="badge badge-adult">Adulto</span>';
+    const queixa = r.queixa ? r.queixa.substring(0,40) + (r.queixa.length>40?'…':'') : '—';
+    return `<tr><td><strong>${nome}</strong></td><td>${badge}</td><td>${r.data_consulta||'—'}</td><td>${r.dentista||'—'}</td><td>${queixa}</td><td><button class="btn btn-outline btn-sm" onclick="verPaciente(${r.id})">Ver</button></td></tr>`;
+  }).join('');
+}
+
+// ── CARREGAR PACIENTES ──
+async function carregarPacientes() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return;
+  const busca = (document.getElementById('search-input')||{}).value || '';
+  let query = 'pacientes?select=id,tipo,nome,nome_crianca,nascimento,nasc_crianca,telefone,telefone_ped,dentista,data_consulta&order=id.desc&limit=100';
+  if (filtroTipo !== 'todos') query += `&tipo=eq.${filtroTipo}`;
+  if (busca) query += `&or=(nome.ilike.*${busca}*,nome_crianca.ilike.*${busca}*,cpf.ilike.*${busca}*,dentista.ilike.*${busca}*)`;
+  try {
+    const rows = await sbFetch(query, { method: 'GET', prefer: '' });
+    const tbody = document.getElementById('pacientes-tbody');
+    if (!rows || !rows.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>Nenhum paciente encontrado</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => {
+      const nome = r.tipo === 'pediatrico' ? (r.nome_crianca||'—') : (r.nome||'—');
+      const badge = r.tipo === 'pediatrico' ? '<span class="badge badge-ped">Pediátrico</span>' : '<span class="badge badge-adult">Adulto</span>';
+      const nasc = r.tipo === 'pediatrico' ? (r.nasc_crianca||'—') : (r.nascimento||'—');
+      const tel = r.tipo === 'pediatrico' ? (r.telefone_ped||'—') : (r.telefone||'—');
+      return `<tr><td><strong>${nome}</strong></td><td>${badge}</td><td>${nasc}</td><td>${tel}</td><td>${r.dentista||'—'}</td><td>${r.data_consulta||'—'}</td>
+        <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="verPaciente(${r.id})">Ver</button> <button class="btn btn-outline btn-sm" onclick="editarPaciente(${r.id})">✏️</button></td></tr>`;
+    }).join('');
+  } catch(e) { toast('Erro ao carregar: ' + e.message, 'error'); }
+}
+
+function filtrarTipo(tipo, btn) {
+  filtroTipo = tipo;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  carregarPacientes();
+}
+
+// ── VER PACIENTE ──
+async function verPaciente(id) {
+  currentId = id;
+  showLoading('Carregando ficha...');
+  try {
+    const rows = await sbFetch(`pacientes?id=eq.${id}`, { method: 'GET', prefer: '' });
+    if (!rows || !rows.length) return;
+    const row = rows[0];
+    const nome = row.tipo === 'pediatrico' ? row.nome_crianca : row.nome;
+    document.getElementById('modal-titulo').textContent = nome || 'Ficha do paciente';
+    const tipo = row.tipo === 'pediatrico' ? '<span class="badge badge-ped">Pediátrico</span>' : '<span class="badge badge-adult">Adulto</span>';
+    const d = (label, val) => `<div class="detail-item"><div class="detail-key">${label}</div><div class="detail-val ${!val?'empty':''}">${val||'Não informado'}</div></div>`;
+    const sec = title => `<div class="detail-section">${title}</div>`;
+    let html = `<div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap">
+      ${row.foto_paciente ? `<img src="${row.foto_paciente}" style="width:80px;height:80px;border-radius:8px;object-fit:cover;border:2px solid var(--gray-200)">` : ''}
+      <div>${tipo} · Consulta: ${row.data_consulta||'—'} ${row.horario||''} · Dentista: ${row.dentista||'—'} ${row.cro?'('+row.cro+')':''}</div>
+    </div>`;
+    if (row.tipo === 'pediatrico') {
+      html += sec('Criança') + '<div class="detail-grid">';
+      html += d('Nome',row.nome_crianca)+d('Nascimento',row.nasc_crianca)+d('Sexo',row.sexo_crianca)+d('CPF',row.cpf_crianca)+d('RG',row.rg_crianca)+d('Irmãos',row.irmaos);
+      html += '</div>' + sec('Responsável') + '<div class="detail-grid">';
+      html += d('Nome',row.resp_nome)+d('Parentesco',row.resp_parentesco)+d('Telefone',row.telefone_ped)+d('CPF',row.resp_cpf)+d('RG',row.resp_rg);
+      html += '</div>' + sec('Escolaridade') + '<div class="detail-grid">';
+      html += d('Escola',row.escola)+d('Nome',row.escola_nome)+d('Rede',row.rede)+d('Período',row.periodo);
+    } else {
+      html += sec('Paciente') + '<div class="detail-grid">';
+      html += d('Nome',row.nome)+d('Nascimento',row.nascimento)+d('Sexo',row.sexo)+d('CPF',row.cpf)+d('RG',row.rg)+d('Telefone',row.telefone)+d('Etnia',row.etnia)+d('Filhos',row.filhos);
+    }
+    html += '</div>' + sec('Dados gerais') + '<div class="detail-grid">';
+    html += d('Endereço',row.endereco)+d('Bairro',row.bairro)+d('CEP',row.cep)+d('Área',row.area)+d('Água',row.agua)+d('Luz',row.luz)+d('Transporte',row.transporte)+d('Renda',row.renda)+d('Valor',row.renda_valor);
+    html += '</div>' + sec('Histórico médico') + '<div class="detail-grid">';
+    html += d('Prob. saúde',row.prob_saude)+d('Qual',row.saude_qual)+d('Tratamento',row.tratamento)+d('Qual',row.trat_qual)+d('Medicamento',row.medicamento)+d('Qual',row.med_qual)+d('Cirurgia',row.cirurgia)+d('Qual/Quando',row.cirurgia_qual)+d('Cicatrização',row.cicatriz)+d('Anestesia',row.anestesia)+d('Hemorragia',row.hemorragia)+d('Alergia',row.alergia)+d('Qual',row.alergia_qual);
+    html += '</div>' + sec('Histórico odontológico') + '<div class="detail-grid">';
+    html += d('Escovações/dia',row.escovacao)+d('Fio dental',row.fio)+d('Flúor',row.fluor)+d('Qual/Freq.',row.fluor_qual)+d('Sangramento',row.sangramento)+d('Hábito bucal',row.habito)+d('Tipos',row.habito_tipos)+d('Prótese',row.protese)+d('Desconforto',row.protese_desc);
+    html += '</div>' + sec('Queixa e observações') + '<div class="detail-grid">';
+    html += d('Queixa',row.queixa)+d('Observações',row.obs);
+    html += '</div>';
+    if (row.plano_tratamento) { try { const pl=JSON.parse(row.plano_tratamento); const it=Object.entries(pl); if(it.length){html+=sec('Plano de tratamento')+'<div class="detail-grid">';it.forEach(([k,v])=>html+=`<div class="detail-item"><div class="detail-key">Dente ${k}</div><div class="detail-val">${v}</div></div>`);html+='</div>';} } catch(e){} }
+    if (row.plano_obs) html += `<div style="margin:8px 0;padding:10px 12px;background:var(--gray-50);border-radius:6px;font-size:13px"><strong>Obs. plano:</strong> ${row.plano_obs}</div>`;
+    if (row.procedimentos) { try { const pr=JSON.parse(row.procedimentos); if(pr.length){html+=sec('Procedimentos realizados')+`<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Data</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Procedimento</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Dentista</th></tr></thead><tbody>${pr.map((p,i)=>`<tr style="background:${i%2===0?'var(--gray-50)':'white'}"><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">${p.data||'—'}</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">${p.proc||'—'}</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">${p.dentista||'—'}</td></tr>`).join('')}</tbody></table>`;} } catch(e){} }
+    if (row.autorizacao_url) html += sec('Autorização') + `<a href="${row.autorizacao_url}" target="_blank" class="btn btn-outline btn-sm">📄 Ver autorização no Google Drive</a>`;
+    if (row.raiox_url) { html += sec('Raio-X'); html += `<a href="${row.raiox_url}" target="_blank"><img src="${row.raiox_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block" alt="Raio-X"></a>`; }
+    if (row.fotos_avaliacao_meta) { try { const fa=JSON.parse(row.fotos_avaliacao_meta); if(fa.length){html+=sec('Fotos de avaliação')+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:6px">'+fa.map(f=>`<div style="border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200)"><a href="${f.drive_url}" target="_blank"><div style="padding:6px;background:var(--teal-light);text-align:center;font-size:12px;color:var(--teal)">📁 ${f.data||'—'}<br><span style="color:var(--gray-400)">${f.desc||''}</span></div></a></div>`).join('')+'</div>';} } catch(e){} }
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal-overlay').classList.add('open');
+  } catch(e) { toast('Erro ao carregar ficha: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
+function fecharModal(e) { if (e.target === document.getElementById('modal-overlay')) fecharModalBtn(); }
+function fecharModalBtn() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+// ── EDITAR ──
+async function editarPaciente(id) {
+  fecharModalBtn(); currentId = id;
+  showLoading('Carregando ficha para edição...');
+  try {
+    const rows = await sbFetch(`pacientes?id=eq.${id}`, { method: 'GET', prefer: '' });
+    if (!rows || !rows.length) return;
+    const row = rows[0];
+    goTo('novo'); trocarTipo(row.tipo||'adulto');
+    document.getElementById('f-id').value = id;
+    document.getElementById('form-title').textContent = 'Editar Ficha';
+    const set = (fid, val) => { const el = document.getElementById(fid); if (el && val != null) el.value = val; };
+    set('f-data-consulta',row.data_consulta); set('f-horario',row.horario); set('f-dentista',row.dentista); set('f-cro',row.cro);
+    set('f-nome',row.nome); set('f-nascimento',row.nascimento); set('f-cpf',row.cpf); set('f-rg',row.rg); set('f-telefone',row.telefone); set('f-cidade',row.cidade); set('f-filhos',row.filhos);
+    set('f-nome-crianca',row.nome_crianca); set('f-nasc-crianca',row.nasc_crianca); set('f-cpf-crianca',row.cpf_crianca); set('f-rg-crianca',row.rg_crianca); set('f-cidade-crianca',row.cidade_crianca); set('f-irmaos',row.irmaos);
+    set('f-resp-nome',row.resp_nome); set('f-resp-nasc',row.resp_nasc); set('f-resp-parentesco',row.resp_parentesco); set('f-resp-cidade',row.resp_cidade); set('f-resp-cpf',row.resp_cpf); set('f-resp-rg',row.resp_rg); set('f-telefone-ped',row.telefone_ped);
+    set('f-endereco',row.endereco); set('f-bairro',row.bairro); set('f-cep',row.cep); set('f-adultos',row.adultos_casa); set('f-criancas',row.criancas_casa); set('f-transporte',row.transporte); set('f-renda-valor',row.renda_valor);
+    set('f-escola-nome',row.escola_nome); set('f-extra-det',row.extra_det);
+    set('f-saude-qual',row.saude_qual); set('f-trat-qual',row.trat_qual); set('f-med-qual',row.med_qual); set('f-cirurgia-qual',row.cirurgia_qual); set('f-alergia-qual',row.alergia_qual);
+    set('f-fluor-qual',row.fluor_qual); set('f-protese-desc',row.protese_desc); set('f-queixa',row.queixa); set('f-obs',row.obs); set('f-plano-obs',row.plano_obs);
+    set('f-raiox-data',row.raiox_data); set('f-raiox-obs',row.raiox_obs);
+    const rm = {'sexo':row.sexo,'sexo-c':row.sexo_crianca,'sexo-r':row.sexo_resp,'area':row.area,'agua':row.agua,'luz':row.luz,'renda':row.renda,'escola':row.escola,'rede':row.rede,'periodo':row.periodo,'extra':row.extra,'prob-saude':row.prob_saude,'tratamento':row.tratamento,'medicamento':row.medicamento,'cirurgia':row.cirurgia,'cicatriz':row.cicatriz,'anestesia':row.anestesia,'hemorragia':row.hemorragia,'alergia':row.alergia,'escovacao':row.escovacao,'fio':row.fio,'fluor':row.fluor,'sangramento':row.sangramento,'habito':row.habito};
+    Object.entries(rm).forEach(([g,v])=>setOpts(g,v,'radio'));
+    const cm = {'etnia':row.etnia,'etnia-c':row.etnia,'hab-tipo':row.habito_tipos,'protese':row.protese};
+    Object.entries(cm).forEach(([g,v])=>setOpts(g,v,'check'));
+    const condMap = {'renda':'cond-renda','prob-saude':'cond-saude','tratamento':'cond-trat','medicamento':'cond-med','cirurgia':'cond-cirurgia','alergia':'cond-alergia','fluor':'cond-fluor','habito':'cond-habito','escola':'cond-escola','extra':'cond-extra'};
+    Object.entries(condMap).forEach(([g,cid])=>{ if(getOpt(g)==='Sim')showCond(cid); });
+    atualizarPreviewFoto(row.foto_paciente||'');
+    setTimeout(() => {
+      carregarPlano(row.plano_tratamento);
+      try { procsFicha = JSON.parse(row.procedimentos||'[]'); } catch(e) { procsFicha = []; }
+      renderizarProcsFicha();
+      autorizacaoAtual = row.autorizacao_url ? row.autorizacao_url : '';
+      autorizacaoTipo = row.autorizacao_tipo || '';
+      renderizarAutorizacao();
+      raioxAtual = row.raiox_url || '';
+      renderizarRaiox();
+      try { const fa = JSON.parse(row.fotos_avaliacao_meta||'[]'); fotosAvaliacao = fa.map(f=>({...f,base64:'',drive_url:f.drive_url||''})); } catch(e) { fotosAvaliacao = []; }
+      renderizarFotosAvaliacao();
+    }, 100);
+  } catch(e) { toast('Erro ao carregar ficha: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
+// ── EXCLUIR ──
+async function excluirPaciente(id) {
+  if (!confirm('Excluir esta ficha permanentemente?')) return;
+  showLoading('Excluindo...');
+  try {
+    await sbFetch(`pacientes?id=eq.${id}`, { method: 'DELETE', prefer: 'return=minimal' });
+    fecharModalBtn(); atualizarDashboard(); carregarPacientes();
+    toast('Ficha excluída', 'success');
+  } catch(e) { toast('Erro ao excluir: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
+// ── EXPORTAR CSV ──
+async function exportarCSV() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) { toast('Configure o Supabase primeiro', 'error'); return; }
+  showLoading('Exportando dados...');
+  try {
+    const rows = await sbFetch('pacientes?select=*&order=id.desc', { method: 'GET', prefer: '' });
+    if (!rows || !rows.length) { toast('Nenhum dado para exportar', 'error'); return; }
+    const cols = Object.keys(rows[0]).filter(c => !['foto_paciente'].includes(c));
+    let csv = cols.join(';') + '\n';
+    rows.forEach(r => csv += cols.map(c => `"${String(r[c]||'').replace(/"/g,'""')}"`).join(';') + '\n');
+    const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `pacientes_junta_mais_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    toast('CSV exportado!', 'success');
+  } catch(e) { toast('Erro ao exportar: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
+// ── LOADING ──
+function showLoading(msg='Aguarde...') {
+  document.getElementById('loading-msg').textContent = msg;
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoading() { document.getElementById('loading-overlay').classList.remove('show'); }
+
+// ── TOAST ──
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = (type==='success'?'✓ ':type==='error'?'⚠ ':'ℹ ') + msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ── INIT ──
+renderizarTabelaPlano();
+renderizarProcsFicha();
+carregarConfig();
+</script>
+</body>
+</html>
