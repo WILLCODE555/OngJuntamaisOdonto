@@ -206,7 +206,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas V10</div>
+    <div class="sub">Sistema de Fichas</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" onclick="goTo('dashboard')">
@@ -515,13 +515,13 @@ textarea{resize:vertical;min-height:70px;}
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-aut-num">8</span><span class="section-title">Autorização de uso de imagem e tratamento</span></div>
     <div class="form-body">
-      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px;line-height:1.6">Anexe o termo de autorização assinado. Aceita foto do documento ou PDF. O arquivo será salvo no Google Drive da ONG.</p>
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px;line-height:1.6">Anexe o termo de autorização assinado. Aceita foto do documento ou PDF. O arquivo será salvo no Supabase Storage (bucket: fichas-pacientes).</p>
       <div id="autorizacao-preview-wrap" style="display:none;margin-bottom:10px"></div>
       <button type="button" class="anexo-btn-add" onclick="document.getElementById('autorizacao-input').click()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Anexar autorização (imagem ou PDF)
       </button>
-      <div style="font-size:11px;color:var(--gray-400);margin-top:8px">📁 Salvo automaticamente no Google Drive da ONG</div>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:8px">📁 Salvo automaticamente no Supabase Storage (bucket: fichas-pacientes)</div>
     </div>
   </div>
 
@@ -529,7 +529,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-raiox-num">9</span><span class="section-title">Imagem de Raio-X</span></div>
     <div class="form-body">
-      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Anexe a imagem do raio-X. O arquivo será salvo no Google Drive da ONG.</p>
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Anexe a imagem do raio-X. O arquivo será salvo no Supabase Storage (bucket: fichas-pacientes).</p>
       <div id="raiox-preview-wrap" style="display:none;margin-bottom:10px"></div>
       <button type="button" class="anexo-btn-add" onclick="document.getElementById('raiox-input').click()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -539,7 +539,7 @@ textarea{resize:vertical;min-height:70px;}
         <div class="field"><div class="field-label">Data do Raio-X</div><input type="text" id="f-raiox-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
         <div class="field"><div class="field-label">Observações</div><input type="text" id="f-raiox-obs" placeholder="Ex: panorâmico, periapical..."></div>
       </div>
-      <div style="font-size:11px;color:var(--gray-400);margin-top:4px">📁 Salvo automaticamente no Google Drive da ONG</div>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:4px">📁 Salvo automaticamente no Supabase Storage (bucket: fichas-pacientes)</div>
     </div>
   </div>
 
@@ -547,7 +547,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-fotosaval-num">10</span><span class="section-title">Fotos do paciente / Avaliação</span></div>
     <div class="form-body">
-      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Adicione fotos de avaliação clínica. Cada foto pode ter data e descrição. As fotos serão salvas no Google Drive da ONG.</p>
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Adicione fotos de avaliação clínica. Cada foto pode ter data e descrição. As fotos serão salvas no Supabase Storage (bucket: fichas-pacientes).</p>
       <div class="fotos-grid" id="fotos-avaliacao-grid"></div>
       <div class="field-row" style="margin-bottom:10px">
         <div><div class="field-label">Data da avaliação</div><input type="text" id="f-fotoaval-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
@@ -557,7 +557,7 @@ textarea{resize:vertical;min-height:70px;}
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Adicionar foto(s) de avaliação
       </button>
-      <div style="font-size:11px;color:var(--gray-400);margin-top:8px">📁 Salvas automaticamente no Google Drive da ONG</div>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:8px">📁 Salvas automaticamente no Supabase Storage (bucket: fichas-pacientes)</div>
     </div>
   </div>
 
@@ -569,7 +569,7 @@ textarea{resize:vertical;min-height:70px;}
 
 <!-- CONFIGURAÇÕES -->
 <div class="page" id="page-config">
-  <div class="topbar"><div><h1>Configurações</h1><p>Conexão com Supabase e Google Drive</p></div></div>
+  <div class="topbar"><div><h1>Configurações</h1><p>Conexão com Supabase</p></div></div>
 
   <div class="config-card">
     <h3>🔌 Conexão Supabase</h3>
@@ -581,15 +581,8 @@ textarea{resize:vertical;min-height:70px;}
   </div>
 
   <div class="config-card">
-    <h3>📁 Google Drive (fotos, raio-x e autorizações)</h3>
-    <p>Cole aqui o ID da pasta do Google Drive onde os arquivos serão salvos. Encontre na URL da pasta: drive.google.com/drive/folders/<strong>ID_AQUI</strong></p>
-    <div id="drive-status" class="config-status warn">⚠️ Não configurado</div>
-    <div class="field"><div class="field-label">API Key do Google</div><input type="text" id="cfg-google-key" placeholder="AIzaSy..."></div>
-    <div class="field" style="margin-top:10px"><div class="field-label">ID da pasta do Google Drive</div><input type="text" id="cfg-drive-folder" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"></div>
-    <button class="btn btn-teal" style="margin-top:12px" onclick="salvarConfigDrive()">Salvar configuração Drive</button>
-    <div style="margin-top:12px;padding:12px;background:var(--amber-light);border-radius:8px;font-size:12px;color:var(--amber)">
-      <strong>⚠️ Importante:</strong> Para usar o Google Drive você precisa criar uma API Key no Google Cloud Console e compartilhar a pasta com o e-mail de serviço. O passo a passo está no manual de configuração.
-    </div>
+    <h3>📁 Google Drive — REMOVIDO</h3>
+    <p>Integração com Google Drive removida. Os arquivos agora são enviados para o Supabase Storage (bucket: <strong>fichas-pacientes</strong>).</p>
   </div>
 
   <div class="config-card">
@@ -638,6 +631,25 @@ let cameraStream = null;
 async function sbFetch(path, opts = {}) {
   if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase não configurado');
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    method: opts.method || 'GET',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=representation',
+      ...(opts.headers || {})
+    },
+    ...opts
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || res.statusText);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase não configurado');
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     headers: {
       'apikey': SUPABASE_KEY,
       'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -666,6 +678,29 @@ function salvarConfig() {
   localStorage.setItem('sb_url', SUPABASE_URL);
   localStorage.setItem('sb_key', SUPABASE_KEY);
   testarConexao();
+}
+
+async function testarConexao() {
+  const el = document.getElementById('supabase-status');
+  el.className = 'config-status warn';
+  el.textContent = '🔄 Testando conexão...';
+  try {
+    await sbFetch('pacientes?limit=1', { method: 'GET' });
+    el.className = 'config-status ok';
+    el.textContent = '✅ Conectado com sucesso!';
+    const connDot = document.getElementById('conn-dot'); if (connDot) connDot.classList.remove('red');
+    const connLabel = document.getElementById('conn-label'); if (connLabel) connLabel.textContent = 'Supabase conectado';
+    const connStatus = document.getElementById('conn-status'); if (connStatus) connStatus.textContent = SUPABASE_URL.replace('https://','').split('.')[0];
+    toast('Supabase conectado!', 'success');
+    atualizarDashboard();
+    carregarPacientes();
+  } catch(e) {
+    el.className = 'config-status err';
+    el.textContent = '❌ Erro: ' + e.message;
+    const connDot = document.getElementById('conn-dot'); if (connDot) connDot.classList.add('red');
+    const connLabel = document.getElementById('conn-label'); if (connLabel) connLabel.textContent = 'Sem conexão';
+    toast('Erro na conexão: ' + e.message, 'error');
+  }
 }
 
 function carregarConfig() {
@@ -920,7 +955,7 @@ function renderizarAutorizacao() {
   const isImg = autorizacaoTipo === 'imagem';
   wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px">
     ${isImg ? `<img src="${autorizacaoAtual}" style="width:48px;height:48px;border-radius:6px;object-fit:cover">` : `<div style="width:48px;height:48px;border-radius:6px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red)">PDF</div>`}
-    <div style="flex:1"><div style="font-size:13px;font-weight:600">Autorização anexada</div><div style="font-size:11px;color:var(--gray-400)">${autorizacaoTipo === 'pdf' ? 'Arquivo PDF' : 'Imagem'} · será enviada ao Google Drive</div></div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">Autorização anexada</div><div style="font-size:11px;color:var(--gray-400)">${autorizacaoTipo === 'pdf' ? 'Arquivo PDF' : 'Imagem'} · será enviada ao Supabase Storage</div></div>
     <button type="button" class="btn btn-danger btn-sm" onclick="removerAutorizacao()">✕</button>
   </div>`;
 }
@@ -1254,7 +1289,7 @@ async function verPaciente(id) {
     if (row.plano_tratamento) { try { const pl=JSON.parse(row.plano_tratamento); const it=Object.entries(pl); if(it.length){html+=sec('Plano de tratamento')+'<div class="detail-grid">';it.forEach(([k,v])=>html+=`<div class="detail-item"><div class="detail-key">Dente ${k}</div><div class="detail-val">${v}</div></div>`);html+='</div>';} } catch(e){} }
     if (row.plano_obs) html += `<div style="margin:8px 0;padding:10px 12px;background:var(--gray-50);border-radius:6px;font-size:13px"><strong>Obs. plano:</strong> ${row.plano_obs}</div>`;
     if (row.procedimentos) { try { const pr=JSON.parse(row.procedimentos); if(pr.length){html+=sec('Procedimentos realizados')+`<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Data</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Procedimento</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Dentista</th></tr></thead><tbody>${pr.map((p,i)=>`<tr style="background:${i%2===0?'var(--gray-50)':'white'}"><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">${p.data||'—'}</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">${p.proc||'—'}</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">${p.dentista||'—'}</td></tr>`).join('')}</tbody></table>`;} } catch(e){} }
-    if (row.autorizacao_url) html += sec('Autorização') + `<a href="${row.autorizacao_url}" target="_blank" class="btn btn-outline btn-sm">📄 Ver autorização no Google Drive</a>`;
+    if (row.autorizacao_url) html += sec('Autorização') + `<a href="${row.autorizacao_url}" target="_blank" class="btn btn-outline btn-sm">📄 Ver autorização (Supabase Storage)</a>`;
     if (row.raiox_url) { html += sec('Raio-X'); html += `<a href="${row.raiox_url}" target="_blank"><img src="${row.raiox_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block" alt="Raio-X"></a>`; }
     if (row.fotos_avaliacao_meta) { try { const fa=JSON.parse(row.fotos_avaliacao_meta); if(fa.length){html+=sec('Fotos de avaliação')+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:6px">'+fa.map(f=>`<div style="border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200)"><a href="${f.drive_url}" target="_blank"><div style="padding:6px;background:var(--teal-light);text-align:center;font-size:12px;color:var(--teal)">📁 ${f.data||'—'}<br><span style="color:var(--gray-400)">${f.desc||''}</span></div></a></div>`).join('')+'</div>';} } catch(e){} }
     document.getElementById('modal-body').innerHTML = html;
