@@ -175,6 +175,7 @@ textarea{resize:vertical;min-height:70px;}
   .proc-row{grid-template-columns:1fr;}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -620,8 +621,7 @@ textarea{resize:vertical;min-height:70px;}
 // ══════════════════════════════════════════
 let SUPABASE_URL = localStorage.getItem('sb_url') || '';
 let SUPABASE_KEY = localStorage.getItem('sb_key') || '';
-let GOOGLE_KEY   = localStorage.getItem('gd_key') || '';
-let DRIVE_FOLDER = localStorage.getItem('gd_folder') || '';
+let SUPABASE_BUCKET = 'fichas-pacientes';
 
 let currentId = null;
 let tipoAtual = 'adulto';
@@ -668,55 +668,16 @@ function salvarConfig() {
   testarConexao();
 }
 
-function salvarConfigDrive() {
-  GOOGLE_KEY = document.getElementById('cfg-google-key').value.trim();
-  DRIVE_FOLDER = document.getElementById('cfg-drive-folder').value.trim();
-  localStorage.setItem('gd_key', GOOGLE_KEY);
-  localStorage.setItem('gd_folder', DRIVE_FOLDER);
-  document.getElementById('drive-status').className = 'config-status ok';
-  document.getElementById('drive-status').textContent = '✅ Configuração salva';
-  toast('Configuração do Drive salva!', 'success');
-}
-
-async function testarConexao() {
-  const el = document.getElementById('supabase-status');
-  el.className = 'config-status warn';
-  el.textContent = '🔄 Testando conexão...';
-  try {
-    await sbFetch('pacientes?limit=1', { method: 'GET' });
-    el.className = 'config-status ok';
-    el.textContent = '✅ Conectado com sucesso!';
-    document.getElementById('conn-dot').classList.remove('red');
-    document.getElementById('conn-label').textContent = 'Supabase conectado';
-    document.getElementById('conn-status').textContent = SUPABASE_URL.replace('https://','').split('.')[0];
-    toast('Supabase conectado!', 'success');
-    atualizarDashboard();
-    carregarPacientes();
-  } catch(e) {
-    el.className = 'config-status err';
-    el.textContent = '❌ Erro: ' + e.message;
-    document.getElementById('conn-dot').classList.add('red');
-    document.getElementById('conn-label').textContent = 'Sem conexão';
-    toast('Erro na conexão: ' + e.message, 'error');
-  }
-}
-
 function carregarConfig() {
   if (SUPABASE_URL) document.getElementById('cfg-url').value = SUPABASE_URL;
   if (SUPABASE_KEY) document.getElementById('cfg-key').value = SUPABASE_KEY;
-  if (GOOGLE_KEY) document.getElementById('cfg-google-key').value = GOOGLE_KEY;
-  if (DRIVE_FOLDER) document.getElementById('cfg-drive-folder').value = DRIVE_FOLDER;
   if (SUPABASE_URL && SUPABASE_KEY) testarConexao();
-  if (DRIVE_FOLDER) {
-    document.getElementById('drive-status').className = 'config-status ok';
-    document.getElementById('drive-status').textContent = '✅ Drive configurado';
-  }
 }
 
-// ── GOOGLE DRIVE UPLOAD ──
-async function uploadDrive(base64, nome, mimeType) {
-  if (!GOOGLE_KEY || !DRIVE_FOLDER) {
-    toast('Configure o Google Drive nas Configurações', 'error');
+// ── SUPABASE STORAGE UPLOAD ──
+async function uploadSupabaseStorage(base64, caminho, mimeType) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    toast('Configure Supabase nas Configurações', 'error');
     return null;
   }
   try {
@@ -727,19 +688,114 @@ async function uploadDrive(base64, nome, mimeType) {
     for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
     const blob = new Blob([ab], { type: mimeType });
 
-    const metadata = JSON.stringify({ name: nome, parents: [DRIVE_FOLDER] });
-    const formData = new FormData();
-    formData.append('metadata', new Blob([metadata], { type: 'application/json' }));
-    formData.append('file', blob);
-
-    const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&key=${GOOGLE_KEY}`, {
-      method: 'POST', body: formData
+    const bucket = 'fichas-pacientes';
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${caminho}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': mimeType
+      },
+      body: blob
     });
-    const data = await res.json();
-    return data.id ? `https://drive.google.com/file/d/${data.id}/view` : null;
+    
+    if (!res.ok) {
+      const err = await res.json();
+      console.error('Upload error:', err);
+      return null;
+    }
+    
+    return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${caminho}`;
   } catch(e) {
-    console.error('Drive upload error:', e);
+    console.error('Storage upload error:', e);
     return null;
+  }
+}
+
+// ── CRIAR BACKUP ZIP ──
+async function criarBackupZip(dadosPaciente, arquivosMetadata) {
+  try {
+    const zip = new JSZip();
+    
+    // Adicionar dados do paciente como JSON
+    const jsonData = {
+      paciente: dadosPaciente,
+      dataBackup: new Date().toISOString(),
+      versaoSistema: '2.0'
+    };
+    zip.file('paciente.json', JSON.stringify(jsonData, null, 2));
+    
+    // Adicionar README
+    const readme = `BACKUP DE PACIENTE
+===================
+Data: ${new Date().toLocaleString('pt-BR')}
+Nome: ${dadosPaciente.nome || dadosPaciente.nome_crianca}
+
+Este arquivo contém backup completo dos dados e documentos.
+Para restaurar: importe o arquivo paciente.json no sistema.
+
+Pastas:
+- fotos/: fotografias da avaliação
+- anexos/: autorizações e raio-x
+`;
+    zip.file('README.txt', readme);
+    
+    // Adicionar arquivos de fotos
+    if (arquivosMetadata.fotos && arquivosMetadata.fotos.length > 0) {
+      const fotosFolder = zip.folder('fotos');
+      for (let i = 0; i < arquivosMetadata.fotos.length; i++) {
+        const foto = arquivosMetadata.fotos[i];
+        if (foto.base64) {
+          const data = foto.base64.split(',')[1];
+          fotosFolder.file(`foto_${i+1}.jpg`, data, {base64: true});
+        }
+      }
+    }
+    
+    // Adicionar arquivos anexos
+    if (arquivosMetadata.anexos && arquivosMetadata.anexos.length > 0) {
+      const anexosFolder = zip.folder('anexos');
+      for (let i = 0; i < arquivosMetadata.anexos.length; i++) {
+        const anexo = arquivosMetadata.anexos[i];
+        if (anexo.base64) {
+          const data = anexo.base64.split(',')[1];
+          const nome = anexo.nome || `anexo_${i+1}.pdf`;
+          anexosFolder.file(nome, data, {base64: true});
+        }
+      }
+    }
+    
+    return zip;
+  } catch(e) {
+    console.error('ZIP creation error:', e);
+    return null;
+  }
+}
+
+// ── GERAR BACKUP E FAZER DOWNLOAD ──
+async function gerarBackupZipAutomatico(dadosPaciente, arquivosMetadata) {
+  try {
+    const zip = await criarBackupZip(dadosPaciente, arquivosMetadata);
+    if (!zip) {
+      console.warn('Falha ao criar ZIP, continuando sem backup...');
+      return;
+    }
+    
+    const nomeBackup = `backup_${(dadosPaciente.nome || dadosPaciente.nome_crianca).replace(/\s/g,'_')}_${new Date().toISOString().split('T')[0]}.zip`;
+    const blob = await zip.generateAsync({type: 'blob'});
+    
+    // Criar download automático
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nomeBackup;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    console.log('✓ Backup baixado:', nomeBackup);
+  } catch(e) {
+    console.error('Backup generation error:', e);
   }
 }
 
@@ -1021,33 +1077,43 @@ async function salvarFicha() {
   const nomeDisplay = d.tipo === 'pediatrico' ? d.nome_crianca : d.nome;
   if (!nomeDisplay || !d.dentista) { toast('Preencha nome e dentista!', 'error'); return; }
   showLoading('Salvando ficha...');
+  
+  // Preparar metadados de arquivos para ZIP
+  const arquivosMetadata = {
+    fotos: fotosAvaliacao.map(f => ({base64: f.base64, desc: f.desc})),
+    anexos: []
+  };
+  
   try {
-    // Upload de arquivos no Google Drive
+    // Upload de arquivos no Supabase Storage
     if (autorizacaoAtual && !autorizacaoAtual.startsWith('https')) {
-      showLoading('Enviando autorização para o Drive...');
+      showLoading('Enviando autorização para Supabase...');
       const ext = autorizacaoTipo === 'pdf' ? 'pdf' : 'jpg';
-      const nome = `autorizacao_${nomeDisplay.replace(/\s/g,'_')}_${Date.now()}.${ext}`;
+      const caminhoAuth = `${nomeDisplay.replace(/\s/g,'_')}/autorizacao_${Date.now()}.${ext}`;
       const mime = autorizacaoTipo === 'pdf' ? 'application/pdf' : 'image/jpeg';
-      const url = await uploadDrive(autorizacaoAtual, nome, mime);
+      const url = await uploadSupabaseStorage(autorizacaoAtual, caminhoAuth, mime);
       d.autorizacao_url = url || '';
+      arquivosMetadata.anexos.push({base64: autorizacaoAtual, nome: `autorizacao.${ext}`});
     }
+    
     if (raioxAtual && !raioxAtual.startsWith('https')) {
-      showLoading('Enviando raio-x para o Drive...');
-      const nome = `raiox_${nomeDisplay.replace(/\s/g,'_')}_${Date.now()}.jpg`;
-      const url = await uploadDrive(raioxAtual, nome, 'image/jpeg');
+      showLoading('Enviando raio-x para Supabase...');
+      const caminhoRaiox = `${nomeDisplay.replace(/\s/g,'_')}/raiox_${Date.now()}.jpg`;
+      const url = await uploadSupabaseStorage(raioxAtual, caminhoRaiox, 'image/jpeg');
       d.raiox_url = url || '';
+      arquivosMetadata.anexos.push({base64: raioxAtual, nome: 'raiox.jpg'});
     }
-    // Upload fotos avaliação
+    
     const fotasMeta = [];
     for (let i = 0; i < fotosAvaliacao.length; i++) {
       const f = fotosAvaliacao[i];
-      if (f.base64 && !f.drive_url) {
-        showLoading(`Enviando foto ${i+1} de ${fotosAvaliacao.length} para o Drive...`);
-        const nome = `foto_${nomeDisplay.replace(/\s/g,'_')}_${Date.now()}_${i}.jpg`;
-        const url = await uploadDrive(f.base64, nome, f.mimeType || 'image/jpeg');
-        fotasMeta.push({ data: f.data, desc: f.desc, drive_url: url || '' });
+      if (f.base64 && !f.supabase_url) {
+        showLoading(`Enviando foto ${i+1} de ${fotosAvaliacao.length} para Supabase...`);
+        const caminhoFoto = `${nomeDisplay.replace(/\s/g,'_')}/foto_${Date.now()}_${i}.jpg`;
+        const url = await uploadSupabaseStorage(f.base64, caminhoFoto, f.mimeType || 'image/jpeg');
+        fotasMeta.push({ data: f.data, desc: f.desc, supabase_url: url || '' });
       } else {
-        fotasMeta.push({ data: f.data, desc: f.desc, drive_url: f.drive_url || '' });
+        fotasMeta.push({ data: f.data, desc: f.desc, supabase_url: f.supabase_url || '' });
       }
     }
     d.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
@@ -1061,6 +1127,11 @@ async function salvarFicha() {
       await sbFetch('pacientes', { method: 'POST', body: JSON.stringify(d) });
       toast('Ficha salva!', 'success');
     }
+    
+    // Gerar backup ZIP automaticamente
+    showLoading('Gerando backup...');
+    await gerarBackupZipAutomatico(d, arquivosMetadata);
+    
     limparForm();
     atualizarDashboard();
     carregarPacientes();
@@ -1293,3 +1364,4 @@ carregarConfig();
 </script>
 </body>
 </html>
+
