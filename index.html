@@ -187,7 +187,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v12</div>
+    <div class="sub">Sistema de Fichas v3</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -551,6 +551,13 @@ async function sbFetch(path, opts) {
 
 async function sbUpload(bucket, caminho, blob) {
   if (!SB_URL || !SB_KEY) return null;
+  // tenta criar o bucket se não existir
+  await fetch(SB_URL + '/storage/v1/bucket', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: bucket, name: bucket, public: true })
+  }).catch(function() {});
+  // deleta versão anterior se existir
   await fetch(SB_URL + '/storage/v1/object/' + bucket + '/' + caminho, {
     method: 'DELETE',
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
@@ -578,14 +585,20 @@ async function testarConexao() {
   el.className = 'config-status warn'; el.textContent = 'Testando...';
   try {
     await sbFetch('pacientes?limit=1', { prefer: '' });
-    el.className = 'config-status ok'; el.textContent = 'Conectado!';
+    // verificar/criar bucket
+    await fetch(SB_URL + '/storage/v1/bucket', {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: 'anexos', name: 'anexos', public: true })
+    }).catch(function() {});
+    el.className = 'config-status ok'; el.textContent = '✅ Conectado!';
     document.getElementById('conn-dot').classList.add('ok');
     document.getElementById('conn-label').textContent = 'Supabase conectado';
     document.getElementById('conn-status').textContent = SB_URL.replace('https://', '').split('.')[0];
     toast('Supabase conectado!', 'success');
     atualizarDashboard(); carregarPacientes();
   } catch(e) {
-    el.className = 'config-status err'; el.textContent = 'Erro: ' + e.message;
+    el.className = 'config-status err'; el.textContent = '❌ Erro: ' + e.message;
     document.getElementById('conn-dot').classList.remove('ok');
     document.getElementById('conn-label').textContent = 'Sem conexão';
     toast('Erro: ' + e.message, 'error');
