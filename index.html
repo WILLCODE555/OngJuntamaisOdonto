@@ -8,7 +8,7 @@
 <style>
 :root{
   --purple:#6B21A8;--purple-mid:#9333EA;--purple-light:#F3E8FF;--purple-border:#D8B4FE;
-  --teal:#0F766E;--teal-mid:#14B8A6;--teal-light:#CCFBF1;
+  --teal:#0F766E;--teal-light:#CCFBF1;
   --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-400:#9CA3AF;
   --gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;
   --red:#DC2626;--red-light:#FEE2E2;--green:#16A34A;--green-light:#DCFCE7;
@@ -43,15 +43,21 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--gray-100);colo
 .stat-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
 .stat-label{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;}
 .stat-value{font-size:28px;font-weight:700;margin-top:4px;}
-.stat-value.purple{color:var(--purple);}.stat-value.teal{color:var(--teal);}.stat-value.amber{color:var(--amber);}
+.stat-value.purple{color:var(--purple);}
+.stat-value.teal{color:var(--teal);}
+.stat-value.amber{color:var(--amber);}
 .toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
 .search-box{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:8px 12px;}
 .search-box input{border:none;outline:none;font-size:14px;width:100%;font-family:inherit;color:var(--gray-800);background:transparent;}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s;}
-.btn-primary{background:var(--purple);color:white;}.btn-primary:hover{background:#581C87;}
-.btn-teal{background:var(--teal);color:white;}.btn-teal:hover{background:#134E4A;}
-.btn-outline{background:white;color:var(--gray-700);border:1.5px solid var(--gray-200);}.btn-outline:hover{border-color:var(--gray-400);}
-.btn-danger{background:var(--red-light);color:var(--red);}.btn-danger:hover{background:#FECACA;}
+.btn-primary{background:var(--purple);color:white;}
+.btn-primary:hover{background:#581C87;}
+.btn-teal{background:var(--teal);color:white;}
+.btn-teal:hover{background:#134E4A;}
+.btn-outline{background:white;color:var(--gray-700);border:1.5px solid var(--gray-200);}
+.btn-outline:hover{border-color:var(--gray-400);}
+.btn-danger{background:var(--red-light);color:var(--red);}
+.btn-danger:hover{background:#FECACA;}
 .btn-sm{padding:5px 10px;font-size:12px;}
 .filter-btn{padding:8px 12px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-200);background:white;color:var(--gray-600);font-family:inherit;transition:all 0.15s;}
 .filter-btn.active{border-color:var(--purple-mid);background:var(--purple-light);color:var(--purple);}
@@ -79,7 +85,7 @@ tr:hover td{background:var(--gray-50);}
 .field-label{font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
 .required{color:var(--red);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-input[type="text"],input[type="number"],textarea,select{width:100%;border:1.5px solid var(--gray-200);border-radius:6px;padding:9px 12px;font-size:14px;color:var(--gray-800);background:var(--white);font-family:inherit;transition:border-color 0.15s,box-shadow 0.15s;outline:none;}
+input[type="text"],input[type="number"],textarea,select{width:100%;border:1.5px solid var(--gray-200);border-radius:6px;padding:9px 12px;font-size:14px;color:var(--gray-800);background:var(--white);font-family:inherit;transition:border-color 0.15s;outline:none;}
 input:focus,textarea:focus,select:focus{border-color:var(--purple-mid);box-shadow:0 0 0 3px rgba(147,51,234,0.1);}
 textarea{resize:vertical;min-height:70px;}
 .options-group{display:flex;flex-wrap:wrap;gap:7px;}
@@ -88,7 +94,7 @@ textarea{resize:vertical;min-height:70px;}
 .opt.sel{background:var(--purple-light);border-color:var(--purple-mid);color:var(--purple);font-weight:600;}
 .opt .dot{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .opt.sel .dot::after{content:'';width:5px;height:5px;background:var(--purple);border-radius:50%;}
-.opt .chk{width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.opt .chk{width:13px;height:13px;border-radius:3px;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;}
 .opt.sel .chk::after{content:'\2713';font-size:9px;color:var(--purple);font-weight:700;}
 .conditional{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--gray-200);}
 .conditional.show{display:block;}
@@ -113,7 +119,6 @@ textarea{resize:vertical;min-height:70px;}
 .tab-bar{display:flex;gap:4px;background:var(--gray-200);padding:4px;border-radius:10px;margin-bottom:20px;}
 .tab{flex:1;text-align:center;padding:8px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;color:var(--gray-600);transition:all 0.2s;}
 .tab.active{background:white;color:var(--gray-800);box-shadow:var(--shadow);}
-.date-input{font-variant-numeric:tabular-nums;letter-spacing:0.5px;}
 .foto-area{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;}
 .foto-preview{width:120px;height:120px;border-radius:10px;border:2px dashed var(--gray-200);background:var(--gray-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
 .foto-preview img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;}
@@ -133,8 +138,6 @@ textarea{resize:vertical;min-height:70px;}
 .cam-cancelar{background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);}
 .anexo-btn-add{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;border:1.5px dashed var(--gray-200);background:white;color:var(--gray-600);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;width:100%;}
 .anexo-btn-add:hover{border-color:var(--purple-mid);color:var(--purple);}
-.anexo-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;margin-bottom:8px;}
-.anexo-preview{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;border:1px solid var(--gray-200);}
 .fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:10px;}
 .foto-card{position:relative;border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200);}
 .foto-card img{width:100%;height:100px;object-fit:cover;display:block;}
@@ -151,8 +154,8 @@ textarea{resize:vertical;min-height:70px;}
 .loading-overlay.show{display:flex;}
 .spinner{width:40px;height:40px;border:4px solid var(--gray-200);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.plano-table input{border:none;background:transparent;padding:4px;width:100%;font-size:13px;outline:none;font-family:inherit;}
-.plano-table input:focus{background:var(--purple-light);border-radius:4px;}
+.plano-tbl input{border:none;background:transparent;padding:4px;width:100%;font-size:13px;outline:none;font-family:inherit;}
+.plano-tbl input:focus{background:var(--purple-light);border-radius:4px;}
 @media(max-width:640px){
   .sidebar{width:100%;height:auto;position:relative;}
   .main{margin-left:0;}
@@ -163,16 +166,16 @@ textarea{resize:vertical;min-height:70px;}
 </style>
 </head>
 <body>
-<input type="file" id="foto-upload-input" accept="image/*" style="display:none" onchange="fotoUploadSelecionada(this)">
-<input type="file" id="autorizacao-input" accept="image/*,application/pdf" style="display:none" onchange="autorizacaoSelecionada(this)">
-<input type="file" id="raiox-input" accept="image/*" style="display:none" onchange="raioxSelecionado(this)">
-<input type="file" id="fotos-avaliacao-input" accept="image/*" multiple style="display:none" onchange="fotosAvaliacaoSelecionadas(this)">
+<input type="file" id="foto-upload-input" accept="image/*" style="display:none">
+<input type="file" id="autorizacao-input" accept="image/*,application/pdf" style="display:none">
+<input type="file" id="raiox-input" accept="image/*" style="display:none">
+<input type="file" id="fotos-aval-input" accept="image/*" multiple style="display:none">
 <canvas id="cam-canvas" style="display:none"></canvas>
 <div class="cam-overlay" id="cam-overlay">
   <video id="cam-video" class="cam-video" autoplay playsinline muted></video>
   <div class="cam-btns">
-    <button class="cam-btn cam-capturar" onclick="capturarFoto()">📸 Capturar foto</button>
-    <button class="cam-btn cam-cancelar" onclick="fecharCamera()">✕ Cancelar</button>
+    <button class="cam-btn cam-capturar" id="btn-capturar">📸 Capturar foto</button>
+    <button class="cam-btn cam-cancelar" id="btn-cancelar-cam">✕ Cancelar</button>
   </div>
 </div>
 <div class="loading-overlay" id="loading-overlay">
@@ -184,15 +187,15 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v11</div>
+    <div class="sub">Sistema de Fichas v12</div>
   </div>
   <nav class="nav">
-    <div class="nav-item active" onclick="goTo('dashboard')"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
-    <div class="nav-item" onclick="goTo('pacientes')"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Pacientes</div>
-    <div class="nav-item" onclick="goTo('novo')"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Nova Ficha</div>
+    <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+    <div class="nav-item" data-page="pacientes"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Pacientes</div>
+    <div class="nav-item" data-page="novo"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Nova Ficha</div>
     <div class="nav-sep"></div>
-    <div class="nav-item" onclick="exportarCSV()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</div>
-    <div class="nav-item" onclick="goTo('config')"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Configurações</div>
+    <div class="nav-item" id="nav-csv"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</div>
+    <div class="nav-item" data-page="config"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Configurações</div>
   </nav>
   <div class="sidebar-footer">
     <div class="db-badge"><span class="db-dot" id="conn-dot"></span><span id="conn-label">Não conectado</span></div>
@@ -211,22 +214,22 @@ textarea{resize:vertical;min-height:70px;}
   </div>
   <div class="table-wrap">
     <table><thead><tr><th>Paciente</th><th>Tipo</th><th>Consulta</th><th>Dentista</th><th>Queixa</th><th></th></tr></thead>
-    <tbody id="dashboard-tbody"><tr><td colspan="6"><div class="empty-state"><p>Configure o Supabase nas Configurações para começar</p></div></td></tr></tbody></table>
+    <tbody id="dash-tbody"><tr><td colspan="6"><div class="empty-state"><p>Configure o Supabase nas Configurações para começar</p></div></td></tr></tbody></table>
   </div>
 </div>
 
 <!-- PACIENTES -->
 <div class="page" id="page-pacientes">
-  <div class="topbar"><div><h1>Pacientes</h1><p>Buscar e gerenciar fichas</p></div><button class="btn btn-primary" onclick="goTo('novo')">+ Nova ficha</button></div>
+  <div class="topbar"><div><h1>Pacientes</h1><p>Buscar e gerenciar fichas</p></div><button class="btn btn-primary" id="btn-nova-ficha">+ Nova ficha</button></div>
   <div class="toolbar">
-    <div class="search-box"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="search-input" placeholder="Buscar por nome, CPF ou dentista..." oninput="carregarPacientes()"></div>
-    <button class="filter-btn active" onclick="filtrarTipo('todos',this)">Todos</button>
-    <button class="filter-btn" onclick="filtrarTipo('adulto',this)">Adulto</button>
-    <button class="filter-btn" onclick="filtrarTipo('pediatrico',this)">Pediátrico</button>
+    <div class="search-box"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="search-input" placeholder="Buscar por nome, CPF ou dentista..."></div>
+    <button class="filter-btn active" data-tipo="todos">Todos</button>
+    <button class="filter-btn" data-tipo="adulto">Adulto</button>
+    <button class="filter-btn" data-tipo="pediatrico">Pediátrico</button>
   </div>
   <div class="table-wrap">
     <table><thead><tr><th>Paciente</th><th>Tipo</th><th>Nascimento</th><th>Telefone</th><th>Dentista</th><th>Consulta</th><th></th></tr></thead>
-    <tbody id="pacientes-tbody"></tbody></table>
+    <tbody id="pac-tbody"></tbody></table>
   </div>
 </div>
 
@@ -234,95 +237,91 @@ textarea{resize:vertical;min-height:70px;}
 <div class="page" id="page-novo">
   <div class="topbar"><div><h1 id="form-title">Nova Ficha</h1><p>Preencher na chegada do paciente</p></div></div>
   <div class="tab-bar">
-    <div class="tab active" id="tab-adulto" onclick="trocarTipo('adulto')">👤 Adulto</div>
-    <div class="tab" id="tab-pediatrico" onclick="trocarTipo('pediatrico')">🧒 Pediátrico</div>
+    <div class="tab active" id="tab-adulto">👤 Adulto</div>
+    <div class="tab" id="tab-pediatrico">🧒 Pediátrico</div>
   </div>
-  <input type="hidden" id="f-id" value="">
+  <input type="hidden" id="f-id">
   <input type="hidden" id="f-tipo" value="adulto">
 
-  <!-- CONSULTA -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num">1</span><span class="section-title">Consulta</span></div>
     <div class="form-body">
       <div class="field-row">
-        <div class="field"><div class="field-label">Data da consulta <span class="required">*</span></div><input type="text" id="f-data-consulta" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
-        <div class="field"><div class="field-label">Horário</div><input type="text" id="f-horario" placeholder="hh:mm" maxlength="5" oninput="maskTime(this)"></div>
+        <div class="field"><div class="field-label">Data da consulta <span class="required">*</span></div><input type="text" id="f-data-consulta" placeholder="dd/mm/aaaa" maxlength="10"></div>
+        <div class="field"><div class="field-label">Horário</div><input type="text" id="f-horario" placeholder="hh:mm" maxlength="5"></div>
       </div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Nome do(a) dentista <span class="required">*</span></div><input type="text" id="f-dentista" placeholder="Nome completo"></div>
+        <div class="field"><div class="field-label">Dentista <span class="required">*</span></div><input type="text" id="f-dentista" placeholder="Nome completo"></div>
         <div class="field"><div class="field-label">CRO</div><input type="text" id="f-cro" placeholder="Ex: SP-12345"></div>
       </div>
       <div class="field">
         <div class="field-label">Foto do paciente</div>
         <div class="foto-area">
-          <div class="foto-preview" id="foto-preview">
-            <div class="foto-placeholder" id="foto-placeholder"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Sem foto</span></div>
+          <div class="foto-preview" id="foto-preview-box">
+            <div class="foto-placeholder" id="foto-ph"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Sem foto</span></div>
             <img id="foto-img" src="" alt="Foto">
           </div>
           <div class="foto-btns">
-            <button type="button" class="foto-btn" onclick="abrirCamera()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Tirar foto com câmera</button>
-            <button type="button" class="foto-btn" onclick="document.getElementById('foto-upload-input').click()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Carregar imagem</button>
-            <button type="button" class="foto-btn foto-btn-remover" id="foto-btn-remover" onclick="removerFoto()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Remover foto</button>
+            <button type="button" class="foto-btn" id="btn-camera"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Tirar foto</button>
+            <button type="button" class="foto-btn" id="btn-upload-foto"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Carregar imagem</button>
+            <button type="button" class="foto-btn foto-btn-remover" id="btn-remover-foto"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Remover foto</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- CRIANÇA (pediátrico) -->
   <div class="form-card" id="sec-crianca" style="display:none">
     <div class="form-section-header teal"><span class="section-num teal">2</span><span class="section-title teal">Dados da criança</span></div>
     <div class="form-body">
       <div class="field"><div class="field-label">Nome da criança <span class="required">*</span></div><input type="text" id="f-nome-crianca" placeholder="Nome completo da criança"></div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nasc-crianca" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
-        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sexo-c','radio')"><span class="dot"></span>Feminino</span><span class="opt" onclick="selOpt(this,'sexo-c','radio')"><span class="dot"></span>Masculino</span></div></div>
+        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nasc-crianca" placeholder="dd/mm/aaaa" maxlength="10"></div>
+        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="sexo-c" data-modo="radio"><span class="dot"></span>Feminino</span><span class="opt" data-grupo="sexo-c" data-modo="radio"><span class="dot"></span>Masculino</span></div></div>
       </div>
-      <div class="field"><div class="field-label">Possui irmãos? Se sim, quantos e de quais idades?</div><input type="text" id="f-irmaos" placeholder="Ex: 2 irmãos — 3 e 7 anos"></div>
-      <div class="field"><div class="field-label">Etnia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Branca</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Parda</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Negra</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Amarela</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Indígena</span><span class="opt" onclick="selOpt(this,'etnia-c','check')"><span class="chk"></span>Outra</span></div></div>
+      <div class="field"><div class="field-label">Irmãos?</div><input type="text" id="f-irmaos" placeholder="Ex: 2 irmãos — 3 e 7 anos"></div>
+      <div class="field"><div class="field-label">Etnia</div><div class="options-group"><span class="opt" data-grupo="etnia-c" data-modo="check"><span class="chk"></span>Branca</span><span class="opt" data-grupo="etnia-c" data-modo="check"><span class="chk"></span>Parda</span><span class="opt" data-grupo="etnia-c" data-modo="check"><span class="chk"></span>Negra</span><span class="opt" data-grupo="etnia-c" data-modo="check"><span class="chk"></span>Amarela</span><span class="opt" data-grupo="etnia-c" data-modo="check"><span class="chk"></span>Indígena</span><span class="opt" data-grupo="etnia-c" data-modo="check"><span class="chk"></span>Outra</span></div></div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Cidade e Estado que nasceu</div><input type="text" id="f-cidade-crianca" placeholder="Ex: Curitiba - PR"></div>
-        <div class="field"><div class="field-label">CPF da criança</div><input type="text" id="f-cpf-crianca" placeholder="000.000.000-00"></div>
+        <div class="field"><div class="field-label">Cidade/Estado que nasceu</div><input type="text" id="f-cidade-crianca" placeholder="Ex: Curitiba - PR"></div>
+        <div class="field"><div class="field-label">CPF</div><input type="text" id="f-cpf-crianca" placeholder="000.000.000-00"></div>
       </div>
-      <div class="field"><div class="field-label">RG da criança</div><input type="text" id="f-rg-crianca" placeholder="00.000.000-0"></div>
+      <div class="field"><div class="field-label">RG</div><input type="text" id="f-rg-crianca" placeholder="00.000.000-0"></div>
     </div>
   </div>
 
-  <!-- RESPONSÁVEL (pediátrico) -->
   <div class="form-card" id="sec-resp" style="display:none">
     <div class="form-section-header teal"><span class="section-num teal">3</span><span class="section-title teal">Dados do responsável</span></div>
     <div class="form-body">
       <div class="field"><div class="field-label">Nome do responsável <span class="required">*</span></div><input type="text" id="f-resp-nome" placeholder="Nome completo"></div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-resp-nasc" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
-        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sexo-r','radio')"><span class="dot"></span>Feminino</span><span class="opt" onclick="selOpt(this,'sexo-r','radio')"><span class="dot"></span>Masculino</span></div></div>
+        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-resp-nasc" placeholder="dd/mm/aaaa" maxlength="10"></div>
+        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="sexo-r" data-modo="radio"><span class="dot"></span>Feminino</span><span class="opt" data-grupo="sexo-r" data-modo="radio"><span class="dot"></span>Masculino</span></div></div>
       </div>
       <div class="field-row">
         <div class="field"><div class="field-label">Parentesco</div><input type="text" id="f-resp-parentesco" placeholder="Ex: mãe, pai, avó"></div>
-        <div class="field"><div class="field-label">Cidade e Estado que nasceu</div><input type="text" id="f-resp-cidade" placeholder="Ex: Curitiba - PR"></div>
+        <div class="field"><div class="field-label">Cidade/Estado que nasceu</div><input type="text" id="f-resp-cidade" placeholder="Ex: Curitiba - PR"></div>
       </div>
       <div class="field-row">
-        <div class="field"><div class="field-label">CPF do responsável</div><input type="text" id="f-resp-cpf" placeholder="000.000.000-00"></div>
-        <div class="field"><div class="field-label">RG do responsável</div><input type="text" id="f-resp-rg" placeholder="00.000.000-0"></div>
+        <div class="field"><div class="field-label">CPF</div><input type="text" id="f-resp-cpf" placeholder="000.000.000-00"></div>
+        <div class="field"><div class="field-label">RG</div><input type="text" id="f-resp-rg" placeholder="00.000.000-0"></div>
       </div>
-      <div class="field"><div class="field-label">Telefone de contato <span class="required">*</span></div><input type="text" id="f-telefone-ped" placeholder="(00) 00000-0000"></div>
+      <div class="field"><div class="field-label">Telefone <span class="required">*</span></div><input type="text" id="f-telefone-ped" placeholder="(00) 00000-0000"></div>
     </div>
   </div>
 
-  <!-- DADOS ADULTO -->
   <div class="form-card" id="sec-adulto">
     <div class="form-section-header"><span class="section-num">2</span><span class="section-title">Dados do paciente</span></div>
     <div class="form-body">
       <div class="field"><div class="field-label">Nome completo <span class="required">*</span></div><input type="text" id="f-nome" placeholder="Nome completo do paciente"></div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nascimento" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
-        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sexo','radio')"><span class="dot"></span>Feminino</span><span class="opt" onclick="selOpt(this,'sexo','radio')"><span class="dot"></span>Masculino</span></div></div>
+        <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nascimento" placeholder="dd/mm/aaaa" maxlength="10"></div>
+        <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="sexo" data-modo="radio"><span class="dot"></span>Feminino</span><span class="opt" data-grupo="sexo" data-modo="radio"><span class="dot"></span>Masculino</span></div></div>
       </div>
-      <div class="field"><div class="field-label">Possui filhos? Se sim, quantos e de quais idades?</div><input type="text" id="f-filhos" placeholder="Ex: 2 filhos — 5 e 8 anos"></div>
-      <div class="field"><div class="field-label">Etnia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Branca</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Parda</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Negra</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Amarela</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Indígena</span><span class="opt" onclick="selOpt(this,'etnia','check')"><span class="chk"></span>Outra</span></div></div>
+      <div class="field"><div class="field-label">Filhos?</div><input type="text" id="f-filhos" placeholder="Ex: 2 filhos — 5 e 8 anos"></div>
+      <div class="field"><div class="field-label">Etnia</div><div class="options-group"><span class="opt" data-grupo="etnia" data-modo="check"><span class="chk"></span>Branca</span><span class="opt" data-grupo="etnia" data-modo="check"><span class="chk"></span>Parda</span><span class="opt" data-grupo="etnia" data-modo="check"><span class="chk"></span>Negra</span><span class="opt" data-grupo="etnia" data-modo="check"><span class="chk"></span>Amarela</span><span class="opt" data-grupo="etnia" data-modo="check"><span class="chk"></span>Indígena</span><span class="opt" data-grupo="etnia" data-modo="check"><span class="chk"></span>Outra</span></div></div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Cidade e Estado que nasceu</div><input type="text" id="f-cidade" placeholder="Ex: Curitiba - PR"></div>
-        <div class="field"><div class="field-label">Telefone de contato</div><input type="text" id="f-telefone" placeholder="(00) 00000-0000"></div>
+        <div class="field"><div class="field-label">Cidade/Estado que nasceu</div><input type="text" id="f-cidade" placeholder="Ex: Curitiba - PR"></div>
+        <div class="field"><div class="field-label">Telefone</div><input type="text" id="f-telefone" placeholder="(00) 00000-0000"></div>
       </div>
       <div class="field-row">
         <div class="field"><div class="field-label">CPF</div><input type="text" id="f-cpf" placeholder="000.000.000-00"></div>
@@ -331,99 +330,94 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
 
-  <!-- DADOS GERAIS -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-geral-num">3</span><span class="section-title">Dados gerais</span></div>
     <div class="form-body">
-      <div class="field"><div class="field-label">Endereço (caso possua)</div><input type="text" id="f-endereco" placeholder="Rua, número, complemento"></div>
+      <div class="field"><div class="field-label">Endereço</div><input type="text" id="f-endereco" placeholder="Rua, número, complemento"></div>
       <div class="field-row">
         <div class="field"><div class="field-label">Bairro</div><input type="text" id="f-bairro" placeholder="Bairro"></div>
         <div class="field"><div class="field-label">CEP</div><input type="text" id="f-cep" placeholder="00000-000"></div>
       </div>
-      <div class="field"><div class="field-label">Área de moradia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'area','radio')"><span class="dot"></span>Área urbana</span><span class="opt" onclick="selOpt(this,'area','radio')"><span class="dot"></span>Área rural</span></div></div>
+      <div class="field"><div class="field-label">Área</div><div class="options-group"><span class="opt" data-grupo="area" data-modo="radio"><span class="dot"></span>Área urbana</span><span class="opt" data-grupo="area" data-modo="radio"><span class="dot"></span>Área rural</span></div></div>
       <div class="field-row">
         <div class="field"><div class="field-label">Adultos na casa</div><input type="number" id="f-adultos" min="0" placeholder="0"></div>
         <div class="field"><div class="field-label">Crianças na casa</div><input type="number" id="f-criancas" min="0" placeholder="0"></div>
       </div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Água encanada?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'agua','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'agua','radio')"><span class="dot"></span>Não</span></div></div>
-        <div class="field"><div class="field-label">Luz elétrica?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'luz','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'luz','radio')"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Água encanada?</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="agua" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="agua" data-modo="radio"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Luz elétrica?</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="luz" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="luz" data-modo="radio"><span class="dot"></span>Não</span></div></div>
       </div>
-      <div class="field"><div class="field-label">Transporte da família</div><input type="text" id="f-transporte" placeholder="Ex: ônibus, carro próprio, a pé..."></div>
-      <div class="field"><div class="field-label">Possui renda fixa?</div>
-        <div class="options-group"><span class="opt" onclick="selOpt(this,'renda','radio');showCond('cond-renda')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'renda','radio');hideCond('cond-renda')"><span class="dot"></span>Não</span></div>
+      <div class="field"><div class="field-label">Transporte</div><input type="text" id="f-transporte" placeholder="Ex: ônibus, carro próprio, a pé..."></div>
+      <div class="field"><div class="field-label">Renda fixa?</div>
+        <div class="options-group"><span class="opt" data-grupo="renda" data-modo="radio" data-show="cond-renda"><span class="dot"></span>Sim</span><span class="opt" data-grupo="renda" data-modo="radio" data-hide="cond-renda"><span class="dot"></span>Não</span></div>
         <div class="conditional" id="cond-renda"><div class="cond-label">Qual o valor?</div><input type="text" id="f-renda-valor" placeholder="R$ 0,00"></div>
       </div>
     </div>
   </div>
 
-  <!-- ESCOLARIDADE (pediátrico) -->
   <div class="form-card" id="sec-escola" style="display:none">
     <div class="form-section-header teal"><span class="section-num teal" id="sec-escola-num">5</span><span class="section-title teal">Escolaridade</span></div>
     <div class="form-body">
       <div class="field"><div class="field-label">Frequenta escola ou creche?</div>
-        <div class="options-group"><span class="opt" onclick="selOpt(this,'escola','radio');showCond('cond-escola')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'escola','radio');hideCond('cond-escola')"><span class="dot"></span>Não</span></div>
+        <div class="options-group"><span class="opt" data-grupo="escola" data-modo="radio" data-show="cond-escola"><span class="dot"></span>Sim</span><span class="opt" data-grupo="escola" data-modo="radio" data-hide="cond-escola"><span class="dot"></span>Não</span></div>
         <div class="conditional" id="cond-escola">
           <div class="field-row" style="margin-bottom:10px">
-            <div><div class="cond-label">Rede</div><div class="options-group"><span class="opt" onclick="selOpt(this,'rede','radio')"><span class="dot"></span>Pública</span><span class="opt" onclick="selOpt(this,'rede','radio')"><span class="dot"></span>Privada</span></div></div>
-            <div><div class="cond-label">Período</div><div class="options-group"><span class="opt" onclick="selOpt(this,'periodo','radio')"><span class="dot"></span>Manhã</span><span class="opt" onclick="selOpt(this,'periodo','radio')"><span class="dot"></span>Tarde</span><span class="opt" onclick="selOpt(this,'periodo','radio')"><span class="dot"></span>Integral</span></div></div>
+            <div><div class="cond-label">Rede</div><div class="options-group"><span class="opt" data-grupo="rede" data-modo="radio"><span class="dot"></span>Pública</span><span class="opt" data-grupo="rede" data-modo="radio"><span class="dot"></span>Privada</span></div></div>
+            <div><div class="cond-label">Período</div><div class="options-group"><span class="opt" data-grupo="periodo" data-modo="radio"><span class="dot"></span>Manhã</span><span class="opt" data-grupo="periodo" data-modo="radio"><span class="dot"></span>Tarde</span><span class="opt" data-grupo="periodo" data-modo="radio"><span class="dot"></span>Integral</span></div></div>
           </div>
           <div class="cond-label">Nome da escola/creche</div><input type="text" id="f-escola-nome" placeholder="Nome da instituição">
         </div>
       </div>
-      <div class="field"><div class="field-label">Faz atividade extracurricular?</div>
-        <div class="options-group"><span class="opt" onclick="selOpt(this,'extra','radio');showCond('cond-extra')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'extra','radio');hideCond('cond-extra')"><span class="dot"></span>Não</span></div>
+      <div class="field"><div class="field-label">Atividade extracurricular?</div>
+        <div class="options-group"><span class="opt" data-grupo="extra" data-modo="radio" data-show="cond-extra"><span class="dot"></span>Sim</span><span class="opt" data-grupo="extra" data-modo="radio" data-hide="cond-extra"><span class="dot"></span>Não</span></div>
         <div class="conditional" id="cond-extra"><div class="cond-label">O que e onde?</div><textarea id="f-extra-det" placeholder="Ex: futebol no clube da comunidade"></textarea></div>
       </div>
     </div>
   </div>
 
-  <!-- HISTÓRICO MÉDICO -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-med-num">4</span><span class="section-title">Histórico médico</span></div>
     <div class="form-body">
-      <div class="field"><div class="field-label">Problema de saúde?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'prob-saude','radio');showCond('cond-saude')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'prob-saude','radio');hideCond('cond-saude')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-saude"><div class="cond-label">Qual?</div><textarea id="f-saude-qual" placeholder="Descreva"></textarea></div></div>
-      <div class="field"><div class="field-label">Tratamento odontológico ou médico?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'tratamento','radio');showCond('cond-trat')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'tratamento','radio');hideCond('cond-trat')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-trat"><div class="cond-label">Qual?</div><textarea id="f-trat-qual" placeholder="Descreva o tratamento"></textarea></div></div>
-      <div class="field"><div class="field-label">Usa medicamento?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'medicamento','radio');showCond('cond-med')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'medicamento','radio');hideCond('cond-med')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-med"><div class="cond-label">Qual?</div><textarea id="f-med-qual" placeholder="Nome e dose"></textarea></div></div>
-      <div class="field"><div class="field-label">Já realizou cirurgia?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'cirurgia','radio');showCond('cond-cirurgia')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'cirurgia','radio');hideCond('cond-cirurgia')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-cirurgia"><div class="cond-label">Qual e quando?</div><textarea id="f-cirurgia-qual" placeholder="Descreva"></textarea></div></div>
+      <div class="field"><div class="field-label">Problema de saúde?</div><div class="options-group"><span class="opt" data-grupo="prob-saude" data-modo="radio" data-show="cond-saude"><span class="dot"></span>Sim</span><span class="opt" data-grupo="prob-saude" data-modo="radio" data-hide="cond-saude"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-saude"><div class="cond-label">Qual?</div><textarea id="f-saude-qual" placeholder="Descreva"></textarea></div></div>
+      <div class="field"><div class="field-label">Tratamento médico/odontológico?</div><div class="options-group"><span class="opt" data-grupo="tratamento" data-modo="radio" data-show="cond-trat"><span class="dot"></span>Sim</span><span class="opt" data-grupo="tratamento" data-modo="radio" data-hide="cond-trat"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-trat"><div class="cond-label">Qual?</div><textarea id="f-trat-qual" placeholder="Descreva o tratamento"></textarea></div></div>
+      <div class="field"><div class="field-label">Usa medicamento?</div><div class="options-group"><span class="opt" data-grupo="medicamento" data-modo="radio" data-show="cond-med"><span class="dot"></span>Sim</span><span class="opt" data-grupo="medicamento" data-modo="radio" data-hide="cond-med"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-med"><div class="cond-label">Qual?</div><textarea id="f-med-qual" placeholder="Nome e dose"></textarea></div></div>
+      <div class="field"><div class="field-label">Já realizou cirurgia?</div><div class="options-group"><span class="opt" data-grupo="cirurgia" data-modo="radio" data-show="cond-cirurgia"><span class="dot"></span>Sim</span><span class="opt" data-grupo="cirurgia" data-modo="radio" data-hide="cond-cirurgia"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-cirurgia"><div class="cond-label">Qual e quando?</div><textarea id="f-cirurgia-qual" placeholder="Descreva"></textarea></div></div>
       <div class="field">
         <div class="field-label" style="margin-bottom:10px">Complicações</div>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Cicatrização?</span><div class="options-group"><span class="opt" onclick="selOpt(this,'cicatriz','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'cicatriz','radio')"><span class="dot"></span>Não</span></div></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Anestesia?</span><div class="options-group"><span class="opt" onclick="selOpt(this,'anestesia','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'anestesia','radio')"><span class="dot"></span>Não</span></div></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Hemorragia?</span><div class="options-group"><span class="opt" onclick="selOpt(this,'hemorragia','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'hemorragia','radio')"><span class="dot"></span>Não</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Cicatrização?</span><div class="options-group"><span class="opt" data-grupo="cicatriz" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="cicatriz" data-modo="radio"><span class="dot"></span>Não</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Anestesia?</span><div class="options-group"><span class="opt" data-grupo="anestesia" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="anestesia" data-modo="radio"><span class="dot"></span>Não</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span style="font-size:13px">Hemorragia?</span><div class="options-group"><span class="opt" data-grupo="hemorragia" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="hemorragia" data-modo="radio"><span class="dot"></span>Não</span></div></div>
         </div>
       </div>
-      <div class="field"><div class="field-label">Alergia?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'alergia','radio');showCond('cond-alergia')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'alergia','radio');hideCond('cond-alergia')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-alergia"><div class="cond-label">Qual?</div><textarea id="f-alergia-qual" placeholder="Descreva as alergias"></textarea></div></div>
+      <div class="field"><div class="field-label">Alergia?</div><div class="options-group"><span class="opt" data-grupo="alergia" data-modo="radio" data-show="cond-alergia"><span class="dot"></span>Sim</span><span class="opt" data-grupo="alergia" data-modo="radio" data-hide="cond-alergia"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-alergia"><div class="cond-label">Qual?</div><textarea id="f-alergia-qual" placeholder="Descreva as alergias"></textarea></div></div>
     </div>
   </div>
 
-  <!-- HISTÓRICO ODONTOLÓGICO -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-odonto-num">5</span><span class="section-title">Histórico odontológico</span></div>
     <div class="form-body">
-      <div class="field"><div class="field-label">Escovações por dia</div><div class="options-group"><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>1x</span><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>2x</span><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>3x</span><span class="opt" onclick="selOpt(this,'escovacao','radio')"><span class="dot"></span>4x ou mais</span></div></div>
+      <div class="field"><div class="field-label">Escovações por dia</div><div class="options-group"><span class="opt" data-grupo="escovacao" data-modo="radio"><span class="dot"></span>1x</span><span class="opt" data-grupo="escovacao" data-modo="radio"><span class="dot"></span>2x</span><span class="opt" data-grupo="escovacao" data-modo="radio"><span class="dot"></span>3x</span><span class="opt" data-grupo="escovacao" data-modo="radio"><span class="dot"></span>4x ou mais</span></div></div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Fio dental?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'fio','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'fio','radio')"><span class="dot"></span>Não</span></div></div>
-        <div class="field"><div class="field-label">Bochecho c/ flúor?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'fluor','radio');showCond('cond-fluor')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'fluor','radio');hideCond('cond-fluor')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-fluor"><input type="text" id="f-fluor-qual" placeholder="Qual bochecho e frequência?"></div></div>
+        <div class="field"><div class="field-label">Fio dental?</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="fio" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="fio" data-modo="radio"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Bochecho c/ flúor?</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="fluor" data-modo="radio" data-show="cond-fluor"><span class="dot"></span>Sim</span><span class="opt" data-grupo="fluor" data-modo="radio" data-hide="cond-fluor"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-fluor"><input type="text" id="f-fluor-qual" placeholder="Qual e frequência?"></div></div>
       </div>
       <div class="field-row">
-        <div class="field"><div class="field-label">Sangramento gengival?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'sangramento','radio')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'sangramento','radio')"><span class="dot"></span>Não</span></div></div>
-        <div class="field"><div class="field-label">Hábito bucal?</div><div class="options-group" style="margin-top:6px"><span class="opt" onclick="selOpt(this,'habito','radio');showCond('cond-habito')"><span class="dot"></span>Sim</span><span class="opt" onclick="selOpt(this,'habito','radio');hideCond('cond-habito')"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-habito"><div class="options-group"><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Bruxismo</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Apertamento dental</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Chupeta</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Sucção digital</span><span class="opt" onclick="selOpt(this,'hab-tipo','check')"><span class="chk"></span>Onicofagia</span></div></div></div>
+        <div class="field"><div class="field-label">Sangramento gengival?</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="sangramento" data-modo="radio"><span class="dot"></span>Sim</span><span class="opt" data-grupo="sangramento" data-modo="radio"><span class="dot"></span>Não</span></div></div>
+        <div class="field"><div class="field-label">Hábito bucal?</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="habito" data-modo="radio" data-show="cond-habito"><span class="dot"></span>Sim</span><span class="opt" data-grupo="habito" data-modo="radio" data-hide="cond-habito"><span class="dot"></span>Não</span></div><div class="conditional" id="cond-habito"><div class="options-group"><span class="opt" data-grupo="hab-tipo" data-modo="check"><span class="chk"></span>Bruxismo</span><span class="opt" data-grupo="hab-tipo" data-modo="check"><span class="chk"></span>Apertamento dental</span><span class="opt" data-grupo="hab-tipo" data-modo="check"><span class="chk"></span>Chupeta</span><span class="opt" data-grupo="hab-tipo" data-modo="check"><span class="chk"></span>Sucção digital</span><span class="opt" data-grupo="hab-tipo" data-modo="check"><span class="chk"></span>Onicofagia</span></div></div></div>
       </div>
-      <div class="field"><div class="field-label">Prótese odontológica?</div><div class="options-group"><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Não usa</span><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Móvel</span><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Fixa</span><span class="opt" onclick="selOpt(this,'protese','check')"><span class="chk"></span>Total</span></div></div>
+      <div class="field"><div class="field-label">Prótese?</div><div class="options-group"><span class="opt" data-grupo="protese" data-modo="check"><span class="chk"></span>Não usa</span><span class="opt" data-grupo="protese" data-modo="check"><span class="chk"></span>Móvel</span><span class="opt" data-grupo="protese" data-modo="check"><span class="chk"></span>Fixa</span><span class="opt" data-grupo="protese" data-modo="check"><span class="chk"></span>Total</span></div></div>
       <div class="field"><div class="field-label">Desconforto com a prótese?</div><input type="text" id="f-protese-desc" placeholder="Descreva se sente algum desconforto"></div>
       <div class="field"><div class="field-label">Queixa principal <span class="required">*</span></div><textarea id="f-queixa" placeholder="Motivo da consulta" style="min-height:80px"></textarea></div>
       <div class="field"><div class="field-label">Observações</div><textarea id="f-obs" placeholder="Outras informações relevantes"></textarea></div>
     </div>
   </div>
 
-  <!-- PLANO DE TRATAMENTO -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-plano-num">6</span><span class="section-title">Plano de tratamento</span></div>
     <div class="form-body">
-      <p style="font-size:12px;color:var(--gray-400);margin-bottom:12px">Preencha o tratamento planejado para cada dente. Deixe em branco os sem tratamento.</p>
-      <div style="overflow-x:auto"><table class="plano-table" style="width:100%;border-collapse:collapse;font-size:13px">
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:12px">Preencha o tratamento planejado para cada dente.</p>
+      <div style="overflow-x:auto"><table class="plano-tbl" style="width:100%;border-collapse:collapse;font-size:13px">
         <thead><tr><th style="background:var(--purple);color:white;padding:8px 10px;text-align:left;width:70px">Dente</th><th style="background:var(--purple);color:white;padding:8px 10px;text-align:left">Tratamento</th><th style="background:var(--purple);color:white;padding:8px 10px;text-align:left;width:70px">Dente</th><th style="background:var(--purple);color:white;padding:8px 10px;text-align:left">Tratamento</th></tr></thead>
         <tbody id="plano-tbody"></tbody>
       </table></div>
@@ -431,62 +425,58 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
 
-  <!-- PROCEDIMENTOS -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-proc-num">7</span><span class="section-title">Procedimentos realizados</span></div>
     <div class="form-body">
-      <div id="procs-ficha-lista" style="margin-bottom:14px"></div>
+      <div id="procs-lista" style="margin-bottom:14px"></div>
       <div style="background:var(--gray-50);border-radius:8px;padding:14px;border:1.5px dashed var(--gray-200)">
         <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:10px">Adicionar procedimento</div>
         <div class="field-row" style="margin-bottom:10px">
-          <div><div class="field-label">Data</div><input type="text" id="pf-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+          <div><div class="field-label">Data</div><input type="text" id="pf-data" placeholder="dd/mm/aaaa" maxlength="10"></div>
           <div><div class="field-label">Dentista</div><input type="text" id="pf-dentista" placeholder="Nome do(a) dentista"></div>
         </div>
         <div class="field" style="margin-bottom:10px"><div class="field-label">Procedimento <span class="required">*</span></div><input type="text" id="pf-proc" placeholder="Ex: Profilaxia, Extração dente 36..."></div>
-        <button class="btn btn-teal btn-sm" onclick="adicionarProcFicha()">+ Adicionar</button>
+        <button class="btn btn-teal btn-sm" id="btn-add-proc">+ Adicionar</button>
       </div>
     </div>
   </div>
 
-  <!-- AUTORIZAÇÃO -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-aut-num">8</span><span class="section-title">Autorização de uso de imagem e tratamento</span></div>
     <div class="form-body">
-      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px;line-height:1.6">Anexe o termo de autorização assinado. Aceita foto do documento ou PDF.</p>
-      <div id="autorizacao-preview-wrap" style="display:none;margin-bottom:10px"></div>
-      <button type="button" class="anexo-btn-add" onclick="document.getElementById('autorizacao-input').click()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Anexar autorização</button>
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Aceita foto do documento ou PDF.</p>
+      <div id="aut-preview" style="display:none;margin-bottom:10px"></div>
+      <button type="button" class="anexo-btn-add" id="btn-upload-aut"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Anexar autorização (imagem ou PDF)</button>
     </div>
   </div>
 
-  <!-- RAIO-X -->
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-raiox-num">9</span><span class="section-title">Imagem de Raio-X</span></div>
     <div class="form-body">
-      <div id="raiox-preview-wrap" style="display:none;margin-bottom:10px"></div>
-      <button type="button" class="anexo-btn-add" onclick="document.getElementById('raiox-input').click()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Anexar imagem de Raio-X</button>
+      <div id="raiox-preview" style="display:none;margin-bottom:10px"></div>
+      <button type="button" class="anexo-btn-add" id="btn-upload-raiox"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Anexar imagem de Raio-X</button>
       <div class="field-row" style="margin-top:12px">
-        <div class="field"><div class="field-label">Data do Raio-X</div><input type="text" id="f-raiox-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div class="field"><div class="field-label">Data do Raio-X</div><input type="text" id="f-raiox-data" placeholder="dd/mm/aaaa" maxlength="10"></div>
         <div class="field"><div class="field-label">Observações</div><input type="text" id="f-raiox-obs" placeholder="Ex: panorâmico, periapical..."></div>
       </div>
     </div>
   </div>
 
-  <!-- FOTOS DE AVALIAÇÃO -->
   <div class="form-card">
-    <div class="form-section-header"><span class="section-num" id="sec-fotosaval-num">10</span><span class="section-title">Fotos do paciente / Avaliação</span></div>
+    <div class="form-section-header"><span class="section-num" id="sec-faval-num">10</span><span class="section-title">Fotos do paciente / Avaliação</span></div>
     <div class="form-body">
-      <div class="fotos-grid" id="fotos-avaliacao-grid"></div>
+      <div class="fotos-grid" id="fotos-aval-grid"></div>
       <div class="field-row" style="margin-bottom:10px">
-        <div><div class="field-label">Data da avaliação</div><input type="text" id="f-fotoaval-data" class="date-input" placeholder="dd/mm/aaaa" maxlength="10" oninput="maskDate(this)"></div>
+        <div><div class="field-label">Data da avaliação</div><input type="text" id="f-fotoaval-data" placeholder="dd/mm/aaaa" maxlength="10"></div>
         <div><div class="field-label">Descrição</div><input type="text" id="f-fotoaval-desc" placeholder="Ex: foto frontal, lateral..."></div>
       </div>
-      <button type="button" class="anexo-btn-add" onclick="document.getElementById('fotos-avaliacao-input').click()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Adicionar foto(s) de avaliação</button>
+      <button type="button" class="anexo-btn-add" id="btn-upload-faval"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Adicionar foto(s) de avaliação</button>
     </div>
   </div>
 
   <div style="display:flex;gap:10px;margin-bottom:32px">
-    <button class="btn btn-primary" style="flex:1;justify-content:center;padding:13px" id="btn-salvar" onclick="salvarFicha()">Salvar ficha</button>
-    <button class="btn btn-outline" onclick="limparForm()">Limpar</button>
+    <button class="btn btn-primary" style="flex:1;justify-content:center;padding:13px" id="btn-salvar">Salvar ficha</button>
+    <button class="btn btn-outline" id="btn-limpar">Limpar</button>
   </div>
 </div>
 
@@ -495,639 +485,759 @@ textarea{resize:vertical;min-height:70px;}
   <div class="topbar"><div><h1>Configurações</h1><p>Conexão com Supabase</p></div></div>
   <div class="config-card">
     <h3>🔌 Conexão Supabase</h3>
-    <p>Cole as credenciais do seu projeto Supabase. Encontre em: Settings → API</p>
-    <div id="supabase-status" class="config-status warn">⚠️ Não configurado</div>
+    <p>Cole as credenciais do projeto Supabase. Encontre em: Settings → API</p>
+    <div id="sb-status" class="config-status warn">⚠️ Não configurado</div>
     <div class="field"><div class="field-label">Project URL</div><input type="text" id="cfg-url" placeholder="https://xxxxxxxxxxx.supabase.co"></div>
     <div class="field" style="margin-top:10px"><div class="field-label">Anon Public Key</div><input type="text" id="cfg-key" placeholder="eyJhbGci..."></div>
-    <button class="btn btn-primary" style="margin-top:12px" onclick="salvarConfig()">Salvar e testar conexão</button>
+    <button class="btn btn-primary" style="margin-top:12px" id="btn-salvar-config">Salvar e testar conexão</button>
   </div>
   <div class="config-card">
-    <h3>💾 Backup</h3>
+    <h3>💾 Backup automático</h3>
     <p>A cada ficha salva, um arquivo ZIP é gerado automaticamente com todos os dados e imagens do paciente. Você também pode exportar todos os dados em CSV.</p>
-    <button class="btn btn-outline" style="margin-right:8px" onclick="exportarCSV()">📥 Exportar CSV completo</button>
+    <button class="btn btn-outline" id="btn-csv">📥 Exportar CSV completo</button>
   </div>
 </div>
 
 </div></div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+<div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <div class="modal-header"><h2 id="modal-titulo">Ficha</h2><button class="modal-close" onclick="fecharModalBtn()">✕</button></div>
+    <div class="modal-header"><h2 id="modal-titulo">Ficha</h2><button class="modal-close" id="modal-close-btn">✕</button></div>
     <div id="modal-body"></div>
     <div style="display:flex;gap:8px;margin-top:20px">
-      <button class="btn btn-outline btn-sm" onclick="editarPaciente(currentId)">✏️ Editar</button>
-      <button class="btn btn-danger btn-sm" onclick="excluirPaciente(currentId)">🗑️ Excluir</button>
+      <button class="btn btn-outline btn-sm" id="modal-editar-btn">✏️ Editar</button>
+      <button class="btn btn-danger btn-sm" id="modal-excluir-btn">🗑️ Excluir</button>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
-
 <script>
-let SUPABASE_URL=localStorage.getItem('sb_url')||'';
-let SUPABASE_KEY=localStorage.getItem('sb_key')||'';
-let currentId=null,tipoAtual='adulto',filtroTipo='todos';
-let fotoAtual='',fotoBlob=null;
-let autorizacaoAtual='',autorizacaoBlob=null,autorizacaoTipo='',autorizacaoExt='jpg';
-let raioxAtual='',raioxBlob=null;
-let fotosAvaliacao=[];
-let procsFicha=[];
-let cameraStream=null;
+var SB_URL = localStorage.getItem('sb_url') || '';
+var SB_KEY = localStorage.getItem('sb_key') || '';
+var currentId = null;
+var tipoAtual = 'adulto';
+var filtroTipo = 'todos';
+var fotoAtual = '';
+var fotoBlob = null;
+var autAtual = '';
+var autBlob = null;
+var autTipo = '';
+var autExt = 'jpg';
+var raioxAtual = '';
+var raioxBlob = null;
+var fotosAval = [];
+var procs = [];
+var camStream = null;
 
-// ── SUPABASE ──
-async function sbFetch(path,opts={}){
-  if(!SUPABASE_URL||!SUPABASE_KEY)throw new Error('Supabase não configurado');
-  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...(opts.headers||{})},
-    ...opts
+// SUPABASE
+async function sbFetch(path, opts) {
+  opts = opts || {};
+  if (!SB_URL || !SB_KEY) throw new Error('Supabase não configurado');
+  var res = await fetch(SB_URL + '/rest/v1/' + path, {
+    method: opts.method || 'GET',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer !== undefined ? opts.prefer : 'return=representation'
+    },
+    body: opts.body || undefined
   });
-  if(!res.ok){const e=await res.text();throw new Error(e);}
-  const t=await res.text();return t?JSON.parse(t):null;
+  if (!res.ok) { var e = await res.text(); throw new Error(e); }
+  var t = await res.text();
+  return t ? JSON.parse(t) : null;
 }
 
-async function sbUpload(bucket,path,blob){
-  if(!SUPABASE_URL||!SUPABASE_KEY)return null;
-  // delete first (upsert)
-  await fetch(SUPABASE_URL+'/storage/v1/object/'+bucket+'/'+path,{method:'DELETE',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).catch(()=>{});
-  const res=await fetch(SUPABASE_URL+'/storage/v1/object/'+bucket+'/'+path,{
-    method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':blob.type,'x-upsert':'true'},
-    body:blob
+async function sbUpload(bucket, caminho, blob) {
+  if (!SB_URL || !SB_KEY) return null;
+  await fetch(SB_URL + '/storage/v1/object/' + bucket + '/' + caminho, {
+    method: 'DELETE',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  }).catch(function() {});
+  var res = await fetch(SB_URL + '/storage/v1/object/' + bucket + '/' + caminho, {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': blob.type, 'x-upsert': 'true' },
+    body: blob
   });
-  if(!res.ok)throw new Error(await res.text());
-  return SUPABASE_URL+'/storage/v1/object/public/'+bucket+'/'+path;
+  if (!res.ok) throw new Error(await res.text());
+  return SB_URL + '/storage/v1/object/public/' + bucket + '/' + caminho;
 }
 
-async function sbGetUrl(bucket,path){
-  return SUPABASE_URL+'/storage/v1/object/public/'+bucket+'/'+path;
-}
-
-// ── CONFIG ──
-function salvarConfig(){
-  SUPABASE_URL=(document.getElementById('cfg-url').value||'').trim().replace(//$/,'');
-  SUPABASE_KEY=(document.getElementById('cfg-key').value||'').trim();
-  localStorage.setItem('sb_url',SUPABASE_URL);
-  localStorage.setItem('sb_key',SUPABASE_KEY);
+// CONFIG
+function salvarConfig() {
+  SB_URL = (document.getElementById('cfg-url').value || '').trim().replace(/\/$/, '');
+  SB_KEY = (document.getElementById('cfg-key').value || '').trim();
+  localStorage.setItem('sb_url', SB_URL);
+  localStorage.setItem('sb_key', SB_KEY);
   testarConexao();
 }
 
-async function testarConexao(){
-  const el=document.getElementById('supabase-status');
-  el.className='config-status warn';el.textContent='🔄 Testando...';
-  try{
-    await sbFetch('pacientes?limit=1',{method:'GET',prefer:''});
-    el.className='config-status ok';el.textContent='✅ Conectado!';
+async function testarConexao() {
+  var el = document.getElementById('sb-status');
+  el.className = 'config-status warn'; el.textContent = 'Testando...';
+  try {
+    await sbFetch('pacientes?limit=1', { prefer: '' });
+    el.className = 'config-status ok'; el.textContent = 'Conectado!';
     document.getElementById('conn-dot').classList.add('ok');
-    document.getElementById('conn-label').textContent='Supabase conectado';
-    document.getElementById('conn-status').textContent=SUPABASE_URL.replace('https://','').split('.')[0];
-    toast('Supabase conectado!','success');
-    atualizarDashboard();carregarPacientes();
-  }catch(e){
-    el.className='config-status err';el.textContent='❌ Erro: '+e.message;
+    document.getElementById('conn-label').textContent = 'Supabase conectado';
+    document.getElementById('conn-status').textContent = SB_URL.replace('https://', '').split('.')[0];
+    toast('Supabase conectado!', 'success');
+    atualizarDashboard(); carregarPacientes();
+  } catch(e) {
+    el.className = 'config-status err'; el.textContent = 'Erro: ' + e.message;
     document.getElementById('conn-dot').classList.remove('ok');
-    document.getElementById('conn-label').textContent='Sem conexão';
-    toast('Erro: '+e.message,'error');
+    document.getElementById('conn-label').textContent = 'Sem conexão';
+    toast('Erro: ' + e.message, 'error');
   }
 }
 
-function carregarConfig(){
-  if(SUPABASE_URL)document.getElementById('cfg-url').value=SUPABASE_URL;
-  if(SUPABASE_KEY)document.getElementById('cfg-key').value=SUPABASE_KEY;
-  if(SUPABASE_URL&&SUPABASE_KEY)testarConexao();
+// NAVEGAÇÃO
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(n) { n.classList.remove('active'); });
+  document.getElementById('page-' + page).classList.add('active');
+  var nav = document.querySelector('.nav-item[data-page="' + page + '"]');
+  if (nav) nav.classList.add('active');
+  if (page === 'novo') { renderizarPlano(); renderizarProcs(); }
 }
 
-// ── MÁSCARAS ──
-function maskDate(el){let v=el.value.replace(/\D/g,'');if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);if(v.length>5)v=v.slice(0,5)+'/'+v.slice(5);el.value=v.slice(0,10);}
-function maskTime(el){let v=el.value.replace(/\D/g,'');if(v.length>2)v=v.slice(0,2)+':'+v.slice(2);el.value=v.slice(0,5);}
-
-// ── COMPRESSÃO ──
-function comprimirImagem(base64,maxW=800,q=0.75){
-  return new Promise(resolve=>{
-    const img=new Image();
-    img.onload=()=>{
-      const c=document.createElement('canvas');
-      let w=img.width,h=img.height;
-      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      resolve(c.toDataURL('image/jpeg',q));
-    };
-    img.src=base64;
-  });
+// TIPO
+function trocarTipo(tipo) {
+  tipoAtual = tipo;
+  document.getElementById('f-tipo').value = tipo;
+  var isPed = tipo === 'pediatrico';
+  document.getElementById('tab-adulto').classList.toggle('active', !isPed);
+  document.getElementById('tab-pediatrico').classList.toggle('active', isPed);
+  document.getElementById('sec-adulto').style.display = isPed ? 'none' : 'block';
+  document.getElementById('sec-crianca').style.display = isPed ? 'block' : 'none';
+  document.getElementById('sec-resp').style.display = isPed ? 'block' : 'none';
+  document.getElementById('sec-escola').style.display = isPed ? 'block' : 'none';
+  document.getElementById('sec-geral-num').textContent = isPed ? '4' : '3';
+  document.getElementById('sec-med-num').textContent = isPed ? '6' : '4';
+  document.getElementById('sec-odonto-num').textContent = isPed ? '7' : '5';
+  document.getElementById('sec-plano-num').textContent = isPed ? '8' : '6';
+  document.getElementById('sec-proc-num').textContent = isPed ? '9' : '7';
+  document.getElementById('sec-aut-num').textContent = isPed ? '10' : '8';
+  document.getElementById('sec-raiox-num').textContent = isPed ? '11' : '9';
+  document.getElementById('sec-faval-num').textContent = isPed ? '12' : '10';
+  renderizarPlano();
 }
 
-function base64ToBlob(base64,type='image/jpeg'){
-  const b=atob(base64.split(',')[1]);
-  const arr=new Uint8Array(b.length);
-  for(let i=0;i<b.length;i++)arr[i]=b.charCodeAt(i);
-  return new Blob([arr],{type});
+// OPTS
+function getOpt(grupo) {
+  return Array.from(document.querySelectorAll('.opt.sel[data-grupo="' + grupo + '"]'))
+    .map(function(o) { return o.textContent.trim().replace(/[✓●\u2713\u25cf]/gi, '').trim(); }).join(', ');
 }
 
-// ── NAVEGAÇÃO ──
-function goTo(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const map={dashboard:0,pacientes:1,novo:2,config:4};
-  const items=document.querySelectorAll('.nav-item');
-  if(map[page]!==undefined&&items[map[page]])items[map[page]].classList.add('active');
-}
-
-// ── TIPO ──
-function trocarTipo(tipo){
-  tipoAtual=tipo;
-  document.getElementById('tab-adulto').classList.toggle('active',tipo==='adulto');
-  document.getElementById('tab-pediatrico').classList.toggle('active',tipo==='pediatrico');
-  const isPed=tipo==='pediatrico';
-  document.getElementById('sec-adulto').style.display=isPed?'none':'block';
-  document.getElementById('sec-crianca').style.display=isPed?'block':'none';
-  document.getElementById('sec-resp').style.display=isPed?'block':'none';
-  document.getElementById('sec-escola').style.display=isPed?'block':'none';
-  document.getElementById('sec-geral-num').textContent=isPed?'4':'3';
-  document.getElementById('sec-med-num').textContent=isPed?'6':'4';
-  document.getElementById('sec-odonto-num').textContent=isPed?'7':'5';
-  document.getElementById('sec-plano-num').textContent=isPed?'8':'6';
-  document.getElementById('sec-proc-num').textContent=isPed?'9':'7';
-  document.getElementById('sec-aut-num').textContent=isPed?'10':'8';
-  document.getElementById('sec-raiox-num').textContent=isPed?'11':'9';
-  document.getElementById('sec-fotosaval-num').textContent=isPed?'12':'10';
-  renderizarTabelaPlano();
-}
-
-// ── OPTS ──
-function selOpt(el,grupo,modo){
-  if(modo==='radio')document.querySelectorAll('[onclick*="''+grupo+''"]').forEach(o=>o.classList.remove('sel'));
-  el.classList.toggle('sel');
-  if(modo==='radio')el.classList.add('sel');
-}
-function getOpt(grupo){return[...document.querySelectorAll('[onclick*="''+grupo+''"].sel')].map(o=>o.textContent.trim().replace(/[✓●]/g,'')).join(', ');}
-function setOpts(grupo,val,modo){
-  if(!val)return;
-  const vals=val.split(', ');
-  document.querySelectorAll('[onclick*="''+grupo+''"]').forEach(o=>{
-    const txt=o.textContent.trim().replace(/[✓●]/g,'').trim();
-    if(vals.some(v=>v.trim()===txt)){
-      if(modo==='radio')document.querySelectorAll('[onclick*="''+grupo+''"]').forEach(x=>x.classList.remove('sel'));
+function setOpts(grupo, val, modo) {
+  if (!val) return;
+  var vals = val.split(', ');
+  document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(o) {
+    var txt = o.textContent.trim().replace(/[✓●\u2713\u25cf]/gi, '').trim();
+    if (vals.some(function(v) { return v.trim() === txt; })) {
+      if (modo === 'radio') document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(x) { x.classList.remove('sel'); });
       o.classList.add('sel');
     }
   });
 }
-function showCond(id){document.getElementById(id).classList.add('show');}
-function hideCond(id){document.getElementById(id).classList.remove('show');}
 
-// ── FOTO PACIENTE ──
-function atualizarPreviewFoto(base64){
-  fotoAtual=base64;
-  fotoBlob=base64?base64ToBlob(base64):null;
-  const img=document.getElementById('foto-img');
-  const ph=document.getElementById('foto-placeholder');
-  const rem=document.getElementById('foto-btn-remover');
-  if(base64){img.src=base64;img.style.display='block';ph.style.display='none';rem.classList.add('visible');}
-  else{img.src='';img.style.display='none';ph.style.display='flex';rem.classList.remove('visible');}
+// COMPRESSÃO
+function comprimirImagem(base64, maxW, q) {
+  maxW = maxW || 800; q = q || 0.75;
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var c = document.createElement('canvas');
+      var w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL('image/jpeg', q));
+    };
+    img.src = base64;
+  });
 }
-function removerFoto(){atualizarPreviewFoto('');}
-function fotoUploadSelecionada(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async e=>{const c=await comprimirImagem(e.target.result,600,0.75);atualizarPreviewFoto(c);};
-  reader.readAsDataURL(file);input.value='';
+
+function b64ToBlob(b64, type) {
+  type = type || 'image/jpeg';
+  var byteStr = atob(b64.split(',')[1]);
+  var arr = new Uint8Array(byteStr.length);
+  for (var i = 0; i < byteStr.length; i++) arr[i] = byteStr.charCodeAt(i);
+  return new Blob([arr], { type: type });
 }
-async function abrirCamera(){
-  try{
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
-    document.getElementById('cam-video').srcObject=cameraStream;
+
+// FOTO PACIENTE
+function setFoto(base64) {
+  fotoAtual = base64; fotoBlob = base64 ? b64ToBlob(base64) : null;
+  var img = document.getElementById('foto-img');
+  var ph = document.getElementById('foto-ph');
+  var rem = document.getElementById('btn-remover-foto');
+  if (base64) { img.src = base64; img.style.display = 'block'; ph.style.display = 'none'; rem.classList.add('visible'); }
+  else { img.src = ''; img.style.display = 'none'; ph.style.display = 'flex'; rem.classList.remove('visible'); }
+}
+
+// CÂMERA
+async function abrirCamera() {
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    document.getElementById('cam-video').srcObject = camStream;
     document.getElementById('cam-overlay').classList.add('open');
-  }catch(e){toast('Câmera não disponível','error');}
+  } catch(e) { toast('Câmera não disponível. Use Carregar imagem.', 'error'); }
 }
-function capturarFoto(){
-  const video=document.getElementById('cam-video');
-  const canvas=document.getElementById('cam-canvas');
-  const maxW=600;let w=video.videoWidth,h=video.videoHeight;
-  if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-  canvas.width=w;canvas.height=h;
-  canvas.getContext('2d').drawImage(video,0,0,w,h);
-  atualizarPreviewFoto(canvas.toDataURL('image/jpeg',0.75));
+
+function capturarFoto() {
+  var video = document.getElementById('cam-video');
+  var canvas = document.getElementById('cam-canvas');
+  var maxW = 600, w = video.videoWidth, h = video.videoHeight;
+  if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(video, 0, 0, w, h);
+  setFoto(canvas.toDataURL('image/jpeg', 0.75));
   fecharCamera();
 }
-function fecharCamera(){
-  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
+
+function fecharCamera() {
+  if (camStream) { camStream.getTracks().forEach(function(t) { t.stop(); }); camStream = null; }
   document.getElementById('cam-overlay').classList.remove('open');
 }
 
-// ── AUTORIZAÇÃO ──
-function autorizacaoSelecionada(input){
-  const file=input.files[0];if(!file)return;
-  autorizacaoTipo=file.type==='application/pdf'?'pdf':'imagem';
-  autorizacaoExt=file.type==='application/pdf'?'pdf':'jpg';
-  autorizacaoBlob=file;
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    if(autorizacaoTipo==='imagem'){
-      autorizacaoAtual=await comprimirImagem(e.target.result,1200,0.8);
-      autorizacaoBlob=base64ToBlob(autorizacaoAtual);
-    }else{autorizacaoAtual=e.target.result;}
-    renderizarAutorizacao();
-  };
-  reader.readAsDataURL(file);input.value='';
+// AUTORIZAÇÃO
+function renderizarAut() {
+  var wrap = document.getElementById('aut-preview');
+  if (!autAtual) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  var isImg = autTipo === 'imagem';
+  wrap.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px">'
+    + (isImg ? '<img src="' + autAtual + '" style="width:48px;height:48px;border-radius:6px;object-fit:cover">'
+             : '<div style="width:48px;height:48px;border-radius:6px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red)">PDF</div>')
+    + '<div style="flex:1"><div style="font-size:13px;font-weight:600">Autorização anexada</div>'
+    + '<div style="font-size:11px;color:var(--gray-400)">' + (autTipo === 'pdf' ? 'PDF' : 'Imagem') + '</div></div>'
+    + '<button class="btn btn-danger btn-sm" id="btn-rem-aut">✕</button></div>';
+  document.getElementById('btn-rem-aut').onclick = function() { autAtual = ''; autBlob = null; autTipo = ''; renderizarAut(); };
 }
-function renderizarAutorizacao(){
-  const wrap=document.getElementById('autorizacao-preview-wrap');
-  if(!autorizacaoAtual){wrap.style.display='none';wrap.innerHTML='';return;}
-  wrap.style.display='block';
-  const isImg=autorizacaoTipo==='imagem';
-  wrap.innerHTML='<div class="anexo-item">'+(isImg?'<img src="'+autorizacaoAtual+'" class="anexo-preview" alt="Autorização">'+'':'<div class="anexo-preview" style="background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red)">PDF</div>')+'<div style="flex:1"><div style="font-size:13px;font-weight:600">Autorização anexada</div><div style="font-size:11px;color:var(--gray-400)">'+(autorizacaoTipo==='pdf'?'PDF':'Imagem comprimida')+'</div></div><button type="button" class="btn btn-danger btn-sm" onclick="removerAutorizacao()">✕</button></div>';
-}
-function removerAutorizacao(){autorizacaoAtual='';autorizacaoBlob=null;autorizacaoTipo='';renderizarAutorizacao();}
 
-// ── RAIO-X ──
-function raioxSelecionado(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    raioxAtual=await comprimirImagem(e.target.result,1200,0.8);
-    raioxBlob=base64ToBlob(raioxAtual);
-    renderizarRaiox();
-  };
-  reader.readAsDataURL(file);input.value='';
+// RAIO-X
+function renderizarRaiox() {
+  var wrap = document.getElementById('raiox-preview');
+  if (!raioxAtual) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  wrap.innerHTML = '<div style="position:relative;display:inline-block">'
+    + '<img src="' + raioxAtual + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block">'
+    + '<button id="btn-rem-raiox" style="position:absolute;top:6px;right:6px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px">✕</button></div>';
+  document.getElementById('btn-rem-raiox').onclick = function() { raioxAtual = ''; raioxBlob = null; renderizarRaiox(); };
 }
-function renderizarRaiox(){
-  const wrap=document.getElementById('raiox-preview-wrap');
-  if(!raioxAtual){wrap.style.display='none';wrap.innerHTML='';return;}
-  wrap.style.display='block';
-  wrap.innerHTML='<div style="position:relative;display:inline-block"><img src="'+raioxAtual+'" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block" alt="Raio-X"><button type="button" style="position:absolute;top:6px;right:6px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px" onclick="removerRaiox()">✕</button></div>';
-}
-function removerRaiox(){raioxAtual='';raioxBlob=null;renderizarRaiox();}
 
-// ── FOTOS AVALIAÇÃO ──
-function fotosAvaliacaoSelecionadas(input){
-  const files=Array.from(input.files);if(!files.length)return;
-  const data=document.getElementById('f-fotoaval-data').value;
-  const desc=document.getElementById('f-fotoaval-desc').value;
-  let count=0;
-  files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=async e=>{
-      const c=await comprimirImagem(e.target.result,800,0.7);
-      fotosAvaliacao.push({base64:c,blob:base64ToBlob(c),data,desc:desc||'Foto de avaliação',ext:'jpg'});
-      count++;
-      if(count===files.length){
-        renderizarFotosAvaliacao();
-        document.getElementById('f-fotoaval-data').value='';
-        document.getElementById('f-fotoaval-desc').value='';
-      }
-    };
-    reader.readAsDataURL(file);
+// FOTOS AVALIAÇÃO
+function renderizarFotosAval() {
+  var grid = document.getElementById('fotos-aval-grid');
+  if (!fotosAval.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = fotosAval.map(function(f, i) {
+    return '<div class="foto-card"><img src="' + f.base64 + '" alt="Foto">'
+      + '<button class="foto-card-remove" data-idx="' + i + '">✕</button>'
+      + '<div class="foto-card-info"><div style="font-weight:600">' + (f.data || '—') + '</div>'
+      + '<div style="color:var(--gray-400)">' + f.desc + '</div></div></div>';
+  }).join('');
+  grid.querySelectorAll('.foto-card-remove').forEach(function(btn) {
+    btn.onclick = function() { fotosAval.splice(parseInt(this.dataset.idx), 1); renderizarFotosAval(); };
   });
-  input.value='';
 }
-function renderizarFotosAvaliacao(){
-  const grid=document.getElementById('fotos-avaliacao-grid');
-  if(!fotosAvaliacao.length){grid.innerHTML='';return;}
-  grid.innerHTML=fotosAvaliacao.map((f,i)=>'<div class="foto-card"><img src="'+f.base64+'" alt="Foto avaliação"><button type="button" class="foto-card-remove" onclick="removerFotoAvaliacao('+i+')">✕</button><div class="foto-card-info"><div style="font-weight:600">'+(f.data||'—')+'</div><div style="color:var(--gray-400)">'+f.desc+'</div></div></div>').join('');
-}
-function removerFotoAvaliacao(i){fotosAvaliacao.splice(i,1);renderizarFotosAvaliacao();}
 
-// ── PLANO ──
-const DENTES=[['11/51','21/61'],['12/52','22/62'],['13/53','23/63'],['14/54','24/64'],['15/55','25/65'],['16','26'],['17','27'],['18','28'],['31/71','41/81'],['32/72','42/82'],['33/73','43/83'],['34/74','44/84'],['35/75','45/85'],['36','46'],['37','47'],['38','48']];
-function renderizarTabelaPlano(){
-  const tbody=document.getElementById('plano-tbody');if(!tbody)return;
-  tbody.innerHTML=DENTES.map((par,i)=>'<tr style="background:'+(i%2===0?'var(--gray-50)':'white')+'"><td style="padding:6px 10px;font-weight:600;color:var(--purple);border-bottom:1px solid var(--gray-100)">'+par[0]+'</td><td style="padding:4px 6px;border-bottom:1px solid var(--gray-100)"><input type="text" id="dente-'+par[0].replace('/','_')+'" placeholder="—"></td><td style="padding:6px 10px;font-weight:600;color:var(--purple);border-bottom:1px solid var(--gray-100)">'+par[1]+'</td><td style="padding:4px 6px;border-bottom:1px solid var(--gray-100)"><input type="text" id="dente-'+par[1].replace('/','_')+'" placeholder="—"></td></tr>').join('');
-}
-function lerPlano(){const p={};DENTES.forEach(par=>par.forEach(d=>{const el=document.getElementById('dente-'+d.replace('/','_'));if(el&&el.value)p[d]=el.value;}));return JSON.stringify(p);}
-function carregarPlano(json){if(!json)return;try{const p=JSON.parse(json);Object.entries(p).forEach(([d,v])=>{const el=document.getElementById('dente-'+d.replace('/','_'));if(el)el.value=v;});}catch(e){}}
+// PLANO
+var DENTES = [
+  ['11/51','21/61'],['12/52','22/62'],['13/53','23/63'],['14/54','24/64'],['15/55','25/65'],
+  ['16','26'],['17','27'],['18','28'],
+  ['31/71','41/81'],['32/72','42/82'],['33/73','43/83'],['34/74','44/84'],['35/75','45/85'],
+  ['36','46'],['37','47'],['38','48']
+];
 
-// ── PROCEDIMENTOS ──
-function renderizarProcsFicha(){
-  const lista=document.getElementById('procs-ficha-lista');if(!lista)return;
-  if(!procsFicha.length){lista.innerHTML='<div style="font-size:13px;color:var(--gray-400);padding:8px 0">Nenhum procedimento registrado ainda.</div>';return;}
-  lista.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="background:var(--teal);color:white;padding:8px 10px;text-align:left;width:110px">Data</th><th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Procedimento</th><th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Dentista</th><th style="background:var(--teal);color:white;padding:8px 10px;width:40px"></th></tr></thead><tbody>'+procsFicha.map((p,i)=>'<tr style="background:'+(i%2===0?'var(--gray-50)':'white')+'"><td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">'+(p.data||'—')+'</td><td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">'+(p.proc||'—')+'</td><td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">'+(p.dentista||'—')+'</td><td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)"><button class="btn btn-danger btn-sm" onclick="removerProcFicha('+i+')">✕</button></td></tr>').join('')+'</tbody></table>';
+function renderizarPlano() {
+  var tbody = document.getElementById('plano-tbody'); if (!tbody) return;
+  tbody.innerHTML = DENTES.map(function(par, i) {
+    var bg = i % 2 === 0 ? 'var(--gray-50)' : 'white';
+    return '<tr style="background:' + bg + '">'
+      + '<td style="padding:6px 10px;font-weight:600;color:var(--purple);border-bottom:1px solid var(--gray-100)">' + par[0] + '</td>'
+      + '<td style="padding:4px 6px;border-bottom:1px solid var(--gray-100)"><input type="text" id="d-' + par[0].replace('/', '_') + '" placeholder="—"></td>'
+      + '<td style="padding:6px 10px;font-weight:600;color:var(--purple);border-bottom:1px solid var(--gray-100)">' + par[1] + '</td>'
+      + '<td style="padding:4px 6px;border-bottom:1px solid var(--gray-100)"><input type="text" id="d-' + par[1].replace('/', '_') + '" placeholder="—"></td>'
+      + '</tr>';
+  }).join('');
 }
-function adicionarProcFicha(){
-  const proc=document.getElementById('pf-proc').value.trim();
-  if(!proc){toast('Informe o procedimento!','error');return;}
-  procsFicha.push({data:document.getElementById('pf-data').value,proc,dentista:document.getElementById('pf-dentista').value});
-  ['pf-data','pf-proc','pf-dentista'].forEach(id=>document.getElementById(id).value='');
-  renderizarProcsFicha();
-}
-function removerProcFicha(i){procsFicha.splice(i,1);renderizarProcsFicha();}
 
-// ── LER FORM ──
-function lerForm(){
-  const g=id=>(document.getElementById(id)||{}).value||'';
-  return{
-    tipo:tipoAtual,data_consulta:g('f-data-consulta'),horario:g('f-horario'),dentista:g('f-dentista'),cro:g('f-cro'),
-    nome:g('f-nome'),nascimento:g('f-nascimento'),sexo:getOpt('sexo'),cpf:g('f-cpf'),rg:g('f-rg'),telefone:g('f-telefone'),etnia:getOpt('etnia'),cidade:g('f-cidade'),filhos:g('f-filhos'),
-    nome_crianca:g('f-nome-crianca'),nasc_crianca:g('f-nasc-crianca'),sexo_crianca:getOpt('sexo-c'),cpf_crianca:g('f-cpf-crianca'),rg_crianca:g('f-rg-crianca'),cidade_crianca:g('f-cidade-crianca'),irmaos:g('f-irmaos'),
-    resp_nome:g('f-resp-nome'),resp_nasc:g('f-resp-nasc'),sexo_resp:getOpt('sexo-r'),resp_parentesco:g('f-resp-parentesco'),resp_cidade:g('f-resp-cidade'),resp_cpf:g('f-resp-cpf'),resp_rg:g('f-resp-rg'),telefone_ped:g('f-telefone-ped'),
-    endereco:g('f-endereco'),bairro:g('f-bairro'),cep:g('f-cep'),area:getOpt('area'),adultos_casa:g('f-adultos'),criancas_casa:g('f-criancas'),
-    agua:getOpt('agua'),luz:getOpt('luz'),transporte:g('f-transporte'),renda:getOpt('renda'),renda_valor:g('f-renda-valor'),
-    escola:getOpt('escola'),escola_nome:g('f-escola-nome'),rede:getOpt('rede'),periodo:getOpt('periodo'),extra:getOpt('extra'),extra_det:g('f-extra-det'),
-    prob_saude:getOpt('prob-saude'),saude_qual:g('f-saude-qual'),tratamento:getOpt('tratamento'),trat_qual:g('f-trat-qual'),
-    medicamento:getOpt('medicamento'),med_qual:g('f-med-qual'),cirurgia:getOpt('cirurgia'),cirurgia_qual:g('f-cirurgia-qual'),
-    cicatriz:getOpt('cicatriz'),anestesia:getOpt('anestesia'),hemorragia:getOpt('hemorragia'),alergia:getOpt('alergia'),alergia_qual:g('f-alergia-qual'),
-    escovacao:getOpt('escovacao'),fio:getOpt('fio'),fluor:getOpt('fluor'),fluor_qual:g('f-fluor-qual'),sangramento:getOpt('sangramento'),
-    habito:getOpt('habito'),habito_tipos:getOpt('hab-tipo'),protese:getOpt('protese'),protese_desc:g('f-protese-desc'),
-    queixa:g('f-queixa'),obs:g('f-obs'),
-    plano_tratamento:lerPlano(),plano_obs:g('f-plano-obs'),
-    procedimentos:JSON.stringify(procsFicha),
-    autorizacao_tipo:autorizacaoTipo,
-    raiox_data:g('f-raiox-data'),raiox_obs:g('f-raiox-obs'),
-    total_fotos_aval:fotosAvaliacao.length
+function lerPlano() {
+  var p = {};
+  DENTES.forEach(function(par) {
+    par.forEach(function(d) {
+      var el = document.getElementById('d-' + d.replace('/', '_'));
+      if (el && el.value) p[d] = el.value;
+    });
+  });
+  return JSON.stringify(p);
+}
+
+function carregarPlano(json) {
+  if (!json) return;
+  try {
+    var p = JSON.parse(json);
+    Object.keys(p).forEach(function(d) {
+      var el = document.getElementById('d-' + d.replace('/', '_'));
+      if (el) el.value = p[d];
+    });
+  } catch(e) {}
+}
+
+// PROCEDIMENTOS
+function renderizarProcs() {
+  var lista = document.getElementById('procs-lista'); if (!lista) return;
+  if (!procs.length) { lista.innerHTML = '<div style="font-size:13px;color:var(--gray-400);padding:8px 0">Nenhum procedimento ainda.</div>'; return; }
+  lista.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>'
+    + '<th style="background:var(--teal);color:white;padding:8px 10px;text-align:left;width:110px">Data</th>'
+    + '<th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Procedimento</th>'
+    + '<th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Dentista</th>'
+    + '<th style="background:var(--teal);color:white;padding:8px 10px;width:40px"></th>'
+    + '</tr></thead><tbody>'
+    + procs.map(function(p, i) {
+      var bg = i % 2 === 0 ? 'var(--gray-50)' : 'white';
+      return '<tr style="background:' + bg + '">'
+        + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">' + (p.data || '—') + '</td>'
+        + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">' + (p.proc || '—') + '</td>'
+        + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">' + (p.dentista || '—') + '</td>'
+        + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)"><button class="btn btn-danger btn-sm" data-idx="' + i + '">✕</button></td>'
+        + '</tr>';
+    }).join('') + '</tbody></table>';
+  lista.querySelectorAll('[data-idx]').forEach(function(btn) {
+    btn.onclick = function() { procs.splice(parseInt(this.dataset.idx), 1); renderizarProcs(); };
+  });
+}
+
+// LER FORM
+function g(id) { var el = document.getElementById(id); return el ? el.value || '' : ''; }
+
+function lerForm() {
+  return {
+    tipo: tipoAtual, data_consulta: g('f-data-consulta'), horario: g('f-horario'), dentista: g('f-dentista'), cro: g('f-cro'),
+    nome: g('f-nome'), nascimento: g('f-nascimento'), sexo: getOpt('sexo'), cpf: g('f-cpf'), rg: g('f-rg'),
+    telefone: g('f-telefone'), etnia: getOpt('etnia'), cidade: g('f-cidade'), filhos: g('f-filhos'),
+    nome_crianca: g('f-nome-crianca'), nasc_crianca: g('f-nasc-crianca'), sexo_crianca: getOpt('sexo-c'),
+    cpf_crianca: g('f-cpf-crianca'), rg_crianca: g('f-rg-crianca'), cidade_crianca: g('f-cidade-crianca'), irmaos: g('f-irmaos'),
+    resp_nome: g('f-resp-nome'), resp_nasc: g('f-resp-nasc'), sexo_resp: getOpt('sexo-r'),
+    resp_parentesco: g('f-resp-parentesco'), resp_cidade: g('f-resp-cidade'),
+    resp_cpf: g('f-resp-cpf'), resp_rg: g('f-resp-rg'), telefone_ped: g('f-telefone-ped'),
+    endereco: g('f-endereco'), bairro: g('f-bairro'), cep: g('f-cep'), area: getOpt('area'),
+    adultos_casa: g('f-adultos'), criancas_casa: g('f-criancas'),
+    agua: getOpt('agua'), luz: getOpt('luz'), transporte: g('f-transporte'),
+    renda: getOpt('renda'), renda_valor: g('f-renda-valor'),
+    escola: getOpt('escola'), escola_nome: g('f-escola-nome'),
+    rede: getOpt('rede'), periodo: getOpt('periodo'), extra: getOpt('extra'), extra_det: g('f-extra-det'),
+    prob_saude: getOpt('prob-saude'), saude_qual: g('f-saude-qual'),
+    tratamento: getOpt('tratamento'), trat_qual: g('f-trat-qual'),
+    medicamento: getOpt('medicamento'), med_qual: g('f-med-qual'),
+    cirurgia: getOpt('cirurgia'), cirurgia_qual: g('f-cirurgia-qual'),
+    cicatriz: getOpt('cicatriz'), anestesia: getOpt('anestesia'), hemorragia: getOpt('hemorragia'),
+    alergia: getOpt('alergia'), alergia_qual: g('f-alergia-qual'),
+    escovacao: getOpt('escovacao'), fio: getOpt('fio'), fluor: getOpt('fluor'),
+    fluor_qual: g('f-fluor-qual'), sangramento: getOpt('sangramento'),
+    habito: getOpt('habito'), habito_tipos: getOpt('hab-tipo'),
+    protese: getOpt('protese'), protese_desc: g('f-protese-desc'),
+    queixa: g('f-queixa'), obs: g('f-obs'),
+    plano_tratamento: lerPlano(), plano_obs: g('f-plano-obs'),
+    procedimentos: JSON.stringify(procs),
+    autorizacao_tipo: autTipo, raiox_data: g('f-raiox-data'), raiox_obs: g('f-raiox-obs'),
+    total_fotos_aval: fotosAval.length
   };
 }
 
-// ── BACKUP ZIP ──
-async function gerarZip(pacienteId,nome,dados){
-  try{
-    const zip=new JSZip();
-    const pasta=zip.folder(nome);
-    // ficha JSON
-    pasta.file('ficha.json',JSON.stringify(dados,null,2));
-    // foto paciente
-    if(fotoAtual)pasta.file('foto_paciente.jpg',base64ToBlob(fotoAtual));
-    // autorização
-    if(autorizacaoAtual&&autorizacaoTipo==='imagem')pasta.file('autorizacao.jpg',base64ToBlob(autorizacaoAtual));
-    else if(autorizacaoAtual&&autorizacaoTipo==='pdf')pasta.file('autorizacao.pdf',autorizacaoBlob||base64ToBlob(autorizacaoAtual,'application/pdf'));
-    // raio-x
-    if(raioxAtual)pasta.file('raiox.jpg',base64ToBlob(raioxAtual));
-    // fotos avaliação
-    fotosAvaliacao.forEach((f,i)=>{pasta.file('foto_aval_'+(i+1)+'_'+(f.data||'sem-data').replace(/\//g,'-')+'.jpg',f.blob||base64ToBlob(f.base64));});
-    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='backup_'+nome.replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.zip';
+// BACKUP ZIP
+async function gerarZip(nome, dados) {
+  try {
+    var zip = new JSZip();
+    var pasta = zip.folder(nome);
+    pasta.file('ficha.json', JSON.stringify(dados, null, 2));
+    if (fotoBlob) pasta.file('foto_paciente.jpg', fotoBlob);
+    if (autBlob) pasta.file('autorizacao.' + autExt, autBlob);
+    if (raioxBlob) pasta.file('raiox.jpg', raioxBlob);
+    fotosAval.forEach(function(f, i) {
+      if (f.blob) pasta.file('foto_aval_' + (i + 1) + '.jpg', f.blob);
+    });
+    var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'backup_' + nome.replace(/[^a-zA-Z0-9]/g, '_') + '_' + new Date().toISOString().slice(0, 10) + '.zip';
     a.click();
     URL.revokeObjectURL(url);
-    toast('Backup ZIP gerado!','success');
-  }catch(e){
-    console.error('Erro ao gerar ZIP:',e);
-    toast('Erro ao gerar backup: '+e.message,'error');
-  }
+    toast('Backup ZIP gerado!', 'success');
+  } catch(e) { console.error(e); toast('Erro no backup: ' + e.message, 'error'); }
 }
 
-// ── SALVAR FICHA ──
-async function salvarFicha(){
-  const d=lerForm();
-  const nomeDisplay=d.tipo==='pediatrico'?d.nome_crianca:d.nome;
-  if(!nomeDisplay||!d.dentista){toast('Preencha nome e dentista!','error');return;}
-  const btn=document.getElementById('btn-salvar');
-  btn.disabled=true;btn.textContent='Salvando...';
+// SALVAR FICHA
+async function salvarFicha() {
+  var d = lerForm();
+  var nome = d.tipo === 'pediatrico' ? d.nome_crianca : d.nome;
+  if (!nome || !d.dentista) { toast('Preencha nome e dentista!', 'error'); return; }
+  var btn = document.getElementById('btn-salvar');
+  btn.disabled = true; btn.textContent = 'Salvando...';
   showLoading('Salvando dados...');
-  try{
-    const id=document.getElementById('f-id').value;
-    let pacienteId=id;
-
-    // upload imagens no Supabase Storage
-    const nomePasta=(nomeDisplay+'_'+Date.now()).replace(/[^a-zA-Z0-9_]/g,'_');
-    if(fotoBlob){
-      showLoading('Enviando foto...');
-      const url=await sbUpload('anexos',nomePasta+'/foto.jpg',fotoBlob);
-      d.foto_url=url;
+  try {
+    var id = document.getElementById('f-id').value;
+    var pasta = (nome + '_' + Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
+    if (fotoBlob) { showLoading('Enviando foto...'); d.foto_url = await sbUpload('anexos', pasta + '/foto.jpg', fotoBlob); }
+    if (autBlob) { showLoading('Enviando autorização...'); d.autorizacao_url = await sbUpload('anexos', pasta + '/autorizacao.' + autExt, autBlob); }
+    if (raioxBlob) { showLoading('Enviando raio-x...'); d.raiox_url = await sbUpload('anexos', pasta + '/raiox.jpg', raioxBlob); }
+    var fotasMeta = [];
+    for (var i = 0; i < fotosAval.length; i++) {
+      showLoading('Enviando foto ' + (i + 1) + ' de ' + fotosAval.length + '...');
+      var f = fotosAval[i];
+      var url = await sbUpload('anexos', pasta + '/foto_aval_' + (i + 1) + '.jpg', f.blob || b64ToBlob(f.base64));
+      fotasMeta.push({ url: url, data: f.data, desc: f.desc });
     }
-    if(autorizacaoBlob||autorizacaoAtual){
-      showLoading('Enviando autorização...');
-      const blob=autorizacaoBlob||(autorizacaoTipo==='pdf'?base64ToBlob(autorizacaoAtual,'application/pdf'):base64ToBlob(autorizacaoAtual));
-      const url=await sbUpload('anexos',nomePasta+'/autorizacao.'+autorizacaoExt,blob);
-      d.autorizacao_url=url;
-    }
-    if(raioxBlob){
-      showLoading('Enviando raio-x...');
-      const url=await sbUpload('anexos',nomePasta+'/raiox.jpg',raioxBlob);
-      d.raiox_url=url;
-    }
-    // fotos avaliação
-    const fotasUrls=[];
-    for(let i=0;i<fotosAvaliacao.length;i++){
-      showLoading('Enviando foto '+(i+1)+' de '+fotosAvaliacao.length+'...');
-      const f=fotosAvaliacao[i];
-      const url=await sbUpload('anexos',nomePasta+'/foto_aval_'+(i+1)+'.jpg',f.blob||base64ToBlob(f.base64));
-      fotasUrls.push({url,data:f.data,desc:f.desc});
-    }
-    if(fotasUrls.length)d.fotos_avaliacao_meta=JSON.stringify(fotasUrls);
-
+    if (fotasMeta.length) d.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
     showLoading('Salvando ficha...');
-    if(id){
-      await sbFetch('pacientes?id=eq.'+id,{method:'PATCH',body:JSON.stringify(d),prefer:'return=minimal'});
-      toast('Ficha atualizada!','success');
-    }else{
-      const res=await sbFetch('pacientes',{method:'POST',body:JSON.stringify(d)});
-      pacienteId=res&&res[0]?res[0].id:null;
-      toast('Ficha salva!','success');
+    if (id) {
+      await sbFetch('pacientes?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(d), prefer: 'return=minimal' });
+      toast('Ficha atualizada!', 'success');
+    } else {
+      var res = await sbFetch('pacientes', { method: 'POST', body: JSON.stringify(d) });
+      toast('Ficha salva!', 'success');
     }
-
-    // gerar ZIP de backup
     showLoading('Gerando backup ZIP...');
-    await gerarZip(pacienteId,nomeDisplay,d);
-
-    limparForm();atualizarDashboard();carregarPacientes();goTo('pacientes');
-  }catch(e){
-    toast('Erro ao salvar: '+e.message,'error');
-    console.error(e);
-  }finally{
-    btn.disabled=false;btn.textContent='Salvar ficha';
-    hideLoading();
-  }
+    await gerarZip(nome, d);
+    limparForm(); atualizarDashboard(); carregarPacientes(); goTo('pacientes');
+  } catch(e) { toast('Erro: ' + e.message, 'error'); console.error(e); }
+  finally { btn.disabled = false; btn.textContent = 'Salvar ficha'; hideLoading(); }
 }
 
-// ── LIMPAR FORM ──
-function limparForm(){
-  document.getElementById('f-id').value='';
-  document.getElementById('form-title').textContent='Nova Ficha';
-  document.querySelectorAll('#page-novo input[type="text"],#page-novo input[type="number"],#page-novo textarea').forEach(el=>el.value='');
-  document.querySelectorAll('#page-novo .opt').forEach(o=>o.classList.remove('sel'));
-  document.querySelectorAll('#page-novo .conditional').forEach(c=>c.classList.remove('show'));
-  atualizarPreviewFoto('');
-  autorizacaoAtual='';autorizacaoBlob=null;autorizacaoTipo='';renderizarAutorizacao();
-  raioxAtual='';raioxBlob=null;renderizarRaiox();
-  fotosAvaliacao=[];renderizarFotosAvaliacao();
-  procsFicha=[];renderizarProcsFicha();
+// LIMPAR
+function limparForm() {
+  document.getElementById('f-id').value = '';
+  document.getElementById('form-title').textContent = 'Nova Ficha';
+  document.querySelectorAll('#page-novo input[type="text"],#page-novo input[type="number"],#page-novo textarea').forEach(function(el) { el.value = ''; });
+  document.querySelectorAll('#page-novo .opt').forEach(function(o) { o.classList.remove('sel'); });
+  document.querySelectorAll('#page-novo .conditional').forEach(function(c) { c.classList.remove('show'); });
+  setFoto('');
+  autAtual = ''; autBlob = null; autTipo = ''; renderizarAut();
+  raioxAtual = ''; raioxBlob = null; renderizarRaiox();
+  fotosAval = []; renderizarFotosAval();
+  procs = []; renderizarProcs();
   trocarTipo('adulto');
 }
 
-// ── DASHBOARD ──
-async function atualizarDashboard(){
-  if(!SUPABASE_URL||!SUPABASE_KEY)return;
-  try{
-    const todos=await sbFetch('pacientes?select=id,tipo',{method:'GET',prefer:''});
-    const total=todos?todos.length:0;
-    const adultos=todos?todos.filter(p=>p.tipo==='adulto').length:0;
-    const peds=todos?todos.filter(p=>p.tipo==='pediatrico').length:0;
-    document.getElementById('stat-total').textContent=total;
-    document.getElementById('stat-adulto').textContent=adultos;
-    document.getElementById('stat-ped').textContent=peds;
-    const recentes=await sbFetch('pacientes?select=id,tipo,nome,nome_crianca,data_consulta,dentista,queixa&order=id.desc&limit=10',{method:'GET',prefer:''});
-    const tbody=document.getElementById('dashboard-tbody');
-    if(!recentes||!recentes.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><p>Nenhum paciente cadastrado ainda</p></div></td></tr>';return;}
-    tbody.innerHTML=recentes.map(r=>{
-      const nome=r.tipo==='pediatrico'?(r.nome_crianca||'—'):(r.nome||'—');
-      const badge=r.tipo==='pediatrico'?'<span class="badge badge-ped">Pediátrico</span>':'<span class="badge badge-adult">Adulto</span>';
-      const queixa=r.queixa?r.queixa.substring(0,40)+(r.queixa.length>40?'…':''):'—';
-      return '<tr><td><strong>'+nome+'</strong></td><td>'+badge+'</td><td>'+(r.data_consulta||'—')+'</td><td>'+(r.dentista||'—')+'</td><td>'+queixa+'</td><td><button class="btn btn-outline btn-sm" onclick="verPaciente('+r.id+')">Ver</button></td></tr>';
+// DASHBOARD
+async function atualizarDashboard() {
+  if (!SB_URL || !SB_KEY) return;
+  try {
+    var todos = await sbFetch('pacientes?select=id,tipo', { prefer: '' });
+    var total = todos ? todos.length : 0;
+    var adultos = todos ? todos.filter(function(p) { return p.tipo === 'adulto'; }).length : 0;
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-adulto').textContent = adultos;
+    document.getElementById('stat-ped').textContent = total - adultos;
+    var rec = await sbFetch('pacientes?select=id,tipo,nome,nome_crianca,data_consulta,dentista,queixa&order=id.desc&limit=10', { prefer: '' });
+    var tbody = document.getElementById('dash-tbody');
+    if (!rec || !rec.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>Nenhum paciente cadastrado ainda</p></div></td></tr>'; return; }
+    tbody.innerHTML = rec.map(function(r) {
+      var nome = r.tipo === 'pediatrico' ? (r.nome_crianca || '—') : (r.nome || '—');
+      var badge = r.tipo === 'pediatrico' ? '<span class="badge badge-ped">Pediátrico</span>' : '<span class="badge badge-adult">Adulto</span>';
+      var q = r.queixa ? r.queixa.substring(0, 40) + (r.queixa.length > 40 ? '…' : '') : '—';
+      return '<tr><td><strong>' + nome + '</strong></td><td>' + badge + '</td><td>' + (r.data_consulta || '—') + '</td><td>' + (r.dentista || '—') + '</td><td>' + q + '</td><td><button class="btn btn-outline btn-sm btn-ver" data-id="' + r.id + '">Ver</button></td></tr>';
     }).join('');
-  }catch(e){}
+    tbody.querySelectorAll('.btn-ver').forEach(function(b) { b.onclick = function() { verPaciente(parseInt(this.dataset.id)); }; });
+  } catch(e) {}
 }
 
-// ── CARREGAR PACIENTES ──
-async function carregarPacientes(){
-  if(!SUPABASE_URL||!SUPABASE_KEY)return;
-  const busca=(document.getElementById('search-input')||{}).value||'';
-  let query='pacientes?select=id,tipo,nome,nome_crianca,nascimento,nasc_crianca,telefone,telefone_ped,dentista,data_consulta&order=id.desc&limit=100';
-  if(filtroTipo!=='todos')query+='&tipo=eq.'+filtroTipo;
-  if(busca)query+='&or=(nome.ilike.*'+busca+'*,nome_crianca.ilike.*'+busca+'*,cpf.ilike.*'+busca+'*,dentista.ilike.*'+busca+'*)';
-  try{
-    const rows=await sbFetch(query,{method:'GET',prefer:''});
-    const tbody=document.getElementById('pacientes-tbody');
-    if(!rows||!rows.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><p>Nenhum paciente encontrado</p></div></td></tr>';return;}
-    tbody.innerHTML=rows.map(r=>{
-      const nome=r.tipo==='pediatrico'?(r.nome_crianca||'—'):(r.nome||'—');
-      const badge=r.tipo==='pediatrico'?'<span class="badge badge-ped">Pediátrico</span>':'<span class="badge badge-adult">Adulto</span>';
-      const nasc=r.tipo==='pediatrico'?(r.nasc_crianca||'—'):(r.nascimento||'—');
-      const tel=r.tipo==='pediatrico'?(r.telefone_ped||'—'):(r.telefone||'—');
-      return '<tr><td><strong>'+nome+'</strong></td><td>'+badge+'</td><td>'+nasc+'</td><td>'+tel+'</td><td>'+(r.dentista||'—')+'</td><td>'+(r.data_consulta||'—')+'</td><td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="verPaciente('+r.id+')">Ver</button> <button class="btn btn-outline btn-sm" onclick="editarPaciente('+r.id+')">✏️</button></td></tr>';
+// PACIENTES
+async function carregarPacientes() {
+  if (!SB_URL || !SB_KEY) return;
+  var busca = (document.getElementById('search-input') || {}).value || '';
+  var q = 'pacientes?select=id,tipo,nome,nome_crianca,nascimento,nasc_crianca,telefone,telefone_ped,dentista,data_consulta&order=id.desc&limit=100';
+  if (filtroTipo !== 'todos') q += '&tipo=eq.' + filtroTipo;
+  if (busca) q += '&or=(nome.ilike.*' + busca + '*,nome_crianca.ilike.*' + busca + '*,cpf.ilike.*' + busca + '*,dentista.ilike.*' + busca + '*)';
+  try {
+    var rows = await sbFetch(q, { prefer: '' });
+    var tbody = document.getElementById('pac-tbody');
+    if (!rows || !rows.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>Nenhum paciente encontrado</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(function(r) {
+      var nome = r.tipo === 'pediatrico' ? (r.nome_crianca || '—') : (r.nome || '—');
+      var badge = r.tipo === 'pediatrico' ? '<span class="badge badge-ped">Pediátrico</span>' : '<span class="badge badge-adult">Adulto</span>';
+      var nasc = r.tipo === 'pediatrico' ? (r.nasc_crianca || '—') : (r.nascimento || '—');
+      var tel = r.tipo === 'pediatrico' ? (r.telefone_ped || '—') : (r.telefone || '—');
+      return '<tr><td><strong>' + nome + '</strong></td><td>' + badge + '</td><td>' + nasc + '</td><td>' + tel + '</td><td>' + (r.dentista || '—') + '</td><td>' + (r.data_consulta || '—') + '</td>'
+        + '<td style="white-space:nowrap"><button class="btn btn-outline btn-sm btn-ver" data-id="' + r.id + '">Ver</button> <button class="btn btn-outline btn-sm btn-editar" data-id="' + r.id + '">✏️</button></td></tr>';
     }).join('');
-  }catch(e){toast('Erro ao carregar: '+e.message,'error');}
+    tbody.querySelectorAll('.btn-ver').forEach(function(b) { b.onclick = function() { verPaciente(parseInt(this.dataset.id)); }; });
+    tbody.querySelectorAll('.btn-editar').forEach(function(b) { b.onclick = function() { editarPaciente(parseInt(this.dataset.id)); }; });
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
 }
 
-function filtrarTipo(tipo,btn){
-  filtroTipo=tipo;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');carregarPacientes();
-}
+// VER PACIENTE
+function verPaciente(id) { currentId = id; _verAsync(id); }
 
-// ── VER PACIENTE ──
-function verPaciente(id){currentId=id;_verAsync(id);}
-async function _verAsync(id){
+async function _verAsync(id) {
   showLoading('Carregando ficha...');
-  try{
-    const rows=await sbFetch('pacientes?id=eq.'+id,{method:'GET',prefer:''});
-    if(!rows||!rows.length)return;
-    const row=rows[0];
-    const nome=row.tipo==='pediatrico'?row.nome_crianca:row.nome;
-    document.getElementById('modal-titulo').textContent=nome||'Ficha';
-    const tipo=row.tipo==='pediatrico'?'<span class="badge badge-ped">Pediátrico</span>':'<span class="badge badge-adult">Adulto</span>';
-    const d=(label,val)=>'<div class="detail-item"><div class="detail-key">'+label+'</div><div class="detail-val '+((!val)?'empty':'')+'">'+( val||'Não informado')+'</div></div>';
-    const sec=title=>'<div class="detail-section">'+title+'</div>';
-    let html='<div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap">'+(row.foto_url?'<img src="'+row.foto_url+'" style="width:80px;height:80px;border-radius:8px;object-fit:cover;border:2px solid var(--gray-200)">':'')+'<div>'+tipo+' · Consulta: '+(row.data_consulta||'—')+' '+(row.horario||'')+' · Dentista: '+(row.dentista||'—')+(row.cro?' ('+row.cro+')':'')+'</div></div>';
-    if(row.tipo==='pediatrico'){
-      html+=sec('Criança')+'<div class="detail-grid">'+d('Nome',row.nome_crianca)+d('Nascimento',row.nasc_crianca)+d('Sexo',row.sexo_crianca)+d('CPF',row.cpf_crianca)+d('RG',row.rg_crianca)+d('Irmãos',row.irmaos)+'</div>';
-      html+=sec('Responsável')+'<div class="detail-grid">'+d('Nome',row.resp_nome)+d('Parentesco',row.resp_parentesco)+d('Telefone',row.telefone_ped)+d('CPF',row.resp_cpf)+d('RG',row.resp_rg)+'</div>';
-      html+=sec('Escolaridade')+'<div class="detail-grid">'+d('Escola',row.escola)+d('Nome',row.escola_nome)+d('Rede',row.rede)+d('Período',row.periodo)+'</div>';
-    }else{
-      html+=sec('Paciente')+'<div class="detail-grid">'+d('Nome',row.nome)+d('Nascimento',row.nascimento)+d('Sexo',row.sexo)+d('CPF',row.cpf)+d('RG',row.rg)+d('Telefone',row.telefone)+d('Etnia',row.etnia)+d('Filhos',row.filhos)+'</div>';
+  try {
+    var rows = await sbFetch('pacientes?id=eq.' + id, { prefer: '' });
+    if (!rows || !rows.length) return;
+    var row = rows[0];
+    var nome = row.tipo === 'pediatrico' ? row.nome_crianca : row.nome;
+    document.getElementById('modal-titulo').textContent = nome || 'Ficha';
+    var tipo = row.tipo === 'pediatrico' ? '<span class="badge badge-ped">Pediátrico</span>' : '<span class="badge badge-adult">Adulto</span>';
+    function di(label, val) { return '<div class="detail-item"><div class="detail-key">' + label + '</div><div class="detail-val ' + (!val ? 'empty' : '') + '">' + (val || 'Não informado') + '</div></div>'; }
+    function sec(t) { return '<div class="detail-section">' + t + '</div>'; }
+    var html = '<div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap">'
+      + (row.foto_url ? '<img src="' + row.foto_url + '" style="width:80px;height:80px;border-radius:8px;object-fit:cover;border:2px solid var(--gray-200)">' : '')
+      + '<div>' + tipo + ' · ' + (row.data_consulta || '—') + ' · ' + (row.dentista || '—') + '</div></div>';
+    if (row.tipo === 'pediatrico') {
+      html += sec('Criança') + '<div class="detail-grid">' + di('Nome', row.nome_crianca) + di('Nascimento', row.nasc_crianca) + di('Sexo', row.sexo_crianca) + di('CPF', row.cpf_crianca) + di('Irmãos', row.irmaos) + '</div>';
+      html += sec('Responsável') + '<div class="detail-grid">' + di('Nome', row.resp_nome) + di('Parentesco', row.resp_parentesco) + di('Telefone', row.telefone_ped) + di('CPF', row.resp_cpf) + '</div>';
+      html += sec('Escolaridade') + '<div class="detail-grid">' + di('Escola', row.escola) + di('Nome', row.escola_nome) + di('Rede', row.rede) + di('Período', row.periodo) + '</div>';
+    } else {
+      html += sec('Paciente') + '<div class="detail-grid">' + di('Nome', row.nome) + di('Nascimento', row.nascimento) + di('Sexo', row.sexo) + di('CPF', row.cpf) + di('RG', row.rg) + di('Telefone', row.telefone) + di('Etnia', row.etnia) + di('Filhos', row.filhos) + '</div>';
     }
-    html+=sec('Dados gerais')+'<div class="detail-grid">'+d('Endereço',row.endereco)+d('Bairro',row.bairro)+d('CEP',row.cep)+d('Área',row.area)+d('Água',row.agua)+d('Luz',row.luz)+d('Transporte',row.transporte)+d('Renda',row.renda)+d('Valor',row.renda_valor)+'</div>';
-    html+=sec('Histórico médico')+'<div class="detail-grid">'+d('Prob. saúde',row.prob_saude)+d('Qual',row.saude_qual)+d('Tratamento',row.tratamento)+d('Qual',row.trat_qual)+d('Medicamento',row.medicamento)+d('Qual',row.med_qual)+d('Cirurgia',row.cirurgia)+d('Qual/Quando',row.cirurgia_qual)+d('Cicatrização',row.cicatriz)+d('Anestesia',row.anestesia)+d('Hemorragia',row.hemorragia)+d('Alergia',row.alergia)+d('Qual',row.alergia_qual)+'</div>';
-    html+=sec('Histórico odontológico')+'<div class="detail-grid">'+d('Escovações/dia',row.escovacao)+d('Fio dental',row.fio)+d('Flúor',row.fluor)+d('Qual/Freq.',row.fluor_qual)+d('Sangramento',row.sangramento)+d('Hábito bucal',row.habito)+d('Tipos',row.habito_tipos)+d('Prótese',row.protese)+d('Desconforto',row.protese_desc)+'</div>';
-    html+=sec('Queixa e observações')+'<div class="detail-grid">'+d('Queixa',row.queixa)+d('Observações',row.obs)+'</div>';
-    if(row.plano_tratamento){try{const pl=JSON.parse(row.plano_tratamento);const it=Object.entries(pl);if(it.length){html+=sec('Plano de tratamento')+'<div class="detail-grid">'+it.map(([k,v])=>'<div class="detail-item"><div class="detail-key">Dente '+k+'</div><div class="detail-val">'+v+'</div></div>').join('')+'</div>';}}catch(e){}}
-    if(row.plano_obs)html+='<div style="margin:8px 0;padding:10px 12px;background:var(--gray-50);border-radius:6px;font-size:13px"><strong>Obs. plano:</strong> '+row.plano_obs+'</div>';
-    if(row.procedimentos){try{const pr=JSON.parse(row.procedimentos);if(pr.length){html+=sec('Procedimentos realizados')+'<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Data</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Procedimento</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Dentista</th></tr></thead><tbody>'+pr.map((p,i)=>'<tr style="background:'+(i%2===0?'var(--gray-50)':'white')+'"><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">'+(p.data||'—')+'</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">'+(p.proc||'—')+'</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">'+(p.dentista||'—')+'</td></tr>').join('')+'</tbody></table>';}}catch(e){}}
-    if(row.autorizacao_url)html+=sec('Autorização')+'<a href="'+row.autorizacao_url+'" target="_blank" class="btn btn-outline btn-sm">📄 Ver autorização</a>';
-    if(row.raiox_url)html+=sec('Raio-X')+'<a href="'+row.raiox_url+'" target="_blank"><img src="'+row.raiox_url+'" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block;margin-top:6px" alt="Raio-X"></a>'+(row.raiox_data?'<div class="detail-grid" style="margin-top:8px"><div class="detail-item"><div class="detail-key">Data</div><div class="detail-val">'+row.raiox_data+'</div></div><div class="detail-item"><div class="detail-key">Obs.</div><div class="detail-val">'+(row.raiox_obs||'—')+'</div></div></div>':'');
-    if(row.fotos_avaliacao_meta){try{const fa=JSON.parse(row.fotos_avaliacao_meta);if(fa.length){html+=sec('Fotos de avaliação')+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:6px">'+fa.map(f=>'<div style="border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200)"><a href="'+f.url+'" target="_blank"><img src="'+f.url+'" style="width:100%;height:100px;object-fit:cover;display:block" alt="Foto avaliação"></a><div style="padding:4px 6px;background:white;font-size:11px"><div style="font-weight:600">'+(f.data||'—')+'</div><div style="color:var(--gray-400)">'+(f.desc||'')+'</div></div></div>').join('')+'</div>';}}catch(e){}}
-    document.getElementById('modal-body').innerHTML=html;
+    html += sec('Dados gerais') + '<div class="detail-grid">' + di('Endereço', row.endereco) + di('Bairro', row.bairro) + di('CEP', row.cep) + di('Área', row.area) + di('Água', row.agua) + di('Luz', row.luz) + di('Transporte', row.transporte) + di('Renda', row.renda) + '</div>';
+    html += sec('Histórico médico') + '<div class="detail-grid">' + di('Prob. saúde', row.prob_saude) + di('Qual', row.saude_qual) + di('Tratamento', row.tratamento) + di('Medicamento', row.medicamento) + di('Cirurgia', row.cirurgia) + di('Cicatrização', row.cicatriz) + di('Anestesia', row.anestesia) + di('Hemorragia', row.hemorragia) + di('Alergia', row.alergia) + di('Qual', row.alergia_qual) + '</div>';
+    html += sec('Histórico odontológico') + '<div class="detail-grid">' + di('Escovações/dia', row.escovacao) + di('Fio dental', row.fio) + di('Flúor', row.fluor) + di('Sangramento', row.sangramento) + di('Hábito bucal', row.habito) + di('Tipos', row.habito_tipos) + di('Prótese', row.protese) + di('Desconforto', row.protese_desc) + '</div>';
+    html += sec('Queixa') + '<div class="detail-grid">' + di('Queixa', row.queixa) + di('Observações', row.obs) + '</div>';
+    if (row.plano_tratamento) { try { var pl = JSON.parse(row.plano_tratamento); var it = Object.keys(pl); if (it.length) { html += sec('Plano de tratamento') + '<div class="detail-grid">'; it.forEach(function(k) { html += '<div class="detail-item"><div class="detail-key">Dente ' + k + '</div><div class="detail-val">' + pl[k] + '</div></div>'; }); html += '</div>'; } } catch(e) {} }
+    if (row.plano_obs) html += '<div style="margin:8px 0;padding:10px;background:var(--gray-50);border-radius:6px;font-size:13px"><strong>Obs. plano:</strong> ' + row.plano_obs + '</div>';
+    if (row.procedimentos) { try { var pr = JSON.parse(row.procedimentos); if (pr.length) { html += sec('Procedimentos') + '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Data</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Procedimento</th><th style="background:var(--teal);color:white;padding:7px 10px;text-align:left">Dentista</th></tr></thead><tbody>' + pr.map(function(p, i) { var bg = i % 2 === 0 ? 'var(--gray-50)' : 'white'; return '<tr style="background:' + bg + '"><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">' + (p.data || '—') + '</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">' + (p.proc || '—') + '</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100)">' + (p.dentista || '—') + '</td></tr>'; }).join('') + '</tbody></table>'; } } catch(e) {} }
+    if (row.autorizacao_url) html += sec('Autorização') + '<a href="' + row.autorizacao_url + '" target="_blank" class="btn btn-outline btn-sm">📄 Ver autorização</a>';
+    if (row.raiox_url) html += sec('Raio-X') + '<a href="' + row.raiox_url + '" target="_blank"><img src="' + row.raiox_url + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block;margin-top:6px"></a>';
+    if (row.fotos_avaliacao_meta) { try { var fa = JSON.parse(row.fotos_avaliacao_meta); if (fa.length) { html += sec('Fotos de avaliação') + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:6px">' + fa.map(function(f) { return '<div style="border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200)"><a href="' + f.url + '" target="_blank"><img src="' + f.url + '" style="width:100%;height:100px;object-fit:cover;display:block"></a><div style="padding:4px 6px;background:white;font-size:11px"><div style="font-weight:600">' + (f.data || '—') + '</div><div style="color:var(--gray-400)">' + (f.desc || '') + '</div></div></div>'; }).join('') + '</div>'; } } catch(e) {} }
+    document.getElementById('modal-body').innerHTML = html;
     document.getElementById('modal-overlay').classList.add('open');
-  }catch(e){toast('Erro: '+e.message,'error');}
-  finally{hideLoading();}
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-function fecharModal(e){if(e.target===document.getElementById('modal-overlay'))fecharModalBtn();}
-function fecharModalBtn(){document.getElementById('modal-overlay').classList.remove('open');}
+// EDITAR
+function editarPaciente(id) { fecharModal(); currentId = id; _editarAsync(id); }
 
-// ── EDITAR ──
-function editarPaciente(id){fecharModalBtn();currentId=id;_editarAsync(id);}
-async function _editarAsync(id){
+async function _editarAsync(id) {
   showLoading('Carregando...');
-  try{
-    const rows=await sbFetch('pacientes?id=eq.'+id,{method:'GET',prefer:''});
-    if(!rows||!rows.length)return;
-    const row=rows[0];
-    goTo('novo');trocarTipo(row.tipo||'adulto');
-    document.getElementById('f-id').value=id;
-    document.getElementById('form-title').textContent='Editar Ficha';
-    const set=(fid,val)=>{const el=document.getElementById(fid);if(el&&val!=null)el.value=val;};
-    set('f-data-consulta',row.data_consulta);set('f-horario',row.horario);set('f-dentista',row.dentista);set('f-cro',row.cro);
-    set('f-nome',row.nome);set('f-nascimento',row.nascimento);set('f-cpf',row.cpf);set('f-rg',row.rg);set('f-telefone',row.telefone);set('f-cidade',row.cidade);set('f-filhos',row.filhos);
-    set('f-nome-crianca',row.nome_crianca);set('f-nasc-crianca',row.nasc_crianca);set('f-cpf-crianca',row.cpf_crianca);set('f-rg-crianca',row.rg_crianca);set('f-cidade-crianca',row.cidade_crianca);set('f-irmaos',row.irmaos);
-    set('f-resp-nome',row.resp_nome);set('f-resp-nasc',row.resp_nasc);set('f-resp-parentesco',row.resp_parentesco);set('f-resp-cidade',row.resp_cidade);set('f-resp-cpf',row.resp_cpf);set('f-resp-rg',row.resp_rg);set('f-telefone-ped',row.telefone_ped);
-    set('f-endereco',row.endereco);set('f-bairro',row.bairro);set('f-cep',row.cep);set('f-adultos',row.adultos_casa);set('f-criancas',row.criancas_casa);set('f-transporte',row.transporte);set('f-renda-valor',row.renda_valor);
-    set('f-escola-nome',row.escola_nome);set('f-extra-det',row.extra_det);
-    set('f-saude-qual',row.saude_qual);set('f-trat-qual',row.trat_qual);set('f-med-qual',row.med_qual);set('f-cirurgia-qual',row.cirurgia_qual);set('f-alergia-qual',row.alergia_qual);
-    set('f-fluor-qual',row.fluor_qual);set('f-protese-desc',row.protese_desc);set('f-queixa',row.queixa);set('f-obs',row.obs);set('f-plano-obs',row.plano_obs);
-    set('f-raiox-data',row.raiox_data);set('f-raiox-obs',row.raiox_obs);
-    const rm={'sexo':row.sexo,'sexo-c':row.sexo_crianca,'sexo-r':row.sexo_resp,'area':row.area,'agua':row.agua,'luz':row.luz,'renda':row.renda,'escola':row.escola,'rede':row.rede,'periodo':row.periodo,'extra':row.extra,'prob-saude':row.prob_saude,'tratamento':row.tratamento,'medicamento':row.medicamento,'cirurgia':row.cirurgia,'cicatriz':row.cicatriz,'anestesia':row.anestesia,'hemorragia':row.hemorragia,'alergia':row.alergia,'escovacao':row.escovacao,'fio':row.fio,'fluor':row.fluor,'sangramento':row.sangramento,'habito':row.habito};
-    Object.entries(rm).forEach(([g,v])=>setOpts(g,v,'radio'));
-    const cm={'etnia':row.etnia,'etnia-c':row.etnia,'hab-tipo':row.habito_tipos,'protese':row.protese};
-    Object.entries(cm).forEach(([g,v])=>setOpts(g,v,'check'));
-    const condMap={'renda':'cond-renda','prob-saude':'cond-saude','tratamento':'cond-trat','medicamento':'cond-med','cirurgia':'cond-cirurgia','alergia':'cond-alergia','fluor':'cond-fluor','habito':'cond-habito','escola':'cond-escola','extra':'cond-extra'};
-    Object.entries(condMap).forEach(([g,cid])=>{if(getOpt(g)==='Sim')showCond(cid);});
-    setTimeout(()=>{
-      carregarPlano(row.plano_tratamento);
-      try{procsFicha=JSON.parse(row.procedimentos||'[]');}catch(e){procsFicha=[];}
-      renderizarProcsFicha();
-      // mostrar foto atual do storage
-      if(row.foto_url){
-        fotoAtual=row.foto_url;
-        const img=document.getElementById('foto-img');
-        img.src=row.foto_url;img.style.display='block';
-        document.getElementById('foto-placeholder').style.display='none';
-        document.getElementById('foto-btn-remover').classList.add('visible');
-      }
-    },100);
-  }catch(e){toast('Erro: '+e.message,'error');}
-  finally{hideLoading();}
+  try {
+    var rows = await sbFetch('pacientes?id=eq.' + id, { prefer: '' });
+    if (!rows || !rows.length) return;
+    var row = rows[0];
+    goTo('novo'); trocarTipo(row.tipo || 'adulto');
+    document.getElementById('f-id').value = id;
+    document.getElementById('form-title').textContent = 'Editar Ficha';
+    function set(fid, val) { var el = document.getElementById(fid); if (el && val != null) el.value = val; }
+    set('f-data-consulta', row.data_consulta); set('f-horario', row.horario); set('f-dentista', row.dentista); set('f-cro', row.cro);
+    set('f-nome', row.nome); set('f-nascimento', row.nascimento); set('f-cpf', row.cpf); set('f-rg', row.rg); set('f-telefone', row.telefone); set('f-cidade', row.cidade); set('f-filhos', row.filhos);
+    set('f-nome-crianca', row.nome_crianca); set('f-nasc-crianca', row.nasc_crianca); set('f-cpf-crianca', row.cpf_crianca); set('f-rg-crianca', row.rg_crianca); set('f-cidade-crianca', row.cidade_crianca); set('f-irmaos', row.irmaos);
+    set('f-resp-nome', row.resp_nome); set('f-resp-nasc', row.resp_nasc); set('f-resp-parentesco', row.resp_parentesco); set('f-resp-cidade', row.resp_cidade); set('f-resp-cpf', row.resp_cpf); set('f-resp-rg', row.resp_rg); set('f-telefone-ped', row.telefone_ped);
+    set('f-endereco', row.endereco); set('f-bairro', row.bairro); set('f-cep', row.cep); set('f-adultos', row.adultos_casa); set('f-criancas', row.criancas_casa); set('f-transporte', row.transporte); set('f-renda-valor', row.renda_valor);
+    set('f-escola-nome', row.escola_nome); set('f-extra-det', row.extra_det);
+    set('f-saude-qual', row.saude_qual); set('f-trat-qual', row.trat_qual); set('f-med-qual', row.med_qual); set('f-cirurgia-qual', row.cirurgia_qual); set('f-alergia-qual', row.alergia_qual);
+    set('f-fluor-qual', row.fluor_qual); set('f-protese-desc', row.protese_desc); set('f-queixa', row.queixa); set('f-obs', row.obs); set('f-plano-obs', row.plano_obs);
+    set('f-raiox-data', row.raiox_data); set('f-raiox-obs', row.raiox_obs);
+    var rm = { 'sexo': row.sexo, 'sexo-c': row.sexo_crianca, 'sexo-r': row.sexo_resp, 'area': row.area, 'agua': row.agua, 'luz': row.luz, 'renda': row.renda, 'escola': row.escola, 'rede': row.rede, 'periodo': row.periodo, 'extra': row.extra, 'prob-saude': row.prob_saude, 'tratamento': row.tratamento, 'medicamento': row.medicamento, 'cirurgia': row.cirurgia, 'cicatriz': row.cicatriz, 'anestesia': row.anestesia, 'hemorragia': row.hemorragia, 'alergia': row.alergia, 'escovacao': row.escovacao, 'fio': row.fio, 'fluor': row.fluor, 'sangramento': row.sangramento, 'habito': row.habito };
+    Object.keys(rm).forEach(function(gr) { setOpts(gr, rm[gr], 'radio'); });
+    var cm = { 'etnia': row.etnia, 'etnia-c': row.etnia, 'hab-tipo': row.habito_tipos, 'protese': row.protese };
+    Object.keys(cm).forEach(function(gr) { setOpts(gr, cm[gr], 'check'); });
+    var condMap = { 'renda': 'cond-renda', 'prob-saude': 'cond-saude', 'tratamento': 'cond-trat', 'medicamento': 'cond-med', 'cirurgia': 'cond-cirurgia', 'alergia': 'cond-alergia', 'fluor': 'cond-fluor', 'habito': 'cond-habito', 'escola': 'cond-escola', 'extra': 'cond-extra' };
+    Object.keys(condMap).forEach(function(gr) { if (getOpt(gr) === 'Sim') document.getElementById(condMap[gr]).classList.add('show'); });
+    if (row.foto_url) { fotoAtual = row.foto_url; var img = document.getElementById('foto-img'); img.src = row.foto_url; img.style.display = 'block'; document.getElementById('foto-ph').style.display = 'none'; document.getElementById('btn-remover-foto').classList.add('visible'); }
+    setTimeout(function() { carregarPlano(row.plano_tratamento); try { procs = JSON.parse(row.procedimentos || '[]'); } catch(e) { procs = []; } renderizarProcs(); }, 100);
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-// ── EXCLUIR ──
-async function excluirPaciente(id){
-  if(!confirm('Excluir esta ficha permanentemente?'))return;
+// EXCLUIR
+async function excluirPaciente(id) {
+  if (!confirm('Excluir esta ficha permanentemente?')) return;
   showLoading('Excluindo...');
-  try{
-    await sbFetch('pacientes?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'});
-    fecharModalBtn();atualizarDashboard();carregarPacientes();
-    toast('Ficha excluída','success');
-  }catch(e){toast('Erro: '+e.message,'error');}
-  finally{hideLoading();}
+  try {
+    await sbFetch('pacientes?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+    fecharModal(); atualizarDashboard(); carregarPacientes();
+    toast('Ficha excluída', 'success');
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-// ── CSV ──
-async function exportarCSV(){
-  if(!SUPABASE_URL||!SUPABASE_KEY){toast('Configure o Supabase primeiro','error');return;}
+// CSV
+async function exportarCSV() {
+  if (!SB_URL || !SB_KEY) { toast('Configure o Supabase primeiro', 'error'); return; }
   showLoading('Exportando...');
-  try{
-    const rows=await sbFetch('pacientes?select=*&order=id.desc',{method:'GET',prefer:''});
-    if(!rows||!rows.length){toast('Nenhum dado para exportar','error');return;}
-    const excluir=['foto_url','autorizacao_url','raiox_url','fotos_avaliacao_meta'];
-    const cols=Object.keys(rows[0]).filter(c=>!excluir.includes(c));
-    let csv=cols.join(';')+'\n';
-    rows.forEach(r=>csv+=cols.map(c=>'"'+(String(r[c]||'').replace(/"/g,'""'))+'"').join(';')+'\n');
-    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;
-    a.download='pacientes_junta_mais_'+new Date().toISOString().slice(0,10)+'.csv';
-    a.click();URL.revokeObjectURL(url);
-    toast('CSV exportado!','success');
-  }catch(e){toast('Erro: '+e.message,'error');}
-  finally{hideLoading();}
+  try {
+    var rows = await sbFetch('pacientes?select=*&order=id.desc', { prefer: '' });
+    if (!rows || !rows.length) { toast('Nenhum dado para exportar', 'error'); return; }
+    var excluir = ['foto_url', 'autorizacao_url', 'raiox_url', 'fotos_avaliacao_meta'];
+    var cols = Object.keys(rows[0]).filter(function(c) { return excluir.indexOf(c) === -1; });
+    var csv = cols.join(';') + '\n';
+    rows.forEach(function(r) { csv += cols.map(function(c) { return '"' + String(r[c] || '').replace(/"/g, '""') + '"'; }).join(';') + '\n'; });
+    var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url;
+    a.download = 'pacientes_junta_mais_' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click(); URL.revokeObjectURL(url);
+    toast('CSV exportado!', 'success');
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-// ── LOADING ──
-function showLoading(msg){document.getElementById('loading-msg').textContent=msg||'Aguarde...';document.getElementById('loading-overlay').classList.add('show');}
-function hideLoading(){document.getElementById('loading-overlay').classList.remove('show');}
+// MODAL
+function fecharModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
-// ── TOAST ──
-function toast(msg,type='success'){
-  const el=document.getElementById('toast');
-  el.textContent=(type==='success'?'✓ ':type==='error'?'⚠ ':'ℹ ')+msg;
-  el.className='toast '+type+' show';
-  setTimeout(()=>el.classList.remove('show'),3500);
+// LOADING / TOAST
+function showLoading(msg) { document.getElementById('loading-msg').textContent = msg || 'Aguarde...'; document.getElementById('loading-overlay').classList.add('show'); }
+function hideLoading() { document.getElementById('loading-overlay').classList.remove('show'); }
+function toast(msg, type) {
+  type = type || 'success';
+  var el = document.getElementById('toast');
+  el.textContent = (type === 'success' ? '✓ ' : type === 'error' ? '⚠ ' : 'ℹ ') + msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(function() { el.classList.remove('show'); }, 3500);
 }
 
-// ── INIT ──
-renderizarTabelaPlano();
-renderizarProcsFicha();
-carregarConfig();
+// MÁSCARA
+function maskDate(el) { var v = el.value.replace(/\D/g, ''); if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2); if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5); el.value = v.slice(0, 10); }
+function maskTime(el) { var v = el.value.replace(/\D/g, ''); if (v.length > 2) v = v.slice(0, 2) + ':' + v.slice(2); el.value = v.slice(0, 5); }
+
+// EVENTOS
+document.addEventListener('DOMContentLoaded', function() {
+  // nav
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
+    item.addEventListener('click', function() { goTo(this.dataset.page); });
+  });
+  document.getElementById('nav-csv').addEventListener('click', exportarCSV);
+  document.getElementById('btn-nova-ficha').addEventListener('click', function() { goTo('novo'); });
+
+  // tabs
+  document.getElementById('tab-adulto').addEventListener('click', function() { trocarTipo('adulto'); });
+  document.getElementById('tab-pediatrico').addEventListener('click', function() { trocarTipo('pediatrico'); });
+
+  // config
+  document.getElementById('btn-salvar-config').addEventListener('click', salvarConfig);
+  document.getElementById('btn-csv').addEventListener('click', exportarCSV);
+
+  // form
+  document.getElementById('btn-salvar').addEventListener('click', salvarFicha);
+  document.getElementById('btn-limpar').addEventListener('click', limparForm);
+
+  // modal
+  document.getElementById('modal-close-btn').addEventListener('click', fecharModal);
+  document.getElementById('modal-overlay').addEventListener('click', function(e) { if (e.target === this) fecharModal(); });
+  document.getElementById('modal-editar-btn').addEventListener('click', function() { editarPaciente(currentId); });
+  document.getElementById('modal-excluir-btn').addEventListener('click', function() { excluirPaciente(currentId); });
+
+  // câmera
+  document.getElementById('btn-camera').addEventListener('click', abrirCamera);
+  document.getElementById('btn-capturar').addEventListener('click', capturarFoto);
+  document.getElementById('btn-cancelar-cam').addEventListener('click', fecharCamera);
+  document.getElementById('btn-remover-foto').addEventListener('click', function() { setFoto(''); });
+
+  // foto upload
+  document.getElementById('btn-upload-foto').addEventListener('click', function() { document.getElementById('foto-upload-input').click(); });
+  document.getElementById('foto-upload-input').addEventListener('change', function() {
+    var file = this.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) { comprimirImagem(e.target.result, 600, 0.75).then(function(c) { setFoto(c); }); };
+    reader.readAsDataURL(file); this.value = '';
+  });
+
+  // autorização
+  document.getElementById('btn-upload-aut').addEventListener('click', function() { document.getElementById('autorizacao-input').click(); });
+  document.getElementById('autorizacao-input').addEventListener('change', function() {
+    var file = this.files[0]; if (!file) return;
+    autTipo = file.type === 'application/pdf' ? 'pdf' : 'imagem';
+    autExt = file.type === 'application/pdf' ? 'pdf' : 'jpg';
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      if (autTipo === 'imagem') {
+        comprimirImagem(e.target.result, 1200, 0.8).then(function(c) { autAtual = c; autBlob = b64ToBlob(c); renderizarAut(); });
+      } else { autAtual = e.target.result; autBlob = file; renderizarAut(); }
+    };
+    reader.readAsDataURL(file); this.value = '';
+  });
+
+  // raio-x
+  document.getElementById('btn-upload-raiox').addEventListener('click', function() { document.getElementById('raiox-input').click(); });
+  document.getElementById('raiox-input').addEventListener('change', function() {
+    var file = this.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) { comprimirImagem(e.target.result, 1200, 0.8).then(function(c) { raioxAtual = c; raioxBlob = b64ToBlob(c); renderizarRaiox(); }); };
+    reader.readAsDataURL(file); this.value = '';
+  });
+
+  // fotos avaliação
+  document.getElementById('btn-upload-faval').addEventListener('click', function() { document.getElementById('fotos-aval-input').click(); });
+  document.getElementById('fotos-aval-input').addEventListener('change', function() {
+    var files = Array.from(this.files); if (!files.length) return;
+    var data = document.getElementById('f-fotoaval-data').value;
+    var desc = document.getElementById('f-fotoaval-desc').value;
+    var count = 0;
+    files.forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        comprimirImagem(e.target.result, 800, 0.7).then(function(c) {
+          fotosAval.push({ base64: c, blob: b64ToBlob(c), data: data, desc: desc || 'Foto de avaliação' });
+          count++;
+          if (count === files.length) { renderizarFotosAval(); document.getElementById('f-fotoaval-data').value = ''; document.getElementById('f-fotoaval-desc').value = ''; }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    this.value = '';
+  });
+
+  // procedimento
+  document.getElementById('btn-add-proc').addEventListener('click', function() {
+    var proc = document.getElementById('pf-proc').value.trim();
+    if (!proc) { toast('Informe o procedimento!', 'error'); return; }
+    procs.push({ data: document.getElementById('pf-data').value, proc: proc, dentista: document.getElementById('pf-dentista').value });
+    ['pf-data', 'pf-proc', 'pf-dentista'].forEach(function(id) { document.getElementById(id).value = ''; });
+    renderizarProcs();
+  });
+
+  // filtros
+  document.querySelectorAll('.filter-btn[data-tipo]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      filtroTipo = this.dataset.tipo;
+      document.querySelectorAll('.filter-btn[data-tipo]').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      carregarPacientes();
+    });
+  });
+
+  // busca
+  document.getElementById('search-input').addEventListener('input', carregarPacientes);
+
+  // opts
+  document.querySelectorAll('.opt[data-grupo]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var grupo = this.dataset.grupo;
+      var modo = this.dataset.modo;
+      var showId = this.dataset.show;
+      var hideId = this.dataset.hide;
+      if (modo === 'radio') {
+        document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(o) { o.classList.remove('sel'); });
+        el.classList.add('sel');
+      } else {
+        el.classList.toggle('sel');
+      }
+      if (showId) document.getElementById(showId).classList.add('show');
+      if (hideId) document.getElementById(hideId).classList.remove('show');
+    });
+  });
+
+  // máscaras
+  var dateFields = ['f-data-consulta','f-nasc-crianca','f-resp-nasc','f-nascimento','f-raiox-data','f-fotoaval-data','pf-data'];
+  dateFields.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() { maskDate(this); });
+  });
+  var horEl = document.getElementById('f-horario');
+  if (horEl) horEl.addEventListener('input', function() { maskTime(this); });
+
+  // init
+  renderizarPlano();
+  renderizarProcs();
+  // config
+  if (SB_URL) document.getElementById('cfg-url').value = SB_URL;
+  if (SB_KEY) document.getElementById('cfg-key').value = SB_KEY;
+  if (SB_URL && SB_KEY) testarConexao();
+});
 </script>
 </body>
 </html>
