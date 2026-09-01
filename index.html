@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema Odontológico — ONG Junta Mais</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --purple:#6B21A8;--purple-mid:#9333EA;--purple-light:#F3E8FF;--purple-border:#D8B4FE;
@@ -143,6 +145,11 @@ textarea{resize:vertical;min-height:70px;}
 .foto-card img{width:100%;height:100px;object-fit:cover;display:block;}
 .foto-card-info{padding:4px 6px;background:white;font-size:11px;color:var(--gray-600);}
 .foto-card-remove{position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.outros-anexo-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;margin-bottom:8px;}
+.outros-anexo-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--purple-light);}
+.outros-anexo-info{flex:1;min-width:0;}
+.outros-anexo-nome{font-size:13px;font-weight:600;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.outros-anexo-tipo{font-size:11px;color:var(--gray-400);margin-top:2px;}
 .config-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:16px;}
 .config-card h3{font-size:15px;font-weight:700;margin-bottom:4px;}
 .config-card p{font-size:13px;color:var(--gray-600);margin-bottom:16px;}
@@ -170,6 +177,8 @@ textarea{resize:vertical;min-height:70px;}
 <input type="file" id="autorizacao-input" accept="image/*,application/pdf" style="display:none">
 <input type="file" id="raiox-input" accept="image/*" style="display:none">
 <input type="file" id="fotos-aval-input" accept="image/*" multiple style="display:none">
+<input type="file" id="outros-anexos-input" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none">
+<input type="file" id="zip-restaurar-input" accept=".zip" style="display:none">
 <canvas id="cam-canvas" style="display:none"></canvas>
 <div class="cam-overlay" id="cam-overlay">
   <video id="cam-video" class="cam-video" autoplay playsinline muted></video>
@@ -474,6 +483,18 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
 
+  <div class="form-card">
+    <div class="form-section-header"><span class="section-num" id="sec-outros-num">11</span><span class="section-title">Outros anexos</span></div>
+    <div class="form-body">
+      <p style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Anexe outros documentos relevantes (laudos, receitas, documentos, etc). Aceita imagem, PDF e documentos Office.</p>
+      <div id="outros-anexos-lista" style="margin-bottom:10px"></div>
+      <button type="button" class="anexo-btn-add" id="btn-upload-outros">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Adicionar documento(s)
+      </button>
+    </div>
+  </div>
+
   <div style="display:flex;gap:10px;margin-bottom:32px">
     <button class="btn btn-primary" style="flex:1;justify-content:center;padding:13px" id="btn-salvar">Salvar ficha</button>
     <button class="btn btn-outline" id="btn-limpar">Limpar</button>
@@ -496,6 +517,12 @@ textarea{resize:vertical;min-height:70px;}
     <p>A cada ficha salva, um arquivo ZIP é gerado automaticamente com todos os dados e imagens do paciente. Você também pode exportar todos os dados em CSV.</p>
     <button class="btn btn-outline" id="btn-csv">📥 Exportar CSV completo</button>
   </div>
+  <div class="config-card">
+    <h3>📦 Restaurar ficha a partir de ZIP</h3>
+    <p>Em caso de problema, selecione um arquivo ZIP de backup para restaurar os dados de um paciente no sistema.</p>
+    <button class="btn btn-outline" id="btn-restaurar-zip">📦 Selecionar ZIP para restaurar</button>
+    <div id="restaurar-status" style="margin-top:10px;font-size:13px;color:var(--gray-600)"></div>
+  </div>
 </div>
 
 </div></div>
@@ -507,14 +534,20 @@ textarea{resize:vertical;min-height:70px;}
     <div id="modal-body"></div>
     <div style="display:flex;gap:8px;margin-top:20px">
       <button class="btn btn-outline btn-sm" id="modal-editar-btn">✏️ Editar</button>
+      <button class="btn btn-outline btn-sm" id="modal-imprimir-btn">🖨️ Imprimir</button>
       <button class="btn btn-danger btn-sm" id="modal-excluir-btn">🗑️ Excluir</button>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
-var SB_URL = localStorage.getItem('sb_url') || '';
-var SB_KEY = localStorage.getItem('sb_key') || '';
+// ══ CREDENCIAIS FIXAS ══
+// Altere aqui se precisar trocar as credenciais do Supabase
+var SB_URL_FIXO = 'https://bauhojioypirqrhwvmje.supabase.co';
+var SB_KEY_FIXO = 'sb_publishable_gRNZPZ1_-lvkKfrH8IGUiw_kq4nhkBD';
+
+var SB_URL = SB_URL_FIXO || localStorage.getItem('sb_url') || '';
+var SB_KEY = SB_KEY_FIXO || localStorage.getItem('sb_key') || '';
 var currentId = null;
 var tipoAtual = 'adulto';
 var filtroTipo = 'todos';
@@ -529,6 +562,7 @@ var raioxBlob = null;
 var fotosAval = [];
 var procs = [];
 var camStream = null;
+var outrosAnexos = [];
 
 // SUPABASE
 async function sbFetch(path, opts) {
@@ -634,6 +668,7 @@ function trocarTipo(tipo) {
   document.getElementById('sec-aut-num').textContent = isPed ? '10' : '8';
   document.getElementById('sec-raiox-num').textContent = isPed ? '11' : '9';
   document.getElementById('sec-faval-num').textContent = isPed ? '12' : '10';
+  document.getElementById('sec-outros-num').textContent = isPed ? '13' : '11';
   renderizarPlano();
 }
 
@@ -655,9 +690,9 @@ function setOpts(grupo, val, modo) {
   });
 }
 
-// COMPRESSÃO
+// COMPRESSÃO MELHORADA
 function comprimirImagem(base64, maxW, q) {
-  maxW = maxW || 800; q = q || 0.75;
+  maxW = maxW || 800; q = q || 0.7;
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
@@ -666,7 +701,12 @@ function comprimirImagem(base64, maxW, q) {
       if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
       c.width = w; c.height = h;
       c.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(c.toDataURL('image/jpeg', q));
+      // tenta qualidade reduzida até ficar abaixo de 300KB
+      var resultado = c.toDataURL('image/jpeg', q);
+      if (resultado.length > 400000 && q > 0.4) {
+        resultado = c.toDataURL('image/jpeg', q - 0.2);
+      }
+      resolve(resultado);
     };
     img.src = base64;
   });
@@ -678,6 +718,341 @@ function b64ToBlob(b64, type) {
   var arr = new Uint8Array(byteStr.length);
   for (var i = 0; i < byteStr.length; i++) arr[i] = byteStr.charCodeAt(i);
   return new Blob([arr], { type: type });
+}
+
+// OUTROS ANEXOS
+function renderizarOutrosAnexos() {
+  var lista = document.getElementById('outros-anexos-lista');
+  if (!lista) return;
+  if (!outrosAnexos.length) { lista.innerHTML = ''; return; }
+  var icons = { 'image': '🖼️', 'pdf': '📄', 'word': '📝', 'excel': '📊', 'outro': '📎' };
+  lista.innerHTML = outrosAnexos.map(function(a, i) {
+    var tipo = a.tipo.includes('image') ? 'image' : a.tipo.includes('pdf') ? 'pdf' : a.tipo.includes('word') || a.tipo.includes('doc') ? 'word' : a.tipo.includes('excel') || a.tipo.includes('sheet') || a.tipo.includes('xls') ? 'excel' : 'outro';
+    var icon = icons[tipo] || '📎';
+    return '<div class="outros-anexo-item">'
+      + '<div class="outros-anexo-icon">' + icon + '</div>'
+      + '<div class="outros-anexo-info">'
+      + '<div class="outros-anexo-nome">' + a.nome + '</div>'
+      + '<div class="outros-anexo-tipo">' + (a.descricao || tipo.toUpperCase()) + ' · ' + (a.tamanho || '') + '</div>'
+      + '</div>'
+      + '<button class="btn btn-danger btn-sm" data-idx="' + i + '">✕</button>'
+      + '</div>';
+  }).join('');
+  lista.querySelectorAll('[data-idx]').forEach(function(btn) {
+    btn.onclick = function() { outrosAnexos.splice(parseInt(this.dataset.idx), 1); renderizarOutrosAnexos(); };
+  });
+}
+
+// GERAR PDF DA FICHA
+async function gerarPDFFicha(dados, nomeArquivo) {
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+  var y = 15;
+  var pageW = 210;
+  var margin = 15;
+  var colW = pageW - margin * 2;
+
+  function addLine() { y += 4; }
+  function checkPage(needed) { if (y + needed > 280) { doc.addPage(); y = 15; } }
+
+  function header(txt) {
+    checkPage(10);
+    doc.setFillColor(107, 33, 168);
+    doc.rect(margin, y, colW, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(txt.toUpperCase(), margin + 3, y + 5);
+    doc.setTextColor(0, 0, 0);
+    y += 10;
+  }
+
+  function campo(label, val) {
+    if (!val) return;
+    checkPage(8);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 100, 100);
+    doc.text(label.toUpperCase(), margin, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    var lines = doc.splitTextToSize(String(val), colW);
+    doc.text(lines, margin, y + 4);
+    y += 4 + lines.length * 4 + 2;
+  }
+
+  function camposDuplos(pares) {
+    checkPage(10);
+    pares.forEach(function(par) {
+      if (!par[1]) return;
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(100, 100, 100);
+      doc.text(par[0].toUpperCase(), margin, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(9);
+      doc.text(String(par[1]), margin + 45, y);
+      y += 5;
+    });
+  }
+
+  // CABEÇALHO
+  doc.setFillColor(107, 33, 168);
+  doc.rect(0, 0, 210, 20, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('CONSULTÓRIO ODONTOLÓGICO — ONG JUNTA MAIS', margin, 10);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Associação Junta Mais | CNPJ: 35.812.109/0001-08 | Ficha de Cadastro', margin, 16);
+  doc.setTextColor(0, 0, 0);
+  y = 28;
+
+  // CONSULTA
+  header('1. Consulta');
+  camposDuplos([
+    ['Data', dados.data_consulta], ['Horário', dados.horario],
+    ['Dentista', dados.dentista], ['CRO', dados.cro]
+  ]);
+  addLine();
+
+  // PACIENTE
+  if (dados.tipo === 'pediatrico') {
+    header('2. Dados da Criança');
+    camposDuplos([
+      ['Nome', dados.nome_crianca], ['Nascimento', dados.nasc_crianca],
+      ['Sexo', dados.sexo_crianca], ['CPF', dados.cpf_crianca],
+      ['RG', dados.rg_crianca], ['Irmãos', dados.irmaos]
+    ]);
+    addLine();
+    header('3. Responsável');
+    camposDuplos([
+      ['Nome', dados.resp_nome], ['Parentesco', dados.resp_parentesco],
+      ['Telefone', dados.telefone_ped], ['CPF', dados.resp_cpf], ['RG', dados.resp_rg]
+    ]);
+    addLine();
+  } else {
+    header('2. Dados do Paciente');
+    camposDuplos([
+      ['Nome', dados.nome], ['Nascimento', dados.nascimento],
+      ['Sexo', dados.sexo], ['CPF', dados.cpf],
+      ['RG', dados.rg], ['Telefone', dados.telefone],
+      ['Etnia', dados.etnia], ['Filhos', dados.filhos]
+    ]);
+    addLine();
+  }
+
+  header('Dados Gerais');
+  camposDuplos([
+    ['Endereço', dados.endereco], ['Bairro', dados.bairro],
+    ['CEP', dados.cep], ['Área', dados.area],
+    ['Água', dados.agua], ['Luz', dados.luz],
+    ['Transporte', dados.transporte], ['Renda', dados.renda]
+  ]);
+  addLine();
+
+  header('Histórico Médico');
+  camposDuplos([
+    ['Prob. saúde', dados.prob_saude], ['Qual', dados.saude_qual],
+    ['Tratamento', dados.tratamento], ['Medicamento', dados.medicamento],
+    ['Cirurgia', dados.cirurgia], ['Cicatrização', dados.cicatriz],
+    ['Anestesia', dados.anestesia], ['Hemorragia', dados.hemorragia],
+    ['Alergia', dados.alergia], ['Qual', dados.alergia_qual]
+  ]);
+  addLine();
+
+  header('Histórico Odontológico');
+  camposDuplos([
+    ['Escovações/dia', dados.escovacao], ['Fio dental', dados.fio],
+    ['Flúor', dados.fluor], ['Sangramento', dados.sangramento],
+    ['Hábito bucal', dados.habito], ['Tipos', dados.habito_tipos],
+    ['Prótese', dados.protese], ['Desconforto', dados.protese_desc]
+  ]);
+  addLine();
+  campo('Queixa principal', dados.queixa);
+  campo('Observações', dados.obs);
+  addLine();
+
+  // PLANO DE TRATAMENTO
+  if (dados.plano_tratamento) {
+    try {
+      var pl = JSON.parse(dados.plano_tratamento);
+      var dentes = Object.keys(pl);
+      if (dentes.length) {
+        header('Plano de Tratamento');
+        checkPage(10);
+        doc.setFontSize(8);
+        var col = 0;
+        dentes.forEach(function(d) {
+          checkPage(6);
+          var x = margin + (col % 2) * (colW / 2);
+          if (col % 2 === 0 && col > 0) y += 6;
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(107, 33, 168);
+          doc.text('Dente ' + d + ':', x, y);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          doc.text(String(pl[d]).substring(0, 35), x + 18, y);
+          col++;
+          if (col % 2 === 1) y += 6;
+        });
+        if (col % 2 === 1) y += 6;
+        addLine();
+      }
+    } catch(e) {}
+  }
+
+  // PROCEDIMENTOS
+  if (dados.procedimentos) {
+    try {
+      var pr = JSON.parse(dados.procedimentos);
+      if (pr.length) {
+        header('Procedimentos Realizados');
+        pr.forEach(function(p, i) {
+          checkPage(7);
+          doc.setFillColor(i % 2 === 0 ? 249 : 255, i % 2 === 0 ? 250 : 255, i % 2 === 0 ? 251 : 255);
+          doc.rect(margin, y - 1, colW, 6, 'F');
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.text(p.data || '—', margin + 1, y + 3);
+          doc.setFont('helvetica', 'normal');
+          doc.text(String(p.proc || '—').substring(0, 55), margin + 22, y + 3);
+          doc.setTextColor(100, 100, 100);
+          doc.text(String(p.dentista || '—').substring(0, 25), margin + 130, y + 3);
+          doc.setTextColor(0, 0, 0);
+          y += 6;
+        });
+        addLine();
+      }
+    } catch(e) {}
+  }
+
+  // ASSINATURAS
+  checkPage(35);
+  y += 10;
+  doc.setDrawColor(0, 0, 0);
+  var sigW = colW / 3 - 5;
+  [0, 1, 2].forEach(function(i) {
+    var x = margin + i * (sigW + 7.5);
+    doc.line(x, y, x + sigW, y);
+    doc.setFontSize(7);
+    doc.setTextColor(100, 100, 100);
+    var labels = ['Assinatura do paciente/responsável', 'Assinatura e carimbo do(a) dentista', 'Assinatura da Presidente da ONG'];
+    doc.text(labels[i], x + sigW / 2, y + 5, { align: 'center' });
+  });
+
+  return doc.output('arraybuffer');
+}
+
+// EXPORTAR EXCEL FORMATADO
+async function exportarExcel() {
+  if (!SB_URL || !SB_KEY) { toast('Configure o Supabase primeiro', 'error'); return; }
+  showLoading('Exportando Excel...');
+  try {
+    var rows = await sbFetch('pacientes?select=*&order=id.desc', { prefer: '' });
+    if (!rows || !rows.length) { toast('Nenhum dado para exportar', 'error'); return; }
+
+    var wb = XLSX.utils.book_new();
+
+    // ABA 1: RESUMO GERAL
+    var resumoData = [['ID','Tipo','Nome/Criança','Data Consulta','Dentista','Queixa','Telefone','CPF','Nascimento']];
+    rows.forEach(function(r) {
+      resumoData.push([
+        r.id,
+        r.tipo === 'pediatrico' ? 'Pediátrico' : 'Adulto',
+        r.tipo === 'pediatrico' ? (r.nome_crianca || '') : (r.nome || ''),
+        r.data_consulta || '',
+        r.dentista || '',
+        r.queixa || '',
+        r.tipo === 'pediatrico' ? (r.telefone_ped || '') : (r.telefone || ''),
+        r.tipo === 'pediatrico' ? (r.cpf_crianca || '') : (r.cpf || ''),
+        r.tipo === 'pediatrico' ? (r.nasc_crianca || '') : (r.nascimento || '')
+      ]);
+    });
+    var wsResumo = XLSX.utils.aoa_to_sheet(resumoData);
+    wsResumo['!cols'] = [8,10,25,12,20,40,14,14,12].map(function(w){return{wch:w};});
+    XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo Geral');
+
+    // ABA 2: DADOS COMPLETOS
+    var excluir = ['foto_url','autorizacao_url','raiox_url','fotos_avaliacao_meta','outros_anexos_meta'];
+    var cols = Object.keys(rows[0]).filter(function(c){ return excluir.indexOf(c) === -1; });
+    var headers = {
+      id:'ID', tipo:'Tipo', data_consulta:'Data Consulta', horario:'Horário',
+      dentista:'Dentista', cro:'CRO', nome:'Nome (adulto)', nascimento:'Nascimento',
+      sexo:'Sexo', cpf:'CPF', rg:'RG', telefone:'Telefone', etnia:'Etnia',
+      cidade:'Cidade nascimento', filhos:'Filhos',
+      nome_crianca:'Nome criança', nasc_crianca:'Nasc. criança', sexo_crianca:'Sexo criança',
+      cpf_crianca:'CPF criança', resp_nome:'Responsável', resp_parentesco:'Parentesco',
+      telefone_ped:'Telefone resp.', endereco:'Endereço', bairro:'Bairro', cep:'CEP',
+      area:'Área', agua:'Água', luz:'Luz', transporte:'Transporte',
+      renda:'Renda fixa', renda_valor:'Valor renda',
+      prob_saude:'Prob. saúde', saude_qual:'Qual prob. saúde',
+      tratamento:'Tratamento', medicamento:'Medicamento', cirurgia:'Cirurgia',
+      cicatriz:'Cicatrização', anestesia:'Anestesia', hemorragia:'Hemorragia',
+      alergia:'Alergia', alergia_qual:'Qual alergia',
+      escovacao:'Escovações/dia', fio:'Fio dental', fluor:'Flúor', sangramento:'Sangramento',
+      habito:'Hábito bucal', habito_tipos:'Tipos hábito', protese:'Prótese',
+      queixa:'Queixa principal', obs:'Observações',
+      plano_obs:'Obs. plano', autorizacao_tipo:'Tipo autorização',
+      raiox_data:'Data raio-x', raiox_obs:'Obs. raio-x', criado_em:'Cadastrado em'
+    };
+    var dadosData = [cols.map(function(c){ return headers[c] || c; })];
+    rows.forEach(function(r){ dadosData.push(cols.map(function(c){ return r[c] || ''; })); });
+    var wsDados = XLSX.utils.aoa_to_sheet(dadosData);
+    wsDados['!cols'] = cols.map(function(){ return {wch:18}; });
+    XLSX.utils.book_append_sheet(wb, wsDados, 'Dados Completos');
+
+    // ABA 3: HISTÓRICO MÉDICO
+    var medData = [['ID','Nome','Tipo','Prob. saúde','Qual','Tratamento','Qual tratamento','Medicamento','Qual medicamento','Cirurgia','Qual cirurgia','Cicatrização','Anestesia','Hemorragia','Alergia','Qual alergia']];
+    rows.forEach(function(r){
+      var nome = r.tipo === 'pediatrico' ? r.nome_crianca : r.nome;
+      medData.push([r.id, nome||'', r.tipo||'', r.prob_saude||'', r.saude_qual||'', r.tratamento||'', r.trat_qual||'', r.medicamento||'', r.med_qual||'', r.cirurgia||'', r.cirurgia_qual||'', r.cicatriz||'', r.anestesia||'', r.hemorragia||'', r.alergia||'', r.alergia_qual||'']);
+    });
+    var wsMed = XLSX.utils.aoa_to_sheet(medData);
+    wsMed['!cols'] = [6,25,10,12,25,12,25,12,25,12,25,12,12,12,12,25].map(function(w){return{wch:w};});
+    XLSX.utils.book_append_sheet(wb, wsMed, 'Histórico Médico');
+
+    // ABA 4: PLANOS DE TRATAMENTO
+    var planoData = [['ID','Nome','Data Consulta','Dentista','Dente','Tratamento planejado']];
+    rows.forEach(function(r){
+      var nome = r.tipo === 'pediatrico' ? r.nome_crianca : r.nome;
+      if (r.plano_tratamento) {
+        try {
+          var pl = JSON.parse(r.plano_tratamento);
+          Object.keys(pl).forEach(function(d){
+            planoData.push([r.id, nome||'', r.data_consulta||'', r.dentista||'', d, pl[d]]);
+          });
+        } catch(e) {}
+      }
+    });
+    var wsPlano = XLSX.utils.aoa_to_sheet(planoData);
+    wsPlano['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:20},{wch:8},{wch:35}];
+    XLSX.utils.book_append_sheet(wb, wsPlano, 'Planos de Tratamento');
+
+    // ABA 5: PROCEDIMENTOS
+    var procData = [['ID','Nome','Data Consulta','Data Procedimento','Procedimento','Dentista']];
+    rows.forEach(function(r){
+      var nome = r.tipo === 'pediatrico' ? r.nome_crianca : r.nome;
+      if (r.procedimentos) {
+        try {
+          var pr = JSON.parse(r.procedimentos);
+          pr.forEach(function(p){
+            procData.push([r.id, nome||'', r.data_consulta||'', p.data||'', p.proc||'', p.dentista||'']);
+          });
+        } catch(e) {}
+      }
+    });
+    var wsProc = XLSX.utils.aoa_to_sheet(procData);
+    wsProc['!cols'] = [{wch:6},{wch:25},{wch:12},{wch:12},{wch:40},{wch:20}];
+    XLSX.utils.book_append_sheet(wb, wsProc, 'Procedimentos');
+
+    XLSX.writeFile(wb, 'pacientes_junta_mais_' + new Date().toISOString().slice(0,10) + '.xlsx');
+    toast('Excel exportado com 5 abas!', 'success');
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+  finally { hideLoading(); }
 }
 
 // FOTO PACIENTE
@@ -856,21 +1231,31 @@ function lerForm() {
     plano_tratamento: lerPlano(), plano_obs: g('f-plano-obs'),
     procedimentos: JSON.stringify(procs),
     autorizacao_tipo: autTipo, raiox_data: g('f-raiox-data'), raiox_obs: g('f-raiox-obs'),
-    total_fotos_aval: fotosAval.length
+    total_fotos_aval: fotosAval.length,
+    outros_anexos_meta: JSON.stringify(outrosAnexos.map(function(a){ return {nome:a.nome,tipo:a.tipo,descricao:a.descricao}; }))
   };
 }
 
-// BACKUP ZIP
+// BACKUP ZIP COM PDF
 async function gerarZip(nome, dados) {
   try {
     var zip = new JSZip();
     var pasta = zip.folder(nome);
     pasta.file('ficha.json', JSON.stringify(dados, null, 2));
+    // PDF da ficha
+    try {
+      var pdfBuffer = await gerarPDFFicha(dados, nome);
+      pasta.file('ficha_' + nome + '.pdf', pdfBuffer);
+    } catch(e) { console.warn('Erro ao gerar PDF:', e); }
     if (fotoBlob) pasta.file('foto_paciente.jpg', fotoBlob);
     if (autBlob) pasta.file('autorizacao.' + autExt, autBlob);
     if (raioxBlob) pasta.file('raiox.jpg', raioxBlob);
     fotosAval.forEach(function(f, i) {
       if (f.blob) pasta.file('foto_aval_' + (i + 1) + '.jpg', f.blob);
+    });
+    // outros anexos
+    outrosAnexos.forEach(function(a) {
+      if (a.blob) pasta.file('outros_' + a.nome, a.blob);
     });
     var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
     var url = URL.createObjectURL(blob);
@@ -879,7 +1264,7 @@ async function gerarZip(nome, dados) {
     a.download = 'backup_' + nome.replace(/[^a-zA-Z0-9]/g, '_') + '_' + new Date().toISOString().slice(0, 10) + '.zip';
     a.click();
     URL.revokeObjectURL(url);
-    toast('Backup ZIP gerado!', 'success');
+    toast('Backup ZIP + PDF gerado!', 'success');
   } catch(e) { console.error(e); toast('Erro no backup: ' + e.message, 'error'); }
 }
 
@@ -905,6 +1290,17 @@ async function salvarFicha() {
       fotasMeta.push({ url: url, data: f.data, desc: f.desc });
     }
     if (fotasMeta.length) d.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
+    // outros anexos
+    var outrosMeta = [];
+    for (var j = 0; j < outrosAnexos.length; j++) {
+      showLoading('Enviando anexo ' + (j+1) + ' de ' + outrosAnexos.length + '...');
+      var oa = outrosAnexos[j];
+      if (oa.blob) {
+        var oaUrl = await sbUpload('anexos', pasta + '/outros_' + (j+1) + '_' + oa.nome.replace(/[^a-zA-Z0-9.]/g,'_'), oa.blob);
+        outrosMeta.push({ url: oaUrl, nome: oa.nome, tipo: oa.tipo, descricao: oa.descricao });
+      }
+    }
+    if (outrosMeta.length) d.outros_anexos_meta = JSON.stringify(outrosMeta);
     showLoading('Salvando ficha...');
     if (id) {
       await sbFetch('pacientes?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(d), prefer: 'return=minimal' });
@@ -931,6 +1327,7 @@ function limparForm() {
   autAtual = ''; autBlob = null; autTipo = ''; renderizarAut();
   raioxAtual = ''; raioxBlob = null; renderizarRaiox();
   fotosAval = []; renderizarFotosAval();
+  outrosAnexos = []; renderizarOutrosAnexos();
   procs = []; renderizarProcs();
   trocarTipo('adulto');
 }
@@ -1016,6 +1413,7 @@ async function _verAsync(id) {
     if (row.autorizacao_url) html += sec('Autorização') + '<a href="' + row.autorizacao_url + '" target="_blank" class="btn btn-outline btn-sm">📄 Ver autorização</a>';
     if (row.raiox_url) html += sec('Raio-X') + '<a href="' + row.raiox_url + '" target="_blank"><img src="' + row.raiox_url + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block;margin-top:6px"></a>';
     if (row.fotos_avaliacao_meta) { try { var fa = JSON.parse(row.fotos_avaliacao_meta); if (fa.length) { html += sec('Fotos de avaliação') + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:6px">' + fa.map(function(f) { return '<div style="border-radius:8px;overflow:hidden;border:1.5px solid var(--gray-200)"><a href="' + f.url + '" target="_blank"><img src="' + f.url + '" style="width:100%;height:100px;object-fit:cover;display:block"></a><div style="padding:4px 6px;background:white;font-size:11px"><div style="font-weight:600">' + (f.data || '—') + '</div><div style="color:var(--gray-400)">' + (f.desc || '') + '</div></div></div>'; }).join('') + '</div>'; } } catch(e) {} }
+    if (row.outros_anexos_meta) { try { var oa = JSON.parse(row.outros_anexos_meta); if (oa.length) { html += sec('Outros anexos') + oa.map(function(a) { var icon = a.tipo && a.tipo.includes('image') ? '🖼️' : a.tipo && a.tipo.includes('pdf') ? '📄' : '📎'; return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;margin-bottom:6px"><span style="font-size:20px">' + icon + '</span><div style="flex:1"><div style="font-size:13px;font-weight:600">' + a.nome + '</div><div style="font-size:11px;color:var(--gray-400)">' + (a.descricao || '') + '</div></div>' + (a.url ? '<a href="' + a.url + '" target="_blank" class="btn btn-outline btn-sm">Ver</a>' : '') + '</div>'; }).join(''); } } catch(e) {} }
     document.getElementById('modal-body').innerHTML = html;
     document.getElementById('modal-overlay').classList.add('open');
   } catch(e) { toast('Erro: ' + e.message, 'error'); }
@@ -1068,31 +1466,129 @@ async function excluirPaciente(id) {
   finally { hideLoading(); }
 }
 
-// CSV
-async function exportarCSV() {
-  if (!SB_URL || !SB_KEY) { toast('Configure o Supabase primeiro', 'error'); return; }
-  showLoading('Exportando...');
+// CSV mantido como fallback simples
+async function exportarCSV() { await exportarExcel(); }
+
+// IMPRESSÃO
+function imprimirFicha() {
+  var conteudo = document.getElementById('modal-body').innerHTML;
+  var nome = document.getElementById('modal-titulo').textContent;
+  var win = window.open('', '_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ficha — ' + nome + '</title><style>'
+    + 'body{font-family:Arial,sans-serif;font-size:13px;color:#111;padding:24px;max-width:800px;margin:0 auto}'
+    + 'h1{font-size:18px;color:#6B21A8;margin-bottom:4px}'
+    + '.org{font-size:11px;color:#9CA3AF;margin-bottom:20px}'
+    + '.detail-section{font-size:11px;font-weight:700;color:#6B21A8;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #D8B4FE}'
+    + '.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}'
+    + '.detail-item{padding:8px 10px;background:#F9FAFB;border-radius:4px;break-inside:avoid}'
+    + '.detail-key{font-size:10px;color:#9CA3AF;margin-bottom:2px;text-transform:uppercase}'
+    + '.detail-val{font-size:12px;font-weight:600;color:#111}'
+    + '.detail-val.empty{color:#9CA3AF;font-weight:400;font-style:italic}'
+    + '.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}'
+    + '.badge-adult{background:#F3E8FF;color:#6B21A8}'
+    + '.badge-ped{background:#CCFBF1;color:#0F766E}'
+    + 'img{max-width:100%;border-radius:6px;border:1px solid #E5E7EB}'
+    + 'table{width:100%;border-collapse:collapse;font-size:12px}'
+    + 'th{background:#0F766E;color:white;padding:6px 10px;text-align:left}'
+    + 'td{padding:6px 10px;border-bottom:1px solid #F3F4F6}'
+    + '.assinaturas{margin-top:40px;border-top:1px solid #E5E7EB;padding-top:20px}'
+    + '.assinatura-linha{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:30px}'
+    + '.assinatura-item{text-align:center;border-top:1px solid #111;padding-top:6px;font-size:11px;color:#4B5563}'
+    + '@media print{body{padding:12px}}'
+    + '</style></head><body>'
+    + '<h1>Consultório Odontológico — ONG Junta Mais</h1>'
+    + '<div class="org">Associação Junta Mais | CNPJ: 35.812.109/0001-08</div>'
+    + conteudo
+    + '<div class="assinaturas">'
+    + '<div class="assinatura-linha">'
+    + '<div class="assinatura-item">Assinatura do paciente/responsável</div>'
+    + '<div class="assinatura-item">Assinatura e carimbo do(a) dentista</div>'
+    + '<div class="assinatura-item">Assinatura da Presidente da ONG</div>'
+    + '</div></div>'
+    + '</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(function() { win.print(); }, 500);
+}
+
+// RESTAURAR ZIP
+async function restaurarZip(file) {
+  var status = document.getElementById('restaurar-status');
+  status.textContent = 'Lendo arquivo ZIP...';
+  status.style.color = 'var(--amber)';
   try {
-    var rows = await sbFetch('pacientes?select=*&order=id.desc', { prefer: '' });
-    if (!rows || !rows.length) { toast('Nenhum dado para exportar', 'error'); return; }
-    var excluir = ['foto_url', 'autorizacao_url', 'raiox_url', 'fotos_avaliacao_meta'];
-    var cols = Object.keys(rows[0]).filter(function(c) { return excluir.indexOf(c) === -1; });
-    var csv = cols.join(';') + '\n';
-    rows.forEach(function(r) { csv += cols.map(function(c) { return '"' + String(r[c] || '').replace(/"/g, '""') + '"'; }).join(';') + '\n'; });
-    var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a'); a.href = url;
-    a.download = 'pacientes_junta_mais_' + new Date().toISOString().slice(0, 10) + '.csv';
-    a.click(); URL.revokeObjectURL(url);
-    toast('CSV exportado!', 'success');
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
-  finally { hideLoading(); }
+    var zip = await JSZip.loadAsync(file);
+    // ler ficha.json
+    var fichaFile = zip.file('ficha.json');
+    if (!fichaFile) throw new Error('Arquivo ficha.json não encontrado no ZIP');
+    var fichaJson = await fichaFile.async('string');
+    var dados = JSON.parse(fichaJson);
+    status.textContent = 'Dados encontrados: ' + (dados.nome || dados.nome_crianca || '—') + '. Enviando para o Supabase...';
+
+    // fazer upload das imagens de volta ao Storage
+    var pasta = ((dados.nome || dados.nome_crianca || 'restaurado') + '_restaurado_' + Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
+
+    var fotoFile = zip.file('foto_paciente.jpg');
+    if (fotoFile) {
+      status.textContent = 'Restaurando foto...';
+      var fotoBlob2 = new Blob([await fotoFile.async('arraybuffer')], { type: 'image/jpeg' });
+      dados.foto_url = await sbUpload('anexos', pasta + '/foto.jpg', fotoBlob2);
+    }
+
+    var autFile = zip.file('autorizacao.jpg') || zip.file('autorizacao.pdf');
+    if (autFile) {
+      status.textContent = 'Restaurando autorização...';
+      var isPdf = autFile.name.endsWith('.pdf');
+      var autBlob2 = new Blob([await autFile.async('arraybuffer')], { type: isPdf ? 'application/pdf' : 'image/jpeg' });
+      dados.autorizacao_url = await sbUpload('anexos', pasta + '/autorizacao.' + (isPdf ? 'pdf' : 'jpg'), autBlob2);
+    }
+
+    var raioxFile = zip.file('raiox.jpg');
+    if (raioxFile) {
+      status.textContent = 'Restaurando raio-x...';
+      var raioxBlob2 = new Blob([await raioxFile.async('arraybuffer')], { type: 'image/jpeg' });
+      dados.raiox_url = await sbUpload('anexos', pasta + '/raiox.jpg', raioxBlob2);
+    }
+
+    // fotos de avaliação
+    var fotasMeta = [];
+    var i = 1;
+    while (true) {
+      var faFile = zip.file('foto_aval_' + i + '.jpg');
+      if (!faFile) break;
+      status.textContent = 'Restaurando foto de avaliação ' + i + '...';
+      var faBlob = new Blob([await faFile.async('arraybuffer')], { type: 'image/jpeg' });
+      var faUrl = await sbUpload('anexos', pasta + '/foto_aval_' + i + '.jpg', faBlob);
+      var metaOriginal = [];
+      try { metaOriginal = JSON.parse(dados.fotos_avaliacao_meta || '[]'); } catch(e) {}
+      var meta = metaOriginal[i - 1] || {};
+      fotasMeta.push({ url: faUrl, data: meta.data || '', desc: meta.desc || '' });
+      i++;
+    }
+    if (fotasMeta.length) dados.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
+
+    // remover id para inserir como novo registro
+    delete dados.id;
+    delete dados.criado_em;
+
+    status.textContent = 'Salvando ficha no banco...';
+    await sbFetch('pacientes', { method: 'POST', body: JSON.stringify(dados) });
+
+    status.textContent = '✅ Ficha restaurada com sucesso!';
+    status.style.color = 'var(--green)';
+    toast('Ficha restaurada!', 'success');
+    atualizarDashboard();
+    carregarPacientes();
+  } catch(e) {
+    status.textContent = '❌ Erro: ' + e.message;
+    status.style.color = 'var(--red)';
+    toast('Erro ao restaurar: ' + e.message, 'error');
+    console.error(e);
+  }
 }
 
 // MODAL
 function fecharModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-
-// LOADING / TOAST
 function showLoading(msg) { document.getElementById('loading-msg').textContent = msg || 'Aguarde...'; document.getElementById('loading-overlay').classList.add('show'); }
 function hideLoading() { document.getElementById('loading-overlay').classList.remove('show'); }
 function toast(msg, type) {
@@ -1113,7 +1609,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
     item.addEventListener('click', function() { goTo(this.dataset.page); });
   });
-  document.getElementById('nav-csv').addEventListener('click', exportarCSV);
+  document.getElementById('nav-csv').addEventListener('click', exportarExcel);
   document.getElementById('btn-nova-ficha').addEventListener('click', function() { goTo('novo'); });
 
   // tabs
@@ -1122,7 +1618,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // config
   document.getElementById('btn-salvar-config').addEventListener('click', salvarConfig);
-  document.getElementById('btn-csv').addEventListener('click', exportarCSV);
+  document.getElementById('btn-csv').addEventListener('click', exportarExcel);
 
   // form
   document.getElementById('btn-salvar').addEventListener('click', salvarFicha);
@@ -1133,6 +1629,28 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('modal-overlay').addEventListener('click', function(e) { if (e.target === this) fecharModal(); });
   document.getElementById('modal-editar-btn').addEventListener('click', function() { editarPaciente(currentId); });
   document.getElementById('modal-excluir-btn').addEventListener('click', function() { excluirPaciente(currentId); });
+  document.getElementById('modal-imprimir-btn').addEventListener('click', imprimirFicha);
+
+  // outros anexos
+  document.getElementById('btn-upload-outros').addEventListener('click', function() { document.getElementById('outros-anexos-input').click(); });
+  document.getElementById('outros-anexos-input').addEventListener('change', function() {
+    var files = Array.from(this.files); if (!files.length) return;
+    var desc = prompt('Descrição dos documentos (opcional):', '') || '';
+    files.forEach(function(file) {
+      var tamanho = file.size < 1024 ? file.size + ' B' : file.size < 1048576 ? Math.round(file.size/1024) + ' KB' : Math.round(file.size/1048576*10)/10 + ' MB';
+      outrosAnexos.push({ nome: file.name, tipo: file.type, descricao: desc, blob: file, tamanho: tamanho });
+    });
+    renderizarOutrosAnexos();
+    this.value = '';
+  });
+
+  // CSV/Excel
+  document.getElementById('zip-restaurar-input').addEventListener('change', function() {
+    var file = this.files[0]; if (!file) return;
+    if (!confirm('Restaurar ficha do arquivo "' + file.name + '"? Será criado um novo registro no sistema.')) return;
+    restaurarZip(file);
+    this.value = '';
+  });
 
   // câmera
   document.getElementById('btn-camera').addEventListener('click', abrirCamera);
@@ -1246,10 +1764,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // init
   renderizarPlano();
   renderizarProcs();
-  // config
+  // preencher config com credenciais fixas
   if (SB_URL) document.getElementById('cfg-url').value = SB_URL;
-  if (SB_KEY) document.getElementById('cfg-key').value = SB_KEY;
-  if (SB_URL && SB_KEY) testarConexao();
+  if (SB_KEY && SB_KEY !== '') document.getElementById('cfg-key').value = SB_KEY;
+  if (SB_URL && SB_KEY && SB_KEY !== '') testarConexao();
+  else if (localStorage.getItem('sb_url') && localStorage.getItem('sb_key')) testarConexao();
 });
 </script>
 </body>
