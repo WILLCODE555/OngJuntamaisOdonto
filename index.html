@@ -196,7 +196,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v15</div>
+    <div class="sub">Sistema de Fichas v3</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -1645,6 +1645,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // CSV/Excel
+  document.getElementById('btn-restaurar-zip').addEventListener('click', function() { document.getElementById('zip-restaurar-input').click(); });
   document.getElementById('zip-restaurar-input').addEventListener('change', function() {
     var file = this.files[0]; if (!file) return;
     if (!confirm('Restaurar ficha do arquivo "' + file.name + '"? Será criado um novo registro no sistema.')) return;
