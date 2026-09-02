@@ -196,7 +196,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v15</div>
+    <div class="sub">Sistema de Fichas v3</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -1518,32 +1518,56 @@ async function restaurarZip(file) {
   status.style.color = 'var(--amber)';
   try {
     var zip = await JSZip.loadAsync(file);
-    // ler ficha.json
-    var fichaFile = zip.file('ficha.json');
+
+    // buscar ficha.json em qualquer nível do ZIP
+    var fichaFile = null;
+    zip.forEach(function(relativePath, zipEntry) {
+      if (!zipEntry.dir && relativePath.endsWith('ficha.json')) {
+        fichaFile = zipEntry;
+      }
+    });
     if (!fichaFile) throw new Error('Arquivo ficha.json não encontrado no ZIP');
+
     var fichaJson = await fichaFile.async('string');
     var dados = JSON.parse(fichaJson);
-    status.textContent = 'Dados encontrados: ' + (dados.nome || dados.nome_crianca || '—') + '. Enviando para o Supabase...';
+    var nomePaciente = dados.nome || dados.nome_crianca || 'restaurado';
+    status.textContent = 'Dados encontrados: ' + nomePaciente + '. Enviando para o Supabase...';
 
-    // fazer upload das imagens de volta ao Storage
-    var pasta = ((dados.nome || dados.nome_crianca || 'restaurado') + '_restaurado_' + Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
+    // helper para buscar arquivo em qualquer nível
+    function buscarArquivo(nomes) {
+      var encontrado = null;
+      zip.forEach(function(relativePath, zipEntry) {
+        if (!zipEntry.dir && !encontrado) {
+          var fileName = relativePath.split('/').pop().toLowerCase();
+          for (var i = 0; i < nomes.length; i++) {
+            if (fileName === nomes[i].toLowerCase()) {
+              encontrado = zipEntry;
+              break;
+            }
+          }
+        }
+      });
+      return encontrado;
+    }
 
-    var fotoFile = zip.file('foto_paciente.jpg');
+    var pasta = (nomePaciente + '_restaurado_' + Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
+
+    var fotoFile = buscarArquivo(['foto_paciente.jpg', 'foto.jpg']);
     if (fotoFile) {
       status.textContent = 'Restaurando foto...';
       var fotoBlob2 = new Blob([await fotoFile.async('arraybuffer')], { type: 'image/jpeg' });
       dados.foto_url = await sbUpload('anexos', pasta + '/foto.jpg', fotoBlob2);
     }
 
-    var autFile = zip.file('autorizacao.jpg') || zip.file('autorizacao.pdf');
+    var autFile = buscarArquivo(['autorizacao.jpg', 'autorizacao.pdf', 'autorizacao.png']);
     if (autFile) {
       status.textContent = 'Restaurando autorização...';
-      var isPdf = autFile.name.endsWith('.pdf');
+      var isPdf = autFile.name ? autFile.name.endsWith('.pdf') : false;
       var autBlob2 = new Blob([await autFile.async('arraybuffer')], { type: isPdf ? 'application/pdf' : 'image/jpeg' });
       dados.autorizacao_url = await sbUpload('anexos', pasta + '/autorizacao.' + (isPdf ? 'pdf' : 'jpg'), autBlob2);
     }
 
-    var raioxFile = zip.file('raiox.jpg');
+    var raioxFile = buscarArquivo(['raiox.jpg', 'raiox.png']);
     if (raioxFile) {
       status.textContent = 'Restaurando raio-x...';
       var raioxBlob2 = new Blob([await raioxFile.async('arraybuffer')], { type: 'image/jpeg' });
@@ -1554,7 +1578,7 @@ async function restaurarZip(file) {
     var fotasMeta = [];
     var i = 1;
     while (true) {
-      var faFile = zip.file('foto_aval_' + i + '.jpg');
+      var faFile = buscarArquivo(['foto_aval_' + i + '.jpg', 'foto_aval_' + i + '.png']);
       if (!faFile) break;
       status.textContent = 'Restaurando foto de avaliação ' + i + '...';
       var faBlob = new Blob([await faFile.async('arraybuffer')], { type: 'image/jpeg' });
@@ -1567,14 +1591,35 @@ async function restaurarZip(file) {
     }
     if (fotasMeta.length) dados.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
 
-    // remover id para inserir como novo registro
+    // outros anexos
+    var outrosMeta = [];
+    zip.forEach(function(relativePath, zipEntry) {
+      if (!zipEntry.dir) {
+        var fileName = relativePath.split('/').pop();
+        if (fileName.startsWith('outros_')) {
+          outrosMeta.push({ zipEntry: zipEntry, nome: fileName });
+        }
+      }
+    });
+    if (outrosMeta.length) {
+      var outrosMetaFinal = [];
+      for (var j = 0; j < outrosMeta.length; j++) {
+        status.textContent = 'Restaurando outro anexo ' + (j+1) + '...';
+        var oaBlob = new Blob([await outrosMeta[j].zipEntry.async('arraybuffer')]);
+        var oaUrl = await sbUpload('anexos', pasta + '/' + outrosMeta[j].nome, oaBlob);
+        outrosMetaFinal.push({ url: oaUrl, nome: outrosMeta[j].nome });
+      }
+      dados.outros_anexos_meta = JSON.stringify(outrosMetaFinal);
+    }
+
+    // remover campos que não devem ser inseridos
     delete dados.id;
     delete dados.criado_em;
 
     status.textContent = 'Salvando ficha no banco...';
     await sbFetch('pacientes', { method: 'POST', body: JSON.stringify(dados) });
 
-    status.textContent = '✅ Ficha restaurada com sucesso!';
+    status.textContent = '✅ Ficha de ' + nomePaciente + ' restaurada com sucesso!';
     status.style.color = 'var(--green)';
     toast('Ficha restaurada!', 'success');
     atualizarDashboard();
