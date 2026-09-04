@@ -196,7 +196,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v16</div>
+    <div class="sub">Sistema de Fichas v3</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -1279,28 +1279,64 @@ async function salvarFicha() {
   try {
     var id = document.getElementById('f-id').value;
     var pasta = (nome + '_' + Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
-    if (fotoBlob) { showLoading('Enviando foto...'); d.foto_url = await sbUpload('anexos', pasta + '/foto.jpg', fotoBlob); }
-    if (autBlob) { showLoading('Enviando autorização...'); d.autorizacao_url = await sbUpload('anexos', pasta + '/autorizacao.' + autExt, autBlob); }
-    if (raioxBlob) { showLoading('Enviando raio-x...'); d.raiox_url = await sbUpload('anexos', pasta + '/raiox.jpg', raioxBlob); }
+
+    // foto: só envia se tiver novo blob; se removida limpa url; se mantida preserva url
+    if (fotoBlob) {
+      showLoading('Enviando foto...'); d.foto_url = await sbUpload('anexos', pasta + '/foto.jpg', fotoBlob);
+    } else if (!fotoAtual) {
+      d.foto_url = ''; // removida
+    } else {
+      d.foto_url = fotoAtual; // mantida (url do Storage)
+    }
+
+    // autorização
+    if (autBlob) {
+      showLoading('Enviando autorização...'); d.autorizacao_url = await sbUpload('anexos', pasta + '/autorizacao.' + autExt, autBlob);
+    } else if (!autAtual) {
+      d.autorizacao_url = ''; // removida
+    } else {
+      d.autorizacao_url = autAtual; // mantida
+    }
+
+    // raio-x
+    if (raioxBlob) {
+      showLoading('Enviando raio-x...'); d.raiox_url = await sbUpload('anexos', pasta + '/raiox.jpg', raioxBlob);
+    } else if (!raioxAtual) {
+      d.raiox_url = ''; // removido
+    } else {
+      d.raiox_url = raioxAtual; // mantido
+    }
+
+    // fotos avaliação: já salvas mantêm url, novas fazem upload
     var fotasMeta = [];
     for (var i = 0; i < fotosAval.length; i++) {
-      showLoading('Enviando foto ' + (i + 1) + ' de ' + fotosAval.length + '...');
       var f = fotosAval[i];
-      var url = await sbUpload('anexos', pasta + '/foto_aval_' + (i + 1) + '.jpg', f.blob || b64ToBlob(f.base64));
-      fotasMeta.push({ url: url, data: f.data, desc: f.desc });
+      if (f.salvo && !f.blob) {
+        // já estava salva no Storage — só preserva a url
+        fotasMeta.push({ url: f.url, data: f.data, desc: f.desc });
+      } else if (f.blob) {
+        showLoading('Enviando foto ' + (i + 1) + ' de ' + fotosAval.length + '...');
+        var url = await sbUpload('anexos', pasta + '/foto_aval_' + (i + 1) + '.jpg', f.blob);
+        fotasMeta.push({ url: url, data: f.data, desc: f.desc });
+      }
     }
     if (fotasMeta.length) d.fotos_avaliacao_meta = JSON.stringify(fotasMeta);
-    // outros anexos
+    else d.fotos_avaliacao_meta = '[]';
+
+    // outros anexos: já salvos mantêm url, novos fazem upload
     var outrosMeta = [];
     for (var j = 0; j < outrosAnexos.length; j++) {
-      showLoading('Enviando anexo ' + (j+1) + ' de ' + outrosAnexos.length + '...');
       var oa = outrosAnexos[j];
-      if (oa.blob) {
+      if (oa.salvo && !oa.blob) {
+        outrosMeta.push({ url: oa.url, nome: oa.nome, tipo: oa.tipo, descricao: oa.descricao });
+      } else if (oa.blob) {
+        showLoading('Enviando anexo ' + (j+1) + ' de ' + outrosAnexos.length + '...');
         var oaUrl = await sbUpload('anexos', pasta + '/outros_' + (j+1) + '_' + oa.nome.replace(/[^a-zA-Z0-9.]/g,'_'), oa.blob);
         outrosMeta.push({ url: oaUrl, nome: oa.nome, tipo: oa.tipo, descricao: oa.descricao });
       }
     }
-    if (outrosMeta.length) d.outros_anexos_meta = JSON.stringify(outrosMeta);
+    d.outros_anexos_meta = JSON.stringify(outrosMeta);
+
     showLoading('Salvando ficha...');
     if (id) {
       await sbFetch('pacientes?id=eq.' + id, { method: 'PATCH', body: JSON.stringify(d), prefer: 'return=minimal' });
@@ -1448,8 +1484,96 @@ async function _editarAsync(id) {
     Object.keys(cm).forEach(function(gr) { setOpts(gr, cm[gr], 'check'); });
     var condMap = { 'renda': 'cond-renda', 'prob-saude': 'cond-saude', 'tratamento': 'cond-trat', 'medicamento': 'cond-med', 'cirurgia': 'cond-cirurgia', 'alergia': 'cond-alergia', 'fluor': 'cond-fluor', 'habito': 'cond-habito', 'escola': 'cond-escola', 'extra': 'cond-extra' };
     Object.keys(condMap).forEach(function(gr) { if (getOpt(gr) === 'Sim') document.getElementById(condMap[gr]).classList.add('show'); });
-    if (row.foto_url) { fotoAtual = row.foto_url; var img = document.getElementById('foto-img'); img.src = row.foto_url; img.style.display = 'block'; document.getElementById('foto-ph').style.display = 'none'; document.getElementById('btn-remover-foto').classList.add('visible'); }
-    setTimeout(function() { carregarPlano(row.plano_tratamento); try { procs = JSON.parse(row.procedimentos || '[]'); } catch(e) { procs = []; } renderizarProcs(); }, 100);
+
+    // ── FOTO DO PACIENTE ──
+    if (row.foto_url) {
+      fotoAtual = row.foto_url;
+      fotoBlob = null; // já está no Storage, não precisa re-enviar
+      var img = document.getElementById('foto-img');
+      img.src = row.foto_url; img.style.display = 'block';
+      document.getElementById('foto-ph').style.display = 'none';
+      document.getElementById('btn-remover-foto').classList.add('visible');
+    }
+
+    // ── AUTORIZAÇÃO ──
+    if (row.autorizacao_url) {
+      autAtual = row.autorizacao_url;
+      autTipo = row.autorizacao_tipo || 'imagem';
+      autBlob = null; // já no Storage
+      autExt = row.autorizacao_tipo === 'pdf' ? 'pdf' : 'jpg';
+      var wrap = document.getElementById('aut-preview');
+      wrap.style.display = 'block';
+      var isImg = autTipo === 'imagem';
+      wrap.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px">'
+        + (isImg
+          ? '<img src="' + row.autorizacao_url + '" style="width:48px;height:48px;border-radius:6px;object-fit:cover">'
+          : '<div style="width:48px;height:48px;border-radius:6px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red)">PDF</div>')
+        + '<div style="flex:1"><div style="font-size:13px;font-weight:600">Autorização salva</div>'
+        + '<div style="font-size:11px;color:var(--gray-400)">' + (isImg ? 'Imagem' : 'PDF') + ' · <a href="' + row.autorizacao_url + '" target="_blank" style="color:var(--purple)">Ver arquivo</a></div></div>'
+        + '<button class="btn btn-danger btn-sm" id="btn-rem-aut">✕ Remover</button></div>';
+      document.getElementById('btn-rem-aut').onclick = function() {
+        autAtual = ''; autBlob = null; autTipo = '';
+        wrap.style.display = 'none'; wrap.innerHTML = '';
+      };
+    }
+
+    // ── RAIO-X ──
+    if (row.raiox_url) {
+      raioxAtual = row.raiox_url;
+      raioxBlob = null; // já no Storage
+      var raioxWrap = document.getElementById('raiox-preview');
+      raioxWrap.style.display = 'block';
+      raioxWrap.innerHTML = '<div style="position:relative;display:inline-block">'
+        + '<img src="' + row.raiox_url + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--gray-200);display:block">'
+        + '<button id="btn-rem-raiox" style="position:absolute;top:6px;right:6px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px">✕</button></div>'
+        + '<div style="margin-top:6px"><a href="' + row.raiox_url + '" target="_blank" style="font-size:12px;color:var(--purple)">Ver imagem completa</a></div>';
+      document.getElementById('btn-rem-raiox').onclick = function() {
+        raioxAtual = ''; raioxBlob = null;
+        raioxWrap.style.display = 'none'; raioxWrap.innerHTML = '';
+      };
+    }
+
+    // ── FOTOS DE AVALIAÇÃO ──
+    if (row.fotos_avaliacao_meta) {
+      try {
+        var fa = JSON.parse(row.fotos_avaliacao_meta);
+        // converter urls salvas em objetos para o array fotosAval
+        fotosAval = fa.map(function(f) {
+          return { base64: f.url, blob: null, data: f.data || '', desc: f.desc || '', url: f.url, salvo: true };
+        });
+        // renderizar com indicador "já salvo"
+        var grid = document.getElementById('fotos-aval-grid');
+        grid.innerHTML = fotosAval.map(function(f, i) {
+          return '<div class="foto-card">'
+            + '<img src="' + f.base64 + '" alt="Foto avaliação">'
+            + '<button class="foto-card-remove" data-idx="' + i + '">✕</button>'
+            + '<div class="foto-card-info">'
+            + '<div style="font-weight:600">' + (f.data || '—') + '</div>'
+            + '<div style="color:var(--gray-400)">' + f.desc + '</div>'
+            + '</div></div>';
+        }).join('');
+        grid.querySelectorAll('.foto-card-remove').forEach(function(btn) {
+          btn.onclick = function() { fotosAval.splice(parseInt(this.dataset.idx), 1); renderizarFotosAval(); };
+        });
+      } catch(e) { fotosAval = []; }
+    }
+
+    // ── OUTROS ANEXOS ──
+    if (row.outros_anexos_meta) {
+      try {
+        var oa = JSON.parse(row.outros_anexos_meta);
+        outrosAnexos = oa.map(function(a) {
+          return { nome: a.nome, tipo: a.tipo || '', descricao: a.descricao || '', blob: null, url: a.url, salvo: true, tamanho: 'Salvo' };
+        });
+        renderizarOutrosAnexos();
+      } catch(e) { outrosAnexos = []; }
+    }
+
+    setTimeout(function() {
+      carregarPlano(row.plano_tratamento);
+      try { procs = JSON.parse(row.procedimentos || '[]'); } catch(e) { procs = []; }
+      renderizarProcs();
+    }, 100);
   } catch(e) { toast('Erro: ' + e.message, 'error'); }
   finally { hideLoading(); }
 }
