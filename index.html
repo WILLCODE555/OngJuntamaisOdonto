@@ -196,7 +196,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v17</div>
+    <div class="sub">Sistema de Fichas v3</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -438,14 +438,18 @@ textarea{resize:vertical;min-height:70px;}
     <div class="form-section-header"><span class="section-num" id="sec-proc-num">7</span><span class="section-title">Procedimentos realizados</span></div>
     <div class="form-body">
       <div id="procs-lista" style="margin-bottom:14px"></div>
-      <div style="background:var(--gray-50);border-radius:8px;padding:14px;border:1.5px dashed var(--gray-200)">
-        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:10px">Adicionar procedimento</div>
+      <div style="background:var(--gray-50);border-radius:8px;padding:14px;border:1.5px dashed var(--gray-200)" id="proc-form-box">
+        <div id="proc-form-label" style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:10px">Adicionar procedimento</div>
+        <input type="hidden" id="pf-idx" value="">
         <div class="field-row" style="margin-bottom:10px">
           <div><div class="field-label">Data</div><input type="text" id="pf-data" placeholder="dd/mm/aaaa" maxlength="10"></div>
           <div><div class="field-label">Dentista</div><input type="text" id="pf-dentista" placeholder="Nome do(a) dentista"></div>
         </div>
         <div class="field" style="margin-bottom:10px"><div class="field-label">Procedimento <span class="required">*</span></div><input type="text" id="pf-proc" placeholder="Ex: Profilaxia, Extração dente 36..."></div>
-        <button class="btn btn-teal btn-sm" id="btn-add-proc">+ Adicionar</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-teal btn-sm" id="btn-add-proc">+ Adicionar</button>
+          <button class="btn btn-outline btn-sm" id="btn-cancelar-proc" style="display:none">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1182,7 +1186,7 @@ function renderizarProcs() {
     + '<th style="background:var(--teal);color:white;padding:8px 10px;text-align:left;width:110px">Data</th>'
     + '<th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Procedimento</th>'
     + '<th style="background:var(--teal);color:white;padding:8px 10px;text-align:left">Dentista</th>'
-    + '<th style="background:var(--teal);color:white;padding:8px 10px;width:40px"></th>'
+    + '<th style="background:var(--teal);color:white;padding:8px 10px;width:80px"></th>'
     + '</tr></thead><tbody>'
     + procs.map(function(p, i) {
       var bg = i % 2 === 0 ? 'var(--gray-50)' : 'white';
@@ -1190,12 +1194,50 @@ function renderizarProcs() {
         + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">' + (p.data || '—') + '</td>'
         + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">' + (p.proc || '—') + '</td>'
         + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)">' + (p.dentista || '—') + '</td>'
-        + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100)"><button class="btn btn-danger btn-sm" data-idx="' + i + '">✕</button></td>'
-        + '</tr>';
+        + '<td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);white-space:nowrap">'
+        + '<button class="btn btn-outline btn-sm btn-editar-proc" data-idx="' + i + '" style="margin-right:4px">✏️</button>'
+        + '<button class="btn btn-danger btn-sm btn-excluir-proc" data-idx="' + i + '">✕</button>'
+        + '</td></tr>';
     }).join('') + '</tbody></table>';
-  lista.querySelectorAll('[data-idx]').forEach(function(btn) {
-    btn.onclick = function() { procs.splice(parseInt(this.dataset.idx), 1); renderizarProcs(); };
+  lista.querySelectorAll('.btn-excluir-proc').forEach(function(btn) {
+    btn.onclick = function() {
+      // se estava editando esse, cancela
+      if (document.getElementById('pf-idx').value === this.dataset.idx) cancelarEdicaoProc();
+      procs.splice(parseInt(this.dataset.idx), 1);
+      renderizarProcs();
+    };
   });
+  lista.querySelectorAll('.btn-editar-proc').forEach(function(btn) {
+    btn.onclick = function() { editarProc(parseInt(this.dataset.idx)); };
+  });
+}
+
+function editarProc(idx) {
+  var p = procs[idx];
+  document.getElementById('pf-idx').value = idx;
+  document.getElementById('pf-data').value = p.data || '';
+  document.getElementById('pf-dentista').value = p.dentista || '';
+  document.getElementById('pf-proc').value = p.proc || '';
+  document.getElementById('proc-form-label').textContent = 'Editando procedimento ' + (idx + 1);
+  document.getElementById('proc-form-label').style.color = 'var(--purple)';
+  document.getElementById('btn-add-proc').textContent = '✓ Salvar alteração';
+  document.getElementById('btn-add-proc').className = 'btn btn-primary btn-sm';
+  document.getElementById('btn-cancelar-proc').style.display = 'inline-flex';
+  // scroll até o formulário
+  document.getElementById('proc-form-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('pf-proc').focus();
+}
+
+function cancelarEdicaoProc() {
+  document.getElementById('pf-idx').value = '';
+  document.getElementById('pf-data').value = '';
+  document.getElementById('pf-dentista').value = '';
+  document.getElementById('pf-proc').value = '';
+  document.getElementById('proc-form-label').textContent = 'Adicionar procedimento';
+  document.getElementById('proc-form-label').style.color = 'var(--gray-600)';
+  document.getElementById('btn-add-proc').textContent = '+ Adicionar';
+  document.getElementById('btn-add-proc').className = 'btn btn-teal btn-sm';
+  document.getElementById('btn-cancelar-proc').style.display = 'none';
 }
 
 // LER FORM
@@ -1886,9 +1928,24 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('btn-add-proc').addEventListener('click', function() {
     var proc = document.getElementById('pf-proc').value.trim();
     if (!proc) { toast('Informe o procedimento!', 'error'); return; }
-    procs.push({ data: document.getElementById('pf-data').value, proc: proc, dentista: document.getElementById('pf-dentista').value });
-    ['pf-data', 'pf-proc', 'pf-dentista'].forEach(function(id) { document.getElementById(id).value = ''; });
+    var idx = document.getElementById('pf-idx').value;
+    var item = {
+      data: document.getElementById('pf-data').value,
+      proc: proc,
+      dentista: document.getElementById('pf-dentista').value
+    };
+    if (idx !== '') {
+      procs[parseInt(idx)] = item; // editar existente
+      toast('Procedimento atualizado!', 'success');
+    } else {
+      procs.push(item); // adicionar novo
+    }
+    cancelarEdicaoProc();
     renderizarProcs();
+  });
+
+  document.getElementById('btn-cancelar-proc').addEventListener('click', function() {
+    cancelarEdicaoProc();
   });
 
   // filtros
