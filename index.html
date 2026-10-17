@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema Odontológico v19 — ONG Junta Mais</title>
+<title>Sistema Odontológico v20 — ONG Junta Mais</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -138,6 +138,12 @@ textarea{resize:vertical;min-height:70px;}
 .cam-btn{padding:12px 28px;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;}
 .cam-capturar{background:white;color:#1F2937;}
 .cam-cancelar{background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);}
+.crianca-sug-item{padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background 0.1s;}
+.crianca-sug-item:last-child{border-bottom:none;}
+.crianca-sug-item:hover{background:var(--purple-light);}
+.crianca-sug-nome{font-weight:700;font-size:13px;color:var(--gray-800);}
+.crianca-sug-detalhe{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.crianca-sug-aviso{padding:10px 14px;font-size:12px;color:var(--gray-400);text-align:center;}
 .anexo-btn-add{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;border:1.5px dashed var(--gray-200);background:white;color:var(--gray-600);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;width:100%;}
 .anexo-btn-add:hover{border-color:var(--purple-mid);color:var(--purple);}
 .fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:10px;}
@@ -197,7 +203,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v19</div>
+    <div class="sub">Sistema de Fichas v20</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -292,7 +298,11 @@ textarea{resize:vertical;min-height:70px;}
   <div class="form-card" id="sec-crianca" style="display:none">
     <div class="form-section-header teal"><span class="section-num teal">2</span><span class="section-title teal">Dados da criança</span></div>
     <div class="form-body">
-      <div class="field"><div class="field-label">Nome da criança <span class="required">*</span></div><input type="text" id="f-nome-crianca" placeholder="Nome completo da criança"></div>
+      <div class="field" style="position:relative">
+        <div class="field-label">Nome da criança <span class="required">*</span></div>
+        <input type="text" id="f-nome-crianca" placeholder="Nome completo da criança" autocomplete="off">
+        <div id="crianca-sugestoes" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid var(--purple);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:500;max-height:280px;overflow-y:auto;margin-top:2px"></div>
+      </div>
       <div class="field-row">
         <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-nasc-crianca" placeholder="dd/mm/aaaa" maxlength="10"></div>
         <div class="field"><div class="field-label">Sexo</div><div class="options-group" style="margin-top:6px"><span class="opt" data-grupo="sexo-c" data-modo="radio"><span class="dot"></span>Feminino</span><span class="opt" data-grupo="sexo-c" data-modo="radio"><span class="dot"></span>Masculino</span></div></div>
@@ -672,6 +682,7 @@ function goTo(page) {
 
 // TIPO
 function trocarTipo(tipo) {
+  fecharSugestoesCrianca();
   tipoAtual = tipo;
   document.getElementById('f-tipo').value = tipo;
   var isPed = tipo === 'pediatrico';
@@ -1142,6 +1153,101 @@ function renderizarRaiox() {
 }
 
 // DENTISTAS AUTOCOMPLETE
+// ══ BUSCA DE IRMÃO — AUTOCOMPLETAR FICHA PEDIÁTRICA ══
+var _criancaBuscaTimer = null;
+var _criancaBuscaAtiva = false;
+
+async function buscarFichaIrmao(termo) {
+  if (!SB_URL || !SB_KEY || termo.length < 3) return;
+  try {
+    var rows = await sbFetch(
+      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,convenio,extra_det&tipo=eq.pediatrico&nome_crianca=ilike.*' + encodeURIComponent(termo) + '*&order=id.desc&limit=8',
+      { prefer: '' }
+    );
+    mostrarSugestoesCrianca(rows || []);
+  } catch(e) { fecharSugestoesCrianca(); }
+}
+
+function mostrarSugestoesCrianca(rows) {
+  var el = document.getElementById('crianca-sugestoes');
+  if (!rows.length) { el.style.display = 'none'; return; }
+  el.innerHTML = '<div class="crianca-sug-aviso">🔍 Clique para copiar dados do responsável e dados gerais</div>'
+    + rows.map(function(r) {
+      return '<div class="crianca-sug-item" data-id="' + r.id + '">'
+        + '<div class="crianca-sug-nome">' + (r.nome_crianca || '—') + '</div>'
+        + '<div class="crianca-sug-detalhe">'
+        + (r.resp_nome ? '👤 ' + r.resp_nome : '')
+        + (r.nasc_crianca ? ' · ' + r.nasc_crianca : '')
+        + (r.dentista ? ' · Dr(a). ' + r.dentista : '')
+        + '</div></div>';
+    }).join('');
+  el.querySelectorAll('.crianca-sug-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var id = parseInt(this.dataset.id);
+      var row = rows.find(function(r) { return r.id === id; });
+      if (row) preencherDadosIrmao(row);
+      fecharSugestoesCrianca();
+    });
+  });
+  el.style.display = 'block';
+  _criancaBuscaAtiva = true;
+}
+
+function fecharSugestoesCrianca() {
+  var el = document.getElementById('crianca-sugestoes');
+  if (el) el.style.display = 'none';
+  _criancaBuscaAtiva = false;
+}
+
+function preencherDadosIrmao(row) {
+  function s(id, val) { var el = document.getElementById(id); if (el && val) el.value = val; }
+  function setOpt(grupo, valor) {
+    if (!valor) return;
+    document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(o) {
+      if (o.textContent.trim().toLowerCase() === valor.toLowerCase()) {
+        o.classList.add('sel');
+        // radio: desseleciona outros
+        if (o.dataset.modo === 'radio') {
+          document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(x) { if (x !== o) x.classList.remove('sel'); });
+        }
+      }
+    });
+  }
+
+  // Dados do responsável
+  s('f-resp-nome',       row.resp_nome);
+  s('f-resp-nasc',       row.resp_nasc);
+  s('f-resp-cpf',        row.resp_cpf);
+  s('f-resp-rg',         row.resp_rg);
+  s('f-resp-parentesco', row.resp_parentesco);
+  s('f-resp-cidade',     row.resp_cidade);
+  s('f-telefone-ped',    row.telefone_ped);
+  setOpt('sexo-r',       row.sexo_resp);
+
+  // Dados gerais (endereço, socioeconômico, escola)
+  s('f-endereco',    row.endereco);
+  s('f-bairro',      row.bairro);
+  s('f-cep',         row.cep);
+  s('f-adultos',     row.adultos_casa);
+  s('f-criancas',    row.criancas_casa);
+  s('f-transporte',  row.transporte);
+  s('f-renda-valor', row.renda_valor);
+  s('f-escola-nome', row.escola_nome);
+  s('f-extra-det',   row.extra_det);
+  setOpt('area',     row.area);
+  setOpt('renda',    row.renda);
+  setOpt('escola',   row.escola);
+
+  // Dentista / CRO
+  s('f-dentista', row.dentista);
+  s('f-cro',      row.cro);
+
+  // Convênio (campo de texto livre se existir)
+  if (row.convenio) s('f-convenio', row.convenio);
+
+  toast('Dados copiados de ficha anterior! Verifique e ajuste o necessário.', 'info');
+}
+
 var DENTISTAS_KEY = 'ong_dentistas';
 
 function carregarDentistas() {
@@ -2153,6 +2259,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     this.value = '';
   });
+
+  // busca de irmão na ficha pediátrica
+  var nomeCriancaEl = document.getElementById('f-nome-crianca');
+  if (nomeCriancaEl) {
+    nomeCriancaEl.addEventListener('input', function() {
+      var v = this.value.trim();
+      clearTimeout(_criancaBuscaTimer);
+      if (v.length < 3) { fecharSugestoesCrianca(); return; }
+      _criancaBuscaTimer = setTimeout(function() { buscarFichaIrmao(v); }, 400);
+    });
+    nomeCriancaEl.addEventListener('blur', function() {
+      // pequeno delay para permitir click na sugestão
+      setTimeout(fecharSugestoesCrianca, 200);
+    });
+    nomeCriancaEl.addEventListener('focus', function() {
+      if (this.value.trim().length >= 3 && _criancaBuscaAtiva) {
+        document.getElementById('crianca-sugestoes').style.display = 'block';
+      }
+    });
+  }
 
   // autocomplete dentista → preenche CRO automaticamente
   document.getElementById('f-dentista').addEventListener('input', function() {
