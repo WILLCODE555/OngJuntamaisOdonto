@@ -1194,7 +1194,7 @@ async function abrirModalIrmao() {
   input.focus();
   try {
     var rows = await sbFetch(
-      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,convenio,extra_det&tipo=eq.pediatrico&order=resp_nome.asc&limit=200',
+      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,extra_det&tipo=eq.pediatrico&order=resp_nome.asc&limit=200',
       { prefer: '' }
     );
     _irmaosCache = rows || [];
@@ -1278,9 +1278,6 @@ function preencherDadosIrmao(row) {
   // Dentista / CRO
   s('f-dentista', row.dentista);
   s('f-cro',      row.cro);
-
-  // Convênio (campo de texto livre se existir)
-  if (row.convenio) s('f-convenio', row.convenio);
 
   toast('Dados copiados! Verifique e ajuste o necessário.', 'info');
 }
