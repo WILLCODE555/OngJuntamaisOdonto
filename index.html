@@ -1194,7 +1194,7 @@ async function abrirModalIrmao() {
   input.focus();
   try {
     var rows = await sbFetch(
-      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,extra_det&tipo=eq.pediatrico&order=resp_nome.asc&limit=200',
+      'pacientes?select=id,nome_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,agua,luz,transporte,renda,renda_valor,escola,escola_nome,rede,periodo,extra,extra_det&tipo=eq.pediatrico&order=resp_nome.asc&limit=200',
       { prefer: '' }
     );
     _irmaosCache = rows || [];
@@ -1261,7 +1261,7 @@ function preencherDadosIrmao(row) {
   s('f-telefone-ped',    row.telefone_ped);
   setOpt('sexo-r',       row.sexo_resp);
 
-  // Dados gerais (endereço, socioeconômico, escola)
+  // Dados gerais (endereço, socioeconômico, escolaridade)
   s('f-endereco',    row.endereco);
   s('f-bairro',      row.bairro);
   s('f-cep',         row.cep);
@@ -1272,12 +1272,13 @@ function preencherDadosIrmao(row) {
   s('f-escola-nome', row.escola_nome);
   s('f-extra-det',   row.extra_det);
   setOpt('area',     row.area);
+  setOpt('agua',     row.agua);
+  setOpt('luz',      row.luz);
   setOpt('renda',    row.renda);
   setOpt('escola',   row.escola);
-
-  // Dentista / CRO
-  s('f-dentista', row.dentista);
-  s('f-cro',      row.cro);
+  setOpt('rede',     row.rede);
+  setOpt('periodo',  row.periodo);
+  setOpt('extra',    row.extra);
 
   toast('Dados copiados! Verifique e ajuste o necessário.', 'info');
 }
