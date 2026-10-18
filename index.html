@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema Odontológico v20 — ONG Junta Mais</title>
+<title>Sistema Odontológico v19 — ONG Junta Mais</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -203,7 +203,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v20</div>
+    <div class="sub">Sistema de Fichas v19</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -1161,11 +1161,11 @@ async function buscarFichaIrmao(termo) {
   if (!SB_URL || !SB_KEY || termo.length < 3) return;
   try {
     var rows = await sbFetch(
-      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,convenio,extra_det&tipo=eq.pediatrico&resp_nome=ilike.*' + encodeURIComponent(termo) + '*&order=id.desc&limit=8',
+      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,convenio,extra_det&tipo=eq.pediatrico&resp_nome=ilike.*' + termo.replace(/[%_]/g, '\\$&') + '*&order=id.desc&limit=8',
       { prefer: '' }
     );
     mostrarSugestoesCrianca(rows || []);
-  } catch(e) { fecharSugestoesCrianca(); }
+  } catch(e) { console.error('buscarFichaIrmao erro:', e); fecharSugestoesCrianca(); }
 }
 
 function mostrarSugestoesCrianca(rows) {
