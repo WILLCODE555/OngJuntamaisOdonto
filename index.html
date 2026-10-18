@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema Odontológico v21 — ONG Junta Mais</title>
+<title>Sistema Odontológico v22 — ONG Junta Mais</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -203,7 +203,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v21</div>
+    <div class="sub">Sistema de Fichas v22</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -313,13 +313,42 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
 
+  <!-- Modal: copiar dados de irmão -->
+  <div id="modal-irmao" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;align-items:center;justify-content:center">
+    <div style="background:white;border-radius:14px;width:min(560px,95vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+      <div style="padding:18px 20px 14px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:var(--gray-800)">📋 Copiar dados de outro paciente</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Busque pelo nome da criança ou do responsável</div>
+        </div>
+        <button onclick="document.getElementById('modal-irmao').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);line-height:1">×</button>
+      </div>
+      <div style="padding:14px 20px;border-bottom:1px solid var(--gray-100)">
+        <input id="irmao-busca-input" type="text" placeholder="Digite o nome..." autocomplete="off"
+          style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none"
+          oninput="filtrarIrmaos(this.value)">
+      </div>
+      <div id="irmao-lista" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+      <div style="padding:12px 20px;border-top:1px solid var(--gray-100);text-align:right">
+        <button onclick="document.getElementById('modal-irmao').style.display='none'"
+          style="padding:8px 18px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;font-size:13px;cursor:pointer;color:var(--gray-600)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="form-card" id="sec-resp" style="display:none">
     <div class="form-section-header teal"><span class="section-num teal">3</span><span class="section-title teal">Dados do responsável</span></div>
     <div class="form-body">
-      <div class="field" style="position:relative">
+      <div style="margin-bottom:14px">
+        <button type="button" id="btn-copiar-irmao" onclick="abrirModalIrmao()"
+          style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--teal-light);border:1.5px solid var(--teal);border-radius:8px;color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s"
+          onmouseover="this.style.background='#99f6e4'" onmouseout="this.style.background='var(--teal-light)'">
+          <span style="font-size:16px">📋</span> Copiar dados de outro paciente
+        </button>
+      </div>
+      <div class="field">
         <div class="field-label">Nome do responsável <span class="required">*</span></div>
         <input type="text" id="f-resp-nome" placeholder="Nome completo" autocomplete="off">
-        <div id="crianca-sugestoes" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid var(--purple);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:500;max-height:280px;overflow-y:auto;margin-top:2px"></div>
       </div>
       <div class="field-row">
         <div class="field"><div class="field-label">Data de nascimento</div><input type="text" id="f-resp-nasc" placeholder="dd/mm/aaaa" maxlength="10"></div>
@@ -1154,49 +1183,58 @@ function renderizarRaiox() {
 
 // DENTISTAS AUTOCOMPLETE
 // ══ BUSCA DE IRMÃO — AUTOCOMPLETAR FICHA PEDIÁTRICA ══
-var _criancaBuscaTimer = null;
-var _criancaBuscaAtiva = false;
+var _irmaosCache = [];
 
-async function buscarFichaIrmao(termo) {
-  if (!SB_URL || !SB_KEY || termo.length < 3) return;
+async function abrirModalIrmao() {
+  var modal = document.getElementById('modal-irmao');
+  var lista = document.getElementById('irmao-lista');
+  var input = document.getElementById('irmao-busca-input');
+  modal.style.display = 'flex';
+  input.value = '';
+  lista.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);font-size:13px">⏳ Carregando fichas...</div>';
+  input.focus();
   try {
     var rows = await sbFetch(
-      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,convenio,extra_det&tipo=eq.pediatrico&resp_nome=ilike.*' + termo.replace(/[%_]/g, '\\$&') + '*&order=id.desc&limit=8',
+      'pacientes?select=id,nome_crianca,nasc_crianca,resp_nome,resp_nasc,resp_cpf,resp_rg,resp_parentesco,resp_cidade,sexo_resp,telefone_ped,endereco,bairro,cep,area,adultos_casa,criancas_casa,transporte,renda,renda_valor,escola,escola_nome,dentista,cro,convenio,extra_det&tipo=eq.pediatrico&order=resp_nome.asc&limit=200',
       { prefer: '' }
     );
-    mostrarSugestoesCrianca(rows || []);
-  } catch(e) { console.error('buscarFichaIrmao erro:', e); fecharSugestoesCrianca(); }
+    _irmaosCache = rows || [];
+    renderIrmaos(_irmaosCache);
+  } catch(e) {
+    lista.innerHTML = '<div style="padding:24px;text-align:center;color:var(--red);font-size:13px">❌ Erro ao carregar: ' + e.message + '</div>';
+  }
 }
 
-function mostrarSugestoesCrianca(rows) {
-  var el = document.getElementById('crianca-sugestoes');
-  if (!rows.length) { el.style.display = 'none'; return; }
-  el.innerHTML = '<div class="crianca-sug-aviso">👨‍👩‍👧 Clique para preencher dados do responsável e da família</div>'
-    + rows.map(function(r) {
-      return '<div class="crianca-sug-item" data-id="' + r.id + '">'
-        + '<div class="crianca-sug-nome">👤 ' + (r.resp_nome || '—') + '</div>'
-        + '<div class="crianca-sug-detalhe">'
-        + '🧒 Irmão(ã): ' + (r.nome_crianca || '—')
-        + (r.telefone_ped ? ' · 📞 ' + r.telefone_ped : '')
-        + (r.dentista ? ' · Dr(a). ' + r.dentista : '')
-        + '</div></div>';
-    }).join('');
-  el.querySelectorAll('.crianca-sug-item').forEach(function(item) {
+function filtrarIrmaos(termo) {
+  if (!termo.trim()) { renderIrmaos(_irmaosCache); return; }
+  var t = termo.trim().toLowerCase();
+  var filtrados = _irmaosCache.filter(function(r) {
+    return (r.resp_nome || '').toLowerCase().includes(t)
+        || (r.nome_crianca || '').toLowerCase().includes(t);
+  });
+  renderIrmaos(filtrados);
+}
+
+function renderIrmaos(rows) {
+  var lista = document.getElementById('irmao-lista');
+  if (!rows.length) {
+    lista.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);font-size:13px">Nenhuma ficha encontrada</div>';
+    return;
+  }
+  lista.innerHTML = rows.map(function(r) {
+    return '<div class="irmao-item" data-id="' + r.id + '" style="padding:12px 20px;cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background 0.1s" onmouseover="this.style.background=\'var(--purple-light)\'" onmouseout="this.style.background=\'white\'">'
+      + '<div style="font-weight:700;font-size:13px;color:var(--gray-800)">🧒 ' + (r.nome_crianca || '—') + '</div>'
+      + '<div style="font-size:12px;color:var(--gray-600);margin-top:2px">👤 Resp: ' + (r.resp_nome || '—') + (r.telefone_ped ? ' · 📞 ' + r.telefone_ped : '') + '</div>'
+      + '</div>';
+  }).join('');
+  lista.querySelectorAll('.irmao-item').forEach(function(item) {
     item.addEventListener('click', function() {
       var id = parseInt(this.dataset.id);
-      var row = rows.find(function(r) { return r.id === id; });
+      var row = _irmaosCache.find(function(r) { return r.id === id; });
       if (row) preencherDadosIrmao(row);
-      fecharSugestoesCrianca();
+      document.getElementById('modal-irmao').style.display = 'none';
     });
   });
-  el.style.display = 'block';
-  _criancaBuscaAtiva = true;
-}
-
-function fecharSugestoesCrianca() {
-  var el = document.getElementById('crianca-sugestoes');
-  if (el) el.style.display = 'none';
-  _criancaBuscaAtiva = false;
 }
 
 function preencherDadosIrmao(row) {
@@ -1245,9 +1283,6 @@ function preencherDadosIrmao(row) {
   // Convênio (campo de texto livre se existir)
   if (row.convenio) s('f-convenio', row.convenio);
 
-  // Evitar que o preenchimento de f-resp-nome dispare nova busca
-  _criancaBuscaAtiva = false;
-  clearTimeout(_criancaBuscaTimer);
   toast('Dados copiados! Verifique e ajuste o necessário.', 'info');
 }
 
@@ -2263,24 +2298,10 @@ document.addEventListener('DOMContentLoaded', function() {
     this.value = '';
   });
 
-  // busca de irmão pelo nome do responsável na ficha pediátrica
-  var respNomeEl = document.getElementById('f-resp-nome');
-  if (respNomeEl) {
-    respNomeEl.addEventListener('input', function() {
-      var v = this.value.trim();
-      clearTimeout(_criancaBuscaTimer);
-      if (v.length < 3) { fecharSugestoesCrianca(); return; }
-      _criancaBuscaTimer = setTimeout(function() { buscarFichaIrmao(v); }, 400);
-    });
-    respNomeEl.addEventListener('blur', function() {
-      setTimeout(fecharSugestoesCrianca, 200);
-    });
-    respNomeEl.addEventListener('focus', function() {
-      if (this.value.trim().length >= 3 && _criancaBuscaAtiva) {
-        document.getElementById('crianca-sugestoes').style.display = 'block';
-      }
-    });
-  }
+  // fechar modal irmão ao clicar fora
+  document.getElementById('modal-irmao').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
 
   // autocomplete dentista → preenche CRO automaticamente
   document.getElementById('f-dentista').addEventListener('input', function() {
