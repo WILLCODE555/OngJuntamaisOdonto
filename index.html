@@ -413,7 +413,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-geral-num">3</span><span class="section-title">Dados gerais</span></div>
     <div class="form-body">
-      <div id="btn-copiar-adulto-wrap" style="margin-bottom:14px;display:none">
+      <div id="btn-copiar-adulto-wrap" style="margin-bottom:14px;display:block">
         <button type="button" onclick="abrirModalAdulto()"
           style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--teal-light);border:1.5px solid var(--teal);border-radius:8px;color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s"
           onmouseover="this.style.background='#99f6e4'" onmouseout="this.style.background='var(--teal-light)'">
@@ -2313,6 +2313,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // tabs
   document.getElementById('tab-adulto').addEventListener('click', function() { trocarTipo('adulto'); });
   document.getElementById('tab-pediatrico').addEventListener('click', function() { trocarTipo('pediatrico'); });
+  trocarTipo('adulto'); // garante estado inicial correto
 
   // config
   document.getElementById('btn-salvar-config').addEventListener('click', salvarConfig);
