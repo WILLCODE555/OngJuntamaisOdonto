@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema Odontológico v22 — ONG Junta Mais</title>
+<title>Sistema Odontológico v23 — ONG Junta Mais</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -203,7 +203,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Consultório Odontológico</div>
-    <div class="sub">Sistema de Fichas v22</div>
+    <div class="sub">Sistema de Fichas v23</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -387,9 +387,39 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
 
+  <!-- Modal: copiar dados gerais de adulto -->
+  <div id="modal-adulto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;align-items:center;justify-content:center">
+    <div style="background:white;border-radius:14px;width:min(560px,95vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+      <div style="padding:18px 20px 14px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:var(--gray-800)">📋 Copiar dados de outro paciente</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Busque pelo nome do paciente</div>
+        </div>
+        <button onclick="document.getElementById('modal-adulto').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);line-height:1">×</button>
+      </div>
+      <div style="padding:14px 20px;border-bottom:1px solid var(--gray-100)">
+        <input id="adulto-busca-input" type="text" placeholder="Digite o nome..." autocomplete="off"
+          style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none"
+          oninput="filtrarAdultos(this.value)">
+      </div>
+      <div id="adulto-lista" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+      <div style="padding:12px 20px;border-top:1px solid var(--gray-100);text-align:right">
+        <button onclick="document.getElementById('modal-adulto').style.display='none'"
+          style="padding:8px 18px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;font-size:13px;cursor:pointer;color:var(--gray-600)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="form-card">
     <div class="form-section-header"><span class="section-num" id="sec-geral-num">3</span><span class="section-title">Dados gerais</span></div>
     <div class="form-body">
+      <div id="btn-copiar-adulto-wrap" style="margin-bottom:14px;display:none">
+        <button type="button" onclick="abrirModalAdulto()"
+          style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--teal-light);border:1.5px solid var(--teal);border-radius:8px;color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s"
+          onmouseover="this.style.background='#99f6e4'" onmouseout="this.style.background='var(--teal-light)'">
+          <span style="font-size:16px">📋</span> Copiar dados de outro paciente
+        </button>
+      </div>
       <div class="field"><div class="field-label">Endereço</div><input type="text" id="f-endereco" placeholder="Rua, número, complemento"></div>
       <div class="field-row">
         <div class="field"><div class="field-label">Bairro</div><input type="text" id="f-bairro" placeholder="Bairro"></div>
@@ -729,6 +759,9 @@ function trocarTipo(tipo) {
   document.getElementById('sec-raiox-num').textContent = isPed ? '11' : '9';
   document.getElementById('sec-faval-num').textContent = isPed ? '12' : '10';
   document.getElementById('sec-outros-num').textContent = isPed ? '13' : '11';
+  // mostrar botão copiar adulto só na ficha adulto
+  var btnAdultoWrap = document.getElementById('btn-copiar-adulto-wrap');
+  if (btnAdultoWrap) btnAdultoWrap.style.display = isPed ? 'none' : 'block';
   renderizarPlano();
 }
 
@@ -1276,6 +1309,90 @@ function preencherDadosIrmao(row) {
 
   toast('Dados copiados! Verifique e ajuste o necessário.', 'info');
 }
+
+// ── Copiar dados gerais de adulto ──────────────────────────────
+var _adultosCache = [];
+
+async function abrirModalAdulto() {
+  var modal = document.getElementById('modal-adulto');
+  var lista = document.getElementById('adulto-lista');
+  var input = document.getElementById('adulto-busca-input');
+  modal.style.display = 'flex';
+  input.value = '';
+  lista.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);font-size:13px">⏳ Carregando fichas...</div>';
+  input.focus();
+  try {
+    var rows = await sbFetch(
+      'pacientes?select=id,nome,nascimento,endereco,bairro,cep,area,adultos_casa,criancas_casa,agua,luz,transporte,renda,renda_valor&tipo=eq.adulto&order=nome.asc&limit=200',
+      { prefer: '' }
+    );
+    _adultosCache = rows || [];
+    renderAdultos(_adultosCache);
+  } catch(e) {
+    lista.innerHTML = '<div style="padding:24px;text-align:center;color:var(--red);font-size:13px">❌ Erro ao carregar: ' + e.message + '</div>';
+  }
+}
+
+function filtrarAdultos(termo) {
+  if (!termo.trim()) { renderAdultos(_adultosCache); return; }
+  var t = termo.trim().toLowerCase();
+  var filtrados = _adultosCache.filter(function(r) {
+    return (r.nome || '').toLowerCase().includes(t);
+  });
+  renderAdultos(filtrados);
+}
+
+function renderAdultos(rows) {
+  var lista = document.getElementById('adulto-lista');
+  if (!rows.length) {
+    lista.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);font-size:13px">Nenhuma ficha encontrada</div>';
+    return;
+  }
+  lista.innerHTML = rows.map(function(r) {
+    return '<div class="adulto-item" data-id="' + r.id + '" style="padding:12px 20px;cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background 0.1s" onmouseover="this.style.background=\'var(--purple-light)\'" onmouseout="this.style.background=\'white\'">'
+      + '<div style="font-weight:700;font-size:13px;color:var(--gray-800)">👤 ' + (r.nome || '—') + '</div>'
+      + '<div style="font-size:12px;color:var(--gray-600);margin-top:2px">'
+      + (r.nascimento ? '📅 ' + r.nascimento : '')
+      + (r.bairro ? (r.nascimento ? ' · ' : '') + '📍 ' + r.bairro : '')
+      + '</div></div>';
+  }).join('');
+  lista.querySelectorAll('.adulto-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var id = parseInt(this.dataset.id);
+      var row = _adultosCache.find(function(r) { return r.id === id; });
+      if (row) preencherDadosGeraisAdulto(row);
+      document.getElementById('modal-adulto').style.display = 'none';
+    });
+  });
+}
+
+function preencherDadosGeraisAdulto(row) {
+  function s(id, val) { var el = document.getElementById(id); if (el && val !== undefined && val !== null) el.value = val; }
+  function setOpt(grupo, valor) {
+    if (!valor) return;
+    document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(o) {
+      if (o.textContent.trim().toLowerCase() === valor.toLowerCase()) {
+        o.classList.add('sel');
+        if (o.dataset.modo === 'radio') {
+          document.querySelectorAll('.opt[data-grupo="' + grupo + '"]').forEach(function(x) { if (x !== o) x.classList.remove('sel'); });
+        }
+      }
+    });
+  }
+  s('f-endereco',    row.endereco);
+  s('f-bairro',      row.bairro);
+  s('f-cep',         row.cep);
+  s('f-adultos',     row.adultos_casa);
+  s('f-criancas',    row.criancas_casa);
+  s('f-transporte',  row.transporte);
+  s('f-renda-valor', row.renda_valor);
+  setOpt('area',  row.area);
+  setOpt('agua',  row.agua);
+  setOpt('luz',   row.luz);
+  setOpt('renda', row.renda);
+  toast('Dados copiados! Verifique e ajuste o necessário.', 'info');
+}
+// ───────────────────────────────────────────────────────────────
 
 var DENTISTAS_KEY = 'ong_dentistas';
 
@@ -2289,8 +2406,11 @@ document.addEventListener('DOMContentLoaded', function() {
     this.value = '';
   });
 
-  // fechar modal irmão ao clicar fora
+  // fechar modais ao clicar fora
   document.getElementById('modal-irmao').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+  document.getElementById('modal-adulto').addEventListener('click', function(e) {
     if (e.target === this) this.style.display = 'none';
   });
 
