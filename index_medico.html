@@ -105,6 +105,9 @@ textarea{resize:vertical;min-height:70px;}
 .opt.sel .chk::after{content:'\2713';font-size:9px;color:var(--purple);font-weight:700;}
 .conditional{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--gray-200);}
 .conditional.show{display:block;}
+.field-hint{font-size:11px;color:var(--gray-400);margin-top:4px;min-height:14px;}
+.field-hint.erro{color:var(--red);font-weight:600;}
+input.invalido{border-color:var(--red)!important;background:var(--red-light);}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:white;border-radius:12px;padding:24px;max-width:760px;width:92%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-md);}
@@ -206,7 +209,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="sidebar-brand">
     <div class="org">ONG Junta Mais</div>
     <div class="name">Atendimento Médico</div>
-    <div class="sub">Sistema de Fichas Médicas v1</div>
+    <div class="sub">Sistema de Fichas Médicas v2</div>
   </div>
   <nav class="nav">
     <div class="nav-item active" data-page="dashboard"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
@@ -415,8 +418,8 @@ textarea{resize:vertical;min-height:70px;}
 
 <script>
 // ══ CREDENCIAIS FIXAS (opcional) ══
-var SB_URL_FIXO = 'https://bauhojioypirqrhwvmje.supabase.co';
-var SB_KEY_FIXO = 'sb_publishable_gRNZPZ1_-lvkKfrH8IGUiw_kq4nhkBD';
+var SB_URL_FIXO = '';
+var SB_KEY_FIXO = '';
 
 var TABELA = 'fichas_medicas';
 var BUCKET = 'anexos';          // mesmo bucket do sistema odontológico
@@ -450,7 +453,7 @@ var SECOES = [
   { id: 'crianca', t: 'Dados da criança', v: 'pediatrico', teal: 1, f: [
     { c: 'nome_crianca', l: 'Nome da criança', r: 1, ph: 'Nome completo da criança' },
     { c: 'nasc_crianca', l: 'Data de nascimento', t: 'date', h: 1 },
-    { c: 'idade_crianca', l: 'Idade', ro: 1, h: 1, ph: 'Calculada automaticamente' },
+    { c: 'idade_crianca', l: 'Idade', ro: 1, h: 1, hint: 1, ph: 'Calculada automaticamente' },
     { c: 'sexo_crianca', l: 'Sexo', t: 'radio', o: ['Feminino', 'Masculino'] },
     { c: 'irmaos', l: 'Irmãos?', ph: 'Ex: 2 irmãos — 3 e 7 anos' },
     { c: 'etnia_crianca', l: 'Etnia', t: 'check', o: ETNIAS },
@@ -472,7 +475,7 @@ var SECOES = [
   { id: 'paciente', t: 'Dados do paciente', v: 'adulto', antes: 'copiar', f: [
     { c: 'nome', l: 'Nome completo', r: 1, ph: 'Nome completo do paciente' },
     { c: 'nascimento', l: 'Data de nascimento', t: 'date', h: 1 },
-    { c: 'idade', l: 'Idade', ro: 1, h: 1, ph: 'Calculada automaticamente' },
+    { c: 'idade', l: 'Idade', ro: 1, h: 1, hint: 1, ph: 'Calculada automaticamente' },
     { c: 'sexo', l: 'Sexo', t: 'radio', o: ['Feminino', 'Masculino'] },
     { c: 'filhos', l: 'Filhos?', ph: 'Ex: 2 filhos — 5 e 8 anos' },
     { c: 'etnia', l: 'Etnia', t: 'check', o: ETNIAS },
@@ -615,6 +618,7 @@ function htmlCampo(f) {
       + (f.ro ? ' readonly tabindex="-1"' : '') + (f.list ? ' list="' + f.list + '" autocomplete="off"' : '')
       + ' placeholder="' + esc(ph) + '">';
   }
+  if (f.hint) inner += '<div class="field-hint" id="hint-' + f.c + '"></div>';
   return '<div class="field">' + lab + inner + '</div>';
 }
 
@@ -746,7 +750,19 @@ function setCampo(col, val) {
 // ══ CÁLCULOS ══
 function g(id) { var el = document.getElementById(id); return el ? el.value || '' : ''; }
 function numBR(s) { var n = parseFloat(String(s || '').replace(',', '.')); return isNaN(n) ? 0 : n; }
-function parseData(s) { var p = (s || '').split('/'); if (p.length !== 3 || p[2].length !== 4) return null; var d = new Date(+p[2], +p[1] - 1, +p[0]); return isNaN(d) ? null : d; }
+// Aceita só datas reais no formato dd/mm/aaaa (rejeita 31/02, 00/05 etc.)
+function parseData(s) {
+  var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s || ''); if (!m) return null;
+  var d = +m[1], mo = +m[2], y = +m[3], dt = new Date(y, mo - 1, d);
+  if (y < 1900 || dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+  return dt;
+}
+function hoje() { var t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+function fmtData(d) { return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
+function marcarData(el) {
+  if (!el) return;
+  el.classList.toggle('invalido', el.value.length === 10 && !parseData(el.value));
+}
 
 function calcIMC() {
   var p = numBR(g('f-peso')), e = numBR(g('f-estatura'));
@@ -754,15 +770,41 @@ function calcIMC() {
   if (p > 0 && e > 0) { var m = e > 3 ? e / 100 : e; el.value = (p / (m * m)).toFixed(1).replace('.', ','); }
   else el.value = '';
 }
+// Diferença exata em anos, meses e dias (conta o mês de verdade, sem aproximação)
+function idadeEntre(n, ref) {
+  var a = ref.getFullYear() - n.getFullYear(), m = ref.getMonth() - n.getMonth(), d = ref.getDate() - n.getDate();
+  if (d < 0) { m--; d += new Date(ref.getFullYear(), ref.getMonth(), 0).getDate(); }
+  if (m < 0) { a--; m += 12; }
+  return { a: a, m: m, d: d };
+}
+function textoIdade(i) {
+  function pl(n, s, p) { return n + ' ' + (n === 1 ? s : p); }
+  if (i.a >= 18) return pl(i.a, 'ano', 'anos');
+  if (i.a >= 1) return pl(i.a, 'ano', 'anos') + (i.m ? ' e ' + pl(i.m, 'mês', 'meses') : '');
+  if (i.m >= 1) return pl(i.m, 'mês', 'meses') + (i.d ? ' e ' + pl(i.d, 'dia', 'dias') : '');
+  return i.d ? pl(i.d, 'dia', 'dias') : 'Recém-nascido (0 dias)';
+}
 function calcIdade(nascId, alvoId) {
   var el = document.getElementById(alvoId); if (!el) return;
-  var n = parseData(g(nascId)); var ref = parseData(g('f-data_triagem')) || new Date();
-  if (!n) { el.value = ''; return; }
-  var m = (ref.getFullYear() - n.getFullYear()) * 12 + (ref.getMonth() - n.getMonth());
-  if (ref.getDate() < n.getDate()) m--;
-  if (m < 0) { el.value = ''; return; }
-  var a = Math.floor(m / 12), r = m % 12;
-  el.value = a + (a === 1 ? ' ano' : ' anos') + (a < 18 && r ? ' e ' + r + (r === 1 ? ' mês' : ' meses') : '');
+  var hint = document.getElementById('hint-' + alvoId.slice(2));
+  function dica(t, erro) { if (hint) { hint.textContent = t || ''; hint.classList.toggle('erro', !!erro); } }
+  var txt = g(nascId);
+  el.value = '';
+  if (txt.length < 10) { dica(''); return; }
+  var n = parseData(txt);
+  if (!n) { dica('Data de nascimento inválida — confira dia, mês e ano', true); return; }
+  var triTxt = g('f-data_triagem'), tri = parseData(triTxt), h = hoje(), ref, nota;
+  if (tri && tri <= h) { ref = tri; nota = 'Idade na data da triagem (' + triTxt + ')'; }
+  else {
+    ref = h; nota = 'Idade calculada para hoje (' + fmtData(h) + ')';
+    if (triTxt.length === 10 && !tri) nota += ' — data da triagem inválida';
+    else if (tri && tri > h) nota += ' — data da triagem está no futuro';
+  }
+  if (n > ref) { dica('Nascimento depois da ' + (ref === tri ? 'data da triagem' : 'data de hoje') + ' — confira as datas', true); return; }
+  var i = idadeEntre(n, ref);
+  if (i.a > 120) { dica('Idade acima de 120 anos — confira o ano de nascimento', true); return; }
+  el.value = textoIdade(i);
+  dica(nota, ref !== tri && triTxt.length === 10);
 }
 function recalcular() { calcIMC(); calcIdade('f-nasc_crianca', 'f-idade_crianca'); calcIdade('f-nascimento', 'f-idade'); }
 
@@ -1049,7 +1091,8 @@ function limparForm() {
   document.getElementById('form-title').textContent = 'Nova Ficha Médica';
   document.querySelectorAll('#page-novo input[type="text"],#page-novo input[type="number"],#page-novo textarea').forEach(function(el) { el.value = ''; });
   document.querySelectorAll('#page-novo .opt').forEach(function(o) { o.classList.remove('sel'); });
-  mostrarConds();
+  document.querySelectorAll('#page-novo input.invalido').forEach(function(el) { el.classList.remove('invalido'); });
+  mostrarConds(); recalcular();
   setFoto('');
   autAtual = ''; autBlob = null; autTipo = ''; renderizarAut();
   exameItens.length = 0; renderizarExames();
@@ -1064,6 +1107,10 @@ async function salvarFicha() {
   var d = lerForm();
   var nome = nomeDe(d);
   if (!nome || !d.medico) { toast('Preencha o nome do paciente e o(a) médico(a)!', 'error'); return; }
+  var dataRuim = Array.from(document.querySelectorAll('#page-novo .m-date')).find(function(el) {
+    return el.closest('.form-card').style.display !== 'none' && el.value && !parseData(el.value);
+  });
+  if (dataRuim) { marcarData(dataRuim); dataRuim.classList.add('invalido'); dataRuim.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast('Há uma data inválida ou incompleta (use dd/mm/aaaa)', 'error'); return; }
   if (!SB_URL || !SB_KEY) { toast('Configure o Supabase primeiro', 'error'); return; }
   var btn = document.getElementById('btn-salvar');
   btn.disabled = true; btn.textContent = 'Salvando...';
@@ -1288,6 +1335,7 @@ async function editarPaciente(id) {
     document.getElementById('form-title').textContent = 'Editar Ficha Médica';
     TODOS_CAMPOS.forEach(function(f) { setCampo(f.c, row[f.c]); });
     mostrarConds(); recalcular();
+    document.querySelectorAll('#page-novo .m-date').forEach(marcarData);
     if (row.foto_url) setFoto(row.foto_url);
     if (row.autorizacao_url) { autAtual = row.autorizacao_url; autTipo = row.autorizacao_tipo || 'imagem'; autBlob = null; autExt = autTipo === 'pdf' ? 'pdf' : 'jpg'; renderizarAut(); }
     pj(row.exames_meta).forEach(function(r) { exameItens.push({ base64: r.url, blob: null, url: r.url, data: r.data || '', obs: r.obs || '' }); });
@@ -1510,6 +1558,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('input', function(e) {
     var el = e.target;
     for (var cls in MASCARAS) if (el.classList && el.classList.contains(cls)) { el.value = MASCARAS[cls](el.value); break; }
+    if (el.classList && el.classList.contains('m-date')) marcarData(el);
     if (['f-peso', 'f-estatura', 'f-nasc_crianca', 'f-nascimento', 'f-data_triagem'].indexOf(el.id) >= 0) recalcular();
     if (el.id === 'f-medico') {
       var m = carregarMedicos().find(function(d) { return d.nome.toLowerCase() === el.value.trim().toLowerCase(); });
